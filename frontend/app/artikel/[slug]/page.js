@@ -1,32 +1,62 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { getArticleBySlug, getRelatedArticles, getPopularArticles, getImageUrl, formatDate } from '@/lib/strapi';
+import {
+  getArticleBySlug, getRelatedArticles, getPopularArticles,
+  getImageUrl, formatDate,
+} from '@/lib/strapi';
+import { splitContentIntoPages, resolvePageNumber } from '@/lib/splitContent';
 import { ArticleCardGrid } from '@/components/ArticleCard';
-import { AdLeaderboard, AdRectangle } from '@/components/AdSlot';
+import { AdLeaderboard, AdRectangle, AdMobile } from '@/components/AdSlot';
 import BlocksRenderer from '@/components/BlocksRenderer';
 import ReadProgressBar from '@/components/ReadProgressBar';
 import TableOfContents from '@/components/TableOfContents';
 import { extractHeadings } from '@/lib/extractHeadings';
 import ShareButtons from '@/components/ShareButtons';
 import ArticleViewTracker from '@/components/ArticleViewTracker';
+import Pagination from '@/components/Pagination';
 
 export const revalidate = 60;
 
-export async function generateMetadata({ params }) {
+/* ─────────────────────────────────────────────────────── generateMetadata ── */
+export async function generateMetadata({ params, searchParams }) {
   const article = await getArticleBySlug(params.slug);
   if (!article) return { title: 'Artikel Tidak Ditemukan' };
 
+  const pages       = splitContentIntoPages(article.content ?? []);
+  const totalPages  = pages.length;
+  const currentPage = resolvePageNumber(searchParams?.halaman, totalPages);
+
   const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://news.jobenapp.cloud';
-  const img = getImageUrl(article.cover_image);
+  const img      = getImageUrl(article.cover_image);
+  const canonical = `${SITE_URL}/artikel/${article.slug}`;
+
+  const title = currentPage > 1
+    ? `${article.title} — Halaman ${currentPage}`
+    : article.title;
+
+  const paginationLinks = {};
+  if (currentPage > 1)
+    paginationLinks.prev = currentPage === 2
+      ? canonical
+      : `${canonical}?halaman=${currentPage - 1}`;
+  if (currentPage < totalPages)
+    paginationLinks.next = `${canonical}?halaman=${currentPage + 1}`;
 
   return {
-    title: article.title,
+    title,
     description: article.excerpt ?? article.title,
+    alternates: {
+      canonical,
+      ...paginationLinks,
+    },
+    robots: currentPage > 1
+      ? { index: true, follow: true }
+      : undefined,
     openGraph: {
-      title: article.title,
+      title,
       description: article.excerpt ?? article.title,
-      url: `${SITE_URL}/artikel/${article.slug}`,
+      url: currentPage > 1 ? `${canonical}?halaman=${currentPage}` : canonical,
       type: 'article',
       publishedTime: article.publishedAt,
       authors: [article.author?.name].filter(Boolean),
@@ -34,17 +64,28 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: 'summary_large_image',
-      title: article.title,
+      title,
       description: article.excerpt ?? '',
       images: img ? [img] : [],
     },
   };
 }
 
-export default async function ArticlePage({ params }) {
+/* ─────────────────────────────────────────────────────────── Page Component ── */
+export default async function ArticlePage({ params, searchParams }) {
   const article = await getArticleBySlug(params.slug);
   if (!article) notFound();
 
+  /* ── Pagination ─────────────────────────────────────────────────────────── */
+  const allPages    = splitContentIntoPages(article.content ?? []);
+  const totalPages  = allPages.length;
+  const currentPage = resolvePageNumber(searchParams?.halaman, totalPages);
+  const pageContent = allPages[currentPage - 1] ?? [];
+
+  const articleBasePath = `/artikel/${article.slug}`;
+  const isFirstPage     = currentPage === 1;
+
+  /* ── Fetch data paralel ─────────────────────────────────────────────────── */
   const [relatedArticles, popularArticles] = await Promise.all([
     article.category?.slug
       ? getRelatedArticles(article.category.slug, article.slug, 4)
@@ -52,12 +93,14 @@ export default async function ArticlePage({ params }) {
     getPopularArticles(5),
   ]);
 
-  const SITE_URL   = process.env.NEXT_PUBLIC_SITE_URL || 'https://news.jobenapp.cloud';
-  const img        = getImageUrl(article.cover_image);
-  const authorImg  = getImageUrl(article.author?.photo);
-  const headings   = extractHeadings(article.content);
+  /* ── Metadata artikel ───────────────────────────────────────────────────── */
+  const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL || 'https://news.jobenapp.cloud';
+  const img       = getImageUrl(article.cover_image);
+  const authorImg = getImageUrl(article.author?.photo);
+  const headings  = extractHeadings(pageContent);
 
-  const jsonLd = {
+  /* ── JSON-LD (hanya halaman 1) ──────────────────────────────────────────── */
+  const jsonLd = isFirstPage ? {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
     headline: article.title,
@@ -74,21 +117,27 @@ export default async function ArticlePage({ params }) {
       logo: { '@type': 'ImageObject', url: `${SITE_URL}/logo.png` },
     },
     url: `${SITE_URL}/artikel/${article.slug}`,
-  };
+  } : null;
 
   return (
     <>
       <ReadProgressBar />
-      <ArticleViewTracker title={article.title} category={article.category?.name} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {isFirstPage && (
+        <ArticleViewTracker title={article.title} category={article.category?.name} />
+      )}
+      {jsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* ======= MAIN CONTENT ======= */}
+
+          {/* ═══════════════════════ MAIN CONTENT ═══════════════════════ */}
           <article className="lg:col-span-2 min-w-0">
+
             {/* Breadcrumb */}
             <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-4">
               <Link href="/" className="hover:text-brand-700">Beranda</Link>
@@ -118,16 +167,15 @@ export default async function ArticlePage({ params }) {
               {article.title}
             </h1>
 
-            {/* Excerpt */}
-            {article.excerpt && (
+            {/* Excerpt — hanya halaman 1 */}
+            {isFirstPage && article.excerpt && (
               <p className="text-gray-500 text-base md:text-lg leading-relaxed border-l-4 border-brand-700 pl-4 mb-5 italic">
                 {article.excerpt}
               </p>
             )}
 
-            {/* Meta */}
+            {/* Meta (penulis, tanggal, share) */}
             <div className="flex flex-wrap items-center gap-4 pb-5 mb-5 border-b border-gray-200">
-              {/* Author */}
               <div className="flex items-center gap-2.5">
                 {authorImg ? (
                   <Image
@@ -153,24 +201,20 @@ export default async function ArticlePage({ params }) {
                   )}
                 </div>
               </div>
-
-              {/* Date */}
               <div className="flex items-center gap-1.5 text-sm text-gray-400">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <time dateTime={article.publishedAt}>{formatDate(article.publishedAt)}</time>
               </div>
-
-              {/* Share */}
               <div className="flex items-center gap-2 ml-auto">
                 <span className="text-xs text-gray-400 hidden sm:inline">Bagikan:</span>
                 <ShareButtons url={`${SITE_URL}/artikel/${article.slug}`} title={article.title} slug={article.slug} />
               </div>
             </div>
 
-            {/* Cover image */}
-            {img && (
+            {/* ── Halaman 1: Cover image ────────────────────────────────── */}
+            {isFirstPage && img && (
               <figure className="mb-6 -mx-4 sm:mx-0">
                 <div className="relative aspect-video sm:rounded-xl overflow-hidden bg-gray-100">
                   <Image
@@ -185,19 +229,65 @@ export default async function ArticlePage({ params }) {
               </figure>
             )}
 
-            {/* Ad inline */}
-            <AdLeaderboard />
+            {/* ── Halaman 1: Iklan inline pertama ──────────────────────── */}
+            {isFirstPage && <AdLeaderboard />}
 
-            {/* Article body */}
+            {/* ── Halaman 2+: Banner lanjutan + iklan atas ─────────────── */}
+            {!isFirstPage && (
+              <>
+                {/* Banner penanda halaman lanjutan */}
+                <div className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 mb-5">
+                  <svg className="w-4 h-4 text-brand-700 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                  <p className="text-sm text-gray-600">
+                    <span className="font-semibold text-gray-800">Lanjutan artikel</span>
+                    {' — '}Halaman <span className="font-bold text-brand-700">{currentPage}</span> dari {totalPages}
+                  </p>
+                  <Link
+                    href={articleBasePath}
+                    className="ml-auto text-xs text-brand-700 hover:text-brand-800 font-medium shrink-0"
+                  >
+                    ← Ke halaman 1
+                  </Link>
+                </div>
+
+                {/* Iklan atas halaman 2+ */}
+                <AdLeaderboard />
+                <AdMobile />
+              </>
+            )}
+
+            {/* ── Konten artikel (halaman saat ini) ────────────────────── */}
             <div className="rich-content">
-              {article.content ? (
-                <BlocksRenderer content={article.content} />
+              {pageContent.length > 0 ? (
+                <BlocksRenderer content={pageContent} />
               ) : (
                 <p className="text-gray-400 italic">Konten artikel belum tersedia.</p>
               )}
             </div>
 
-            {/* Tags */}
+            {/* ── Iklan bawah konten (semua halaman) ───────────────────── */}
+            <div className="mt-8">
+              <AdLeaderboard />
+            </div>
+
+            {/* ── Navigasi halaman ─────────────────────────────────────── */}
+            {totalPages > 1 && (
+              <div className="mt-4">
+                {/* Label info */}
+                <p className="text-center text-xs text-gray-400 mb-3">
+                  Halaman {currentPage} dari {totalPages}
+                </p>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  basePath={articleBasePath}
+                />
+              </div>
+            )}
+
+            {/* ── Tag ──────────────────────────────────────────────────── */}
             {article.tags?.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-8 pt-6 border-t border-gray-200">
                 <span className="text-xs font-bold text-gray-500 uppercase tracking-wide mr-1">Tag:</span>
@@ -213,14 +303,16 @@ export default async function ArticlePage({ params }) {
               </div>
             )}
 
-            {/* Share bottom */}
-            <div className="mt-8 p-5 bg-gray-50 rounded-xl flex flex-col sm:flex-row items-center gap-4">
-              <p className="font-semibold text-gray-700 text-sm">Bagikan artikel ini:</p>
-              <ShareButtons url={`${SITE_URL}/artikel/${article.slug}`} title={article.title} slug={article.slug} large />
-            </div>
+            {/* ── Share bawah (hanya halaman terakhir atau satu halaman) ─ */}
+            {currentPage === totalPages && (
+              <div className="mt-8 p-5 bg-gray-50 rounded-xl flex flex-col sm:flex-row items-center gap-4">
+                <p className="font-semibold text-gray-700 text-sm">Bagikan artikel ini:</p>
+                <ShareButtons url={`${SITE_URL}/artikel/${article.slug}`} title={article.title} slug={article.slug} large />
+              </div>
+            )}
 
-            {/* Related articles */}
-            {relatedArticles.length > 0 && (
+            {/* ── Artikel terkait (hanya halaman terakhir) ─────────────── */}
+            {currentPage === totalPages && relatedArticles.length > 0 && (
               <section className="mt-10">
                 <div className="section-title">
                   <div className="w-1 h-5 bg-brand-700 rounded-full" />
@@ -235,13 +327,43 @@ export default async function ArticlePage({ params }) {
             )}
           </article>
 
-          {/* ======= SIDEBAR ======= */}
+          {/* ═══════════════════════════ SIDEBAR ═══════════════════════ */}
           <aside className="lg:col-span-1 space-y-6">
 
-            {/* Daftar Isi — tampil jika artikel punya ≥2 heading h2/h3 */}
+            {/* TOC — tampil jika halaman ini punya ≥2 heading */}
             {headings.length >= 2 && (
               <div className="lg:sticky lg:top-24">
                 <TableOfContents headings={headings} />
+              </div>
+            )}
+
+            {/* Navigasi halaman di sidebar (jika multi-halaman) */}
+            {totalPages > 1 && (
+              <div className="bg-white rounded-xl p-4 card-shadow">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-1 h-5 bg-brand-700 rounded-full" />
+                  <h3 className="text-sm font-black text-dark uppercase tracking-wider">Halaman Artikel</h3>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                    <Link
+                      key={p}
+                      href={p === 1 ? articleBasePath : `${articleBasePath}?halaman=${p}`}
+                      className={`w-9 h-9 flex items-center justify-center rounded text-sm font-semibold transition-colors ${
+                        p === currentPage
+                          ? 'bg-brand-700 text-white'
+                          : 'border border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-brand-700'
+                      }`}
+                      aria-label={`Halaman ${p}`}
+                      aria-current={p === currentPage ? 'page' : undefined}
+                    >
+                      {p}
+                    </Link>
+                  ))}
+                </div>
+                <p className="text-xs text-gray-400 mt-2">
+                  Sedang membaca halaman {currentPage}
+                </p>
               </div>
             )}
 
@@ -257,7 +379,10 @@ export default async function ArticlePage({ params }) {
                   <div key={a.slug ?? a.id} className="flex items-start gap-3 py-3 border-b border-gray-100 last:border-0">
                     <span className="text-2xl font-black text-gray-100 w-7 shrink-0 leading-none">{i + 1}</span>
                     <div className="flex-1 min-w-0">
-                      <Link href={`/artikel/${a.slug}`} className="text-sm font-semibold text-gray-800 hover:text-brand-700 transition-colors line-clamp-3 leading-snug block">
+                      <Link
+                        href={`/artikel/${a.slug}`}
+                        className="text-sm font-semibold text-gray-800 hover:text-brand-700 transition-colors line-clamp-3 leading-snug block"
+                      >
                         {a.title}
                       </Link>
                     </div>
@@ -266,9 +391,9 @@ export default async function ArticlePage({ params }) {
               </div>
             )}
           </aside>
+
         </div>
       </div>
     </>
   );
 }
-

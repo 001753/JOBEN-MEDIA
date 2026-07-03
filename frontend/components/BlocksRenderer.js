@@ -80,7 +80,7 @@ export default function BlocksRenderer({ content }) {
           const id   = trackSlug(slugify(text));
 
           return (
-            <Tag id={id} className={`${cls} scroll-mt-28`}>
+            <Tag id={id} className={`${cls} scroll-mt-28`} suppressHydrationWarning>
               {children}
             </Tag>
           );
