@@ -55,10 +55,10 @@ export default async function RootLayout({ children }) {
   ]);
 
   return (
-    <html lang="id" className={inter.variable}>
+    <html lang="id" className={inter.variable} suppressHydrationWarning>
       <head>
         {/* Anti-FOUC: baca localStorage sebelum paint pertama — tanpa server-side */}
-        <script dangerouslySetInnerHTML={{ __html: ANTI_FOUC }} />
+        <script dangerouslySetInnerHTML={{ __html: ANTI_FOUC }} suppressHydrationWarning />
       </head>
       <body className="min-h-screen flex flex-col">
         <NavigationProgress />

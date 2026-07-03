@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { trackBreakingNewsClick } from '@/lib/analytics';
 
 export default function BreakingNewsTicker({ article }) {
   if (!article) return null;
@@ -15,6 +18,7 @@ export default function BreakingNewsTicker({ article }) {
         <div className="ticker-wrapper flex-1 overflow-hidden">
           <Link
             href={`/artikel/${article.slug}`}
+            onClick={() => trackBreakingNewsClick(article.slug)}
             className="ticker-content text-sm font-semibold hover:text-brand-100 transition-colors inline-block"
           >
             {article.title}

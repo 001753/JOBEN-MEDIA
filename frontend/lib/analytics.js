@@ -21,5 +21,14 @@ export function trackArticleView(articleTitle, category) {
 }
 
 export function trackSearch(keyword) {
-  event({ action: 'search', category: 'Pencarian', label: keyword });
+  if (!keyword || keyword.trim().length < 2) return;
+  event({ action: 'search', category: 'Pencarian', label: keyword.trim() });
+}
+
+export function trackShareClick(platform, articleSlug) {
+  event({ action: 'share_click', category: platform, label: articleSlug });
+}
+
+export function trackBreakingNewsClick(articleSlug) {
+  event({ action: 'breaking_news_click', category: 'Breaking News', label: articleSlug });
 }

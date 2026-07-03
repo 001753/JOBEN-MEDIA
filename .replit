@@ -21,6 +21,7 @@ R2_ENDPOINT = "https://6ffcdac7c1cf3d08b80450851f6646a3.r2.cloudflarestorage.com
 R2_PUBLIC_URL = "https://pub-eb6a0f12e3b748628e7fb3494cb105a4.r2.dev"
 STRAPI_API_URL = "http://localhost:3001"
 NEXT_PUBLIC_SITE_URL = "https://news.jobenapp.cloud"
+REVALIDATION_SECRET = "d12c8a76dcffeb3f1649fe492cc8b2d6a35ddab8ce5f6a99096da4ce032388f216066ab77598a01292d7ff808cc9c7d9"
 
 [workflows]
 runButton = "Project"

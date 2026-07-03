@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { useRef, useTransition, useEffect, useState } from 'react';
+import { trackSearch } from '@/lib/analytics';
 
 /**
  * SearchInput — Client Component
@@ -29,6 +30,7 @@ export default function SearchInput({ defaultValue = '' }) {
     if (q.length >= 2) {
       params.set('q', q);
       params.delete('halaman');
+      trackSearch(q);
     } else {
       params.delete('q');
       params.delete('halaman');

@@ -45,6 +45,7 @@ module.exports = {
   // ─────────────────────────────────────────────────────────────────────────
   async bootstrap({ strapi }) {
     await configurePublicPermissions(strapi);
+    await configureAdminRoles(strapi);
     const { seedCategoriesAndTags } = require('./seeds/categories-tags');
     await seedCategoriesAndTags(strapi);
   },
@@ -117,6 +118,48 @@ async function configurePublicPermissions(strapi) {
   } catch (err) {
     // Jangan crash Strapi jika bootstrap permission gagal
     strapi.log.error(`[Bootstrap] Gagal konfigurasi public permissions: ${err.message}`);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Fungsi: setup admin panel roles (idempotent)
+//
+// Membuat role Editor, Penulis, dan Kontributor di admin panel Strapi.
+// Eksekusi idempotent — skip jika role sudah ada.
+// ─────────────────────────────────────────────────────────────────────────────
+async function configureAdminRoles(strapi) {
+  try {
+    const rolesToCreate = [
+      {
+        name: 'Editor',
+        description: 'Dapat mempublikasikan, mengedit, dan menghapus semua artikel. Akses penuh ke konten.',
+        code: 'editor',
+      },
+      {
+        name: 'Penulis',
+        description: 'Dapat membuat dan mengedit artikel milik sendiri. Tidak dapat mempublikasikan langsung.',
+        code: 'penulis',
+      },
+      {
+        name: 'Kontributor',
+        description: 'Dapat membuat artikel baru dalam status draft saja. Tidak dapat mengedit atau menghapus.',
+        code: 'kontributor',
+      },
+    ];
+
+    const existingRoles = await strapi.db.query('admin::role').findMany({ select: ['name', 'code'] });
+    const existingCodes = new Set(existingRoles.map((r) => r.code));
+
+    for (const roleData of rolesToCreate) {
+      if (existingCodes.has(roleData.code)) {
+        strapi.log.info(`[Bootstrap] Admin role "${roleData.name}" sudah ada, skip.`);
+        continue;
+      }
+      await strapi.db.query('admin::role').create({ data: roleData });
+      strapi.log.info(`[Bootstrap] Admin role "${roleData.name}" berhasil dibuat.`);
+    }
+  } catch (err) {
+    strapi.log.error(`[Bootstrap] Gagal setup admin roles: ${err.message}`);
   }
 }
 
