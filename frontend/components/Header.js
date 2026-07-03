@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import SearchOverlay from '@/components/SearchOverlay';
+import ThemeToggle from '@/components/ThemeToggle';
 
 /* ─── Label singkat di nav bar ─────────────────────────────────────────────── */
 const NAV_SHORT = {
@@ -152,6 +153,9 @@ export default function Header({ categories = [], breakingNews = null }) {
                 </svg>
                 <span className="hidden lg:inline">Cari</span>
               </button>
+
+              {/* Toggle dark/light mode */}
+              <ThemeToggle />
 
               {/* Hamburger mobile */}
               <button

@@ -8,6 +8,9 @@ import BackToTop from '@/components/BackToTop';
 import NavigationProgress from '@/components/NavigationProgress';
 import PageTransition from '@/components/PageTransition';
 
+/* Script anti-FOUC — dijalankan sync di <head> sebelum paint pertama */
+const ANTI_FOUC = `(function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(t===null&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark');}}catch(e){}})();`;
+
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter',
@@ -53,6 +56,10 @@ export default async function RootLayout({ children }) {
 
   return (
     <html lang="id" className={inter.variable}>
+      <head>
+        {/* Anti-FOUC: baca localStorage sebelum paint pertama — tanpa server-side */}
+        <script dangerouslySetInnerHTML={{ __html: ANTI_FOUC }} />
+      </head>
       <body className="min-h-screen flex flex-col">
         <NavigationProgress />
         <Header categories={categories} breakingNews={breakingNews} />
