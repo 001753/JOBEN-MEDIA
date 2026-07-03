@@ -149,13 +149,14 @@ export async function getRelatedArticles(categorySlug, currentSlug, limit = 4) {
   return res?.data ?? [];
 }
 
-export async function searchArticles(keyword, page = 1, pageSize = 12) {
+export async function searchArticles(keyword, page = 1, pageSize = 20) {
+  // Gunakan _q (Strapi full-text search) → jauh lebih cepat dari $containsi
+  // PostgreSQL prod: pakai FTS index; SQLite dev: still works
   const res = await fetchStrapi(
     `/articles?${ARTICLE_POPULATE}`,
     {
+      '_q': keyword,
       'filters[editorial_status][$eq]': 'published',
-      'filters[$or][0][title][$containsi]': keyword,
-      'filters[$or][1][excerpt][$containsi]': keyword,
       'sort[0]': 'publishedAt:desc',
       'pagination[page]': page,
       'pagination[pageSize]': pageSize,
