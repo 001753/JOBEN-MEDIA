@@ -1090,6 +1090,9 @@ video {
 .max-w-xl {
   max-width: 36rem;
 }
+.max-w-xs {
+  max-width: 20rem;
+}
 .flex-1 {
   flex: 1 1 0%;
 }
@@ -1244,6 +1247,11 @@ video {
 }
 .overflow-y-auto {
   overflow-y: auto;
+}
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .whitespace-nowrap {
   white-space: nowrap;
@@ -1852,6 +1860,11 @@ video {
 .filter {
   filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
+.transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
 .transition-all {
   transition-property: all;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
@@ -1877,11 +1890,6 @@ video {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
-.transition {
-  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-}
 .duration-150 {
   transition-duration: 150ms;
 }
@@ -1893,9 +1901,6 @@ video {
 }
 .duration-500 {
   transition-duration: 500ms;
-}
-.ease-in-out {
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 .ease-\[cubic-bezier\(0\.16\2c 1\2c 0\.3\2c 1\)\] {
   transition-timing-function: cubic-bezier(0.16,1,0.3,1);
@@ -1968,6 +1973,52 @@ video {
 .mobile-sub-wrapper.closed {
   max-height: 0;
   opacity: 0;
+}
+
+/* ─── Breaking news badge ───────────────────────────────────────────────────── */
+@keyframes breaking-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+
+@keyframes breaking-ring {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes breaking-slide-in {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.breaking-badge {
+  animation: breaking-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.breaking-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.breaking-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: breaking-ring 1.4s ease-out infinite;
+}
+
+.breaking-dot-inner {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: breaking-pulse 1.4s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
 }
 
 /* ─── Nav item hover lift ───────────────────────────────────────────────────── */
@@ -2157,13 +2208,13 @@ video {
   --tw-border-opacity: 1;
   border-color: rgb(229 23 23 / var(--tw-border-opacity, 1));
 }
-.hover\:border-red-400:hover {
-  --tw-border-opacity: 1;
-  border-color: rgb(248 113 113 / var(--tw-border-opacity, 1));
-}
 .hover\:border-red-200:hover {
   --tw-border-opacity: 1;
   border-color: rgb(254 202 202 / var(--tw-border-opacity, 1));
+}
+.hover\:border-red-400:hover {
+  --tw-border-opacity: 1;
+  border-color: rgb(248 113 113 / var(--tw-border-opacity, 1));
 }
 .hover\:bg-blue-700:hover {
   --tw-bg-opacity: 1;
@@ -2300,6 +2351,10 @@ video {
   --tw-text-opacity: 1;
   color: rgb(239 68 68 / var(--tw-text-opacity, 1));
 }
+.group:hover .group-hover\:text-white {
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity, 1));
+}
 .group:hover .group-hover\:ring-brand-200 {
   --tw-ring-opacity: 1;
   --tw-ring-color: rgb(255 199 199 / var(--tw-ring-opacity, 1));
@@ -2317,6 +2372,10 @@ video {
 
   .sm\:inline {
     display: inline;
+  }
+
+  .sm\:flex {
+    display: flex;
   }
 
   .sm\:grid-cols-2 {
@@ -2451,6 +2510,10 @@ video {
     width: 300px;
   }
 
+  .lg\:max-w-sm {
+    max-width: 24rem;
+  }
+
   .lg\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -2479,6 +2542,10 @@ video {
   }
 }
 @media (min-width: 1280px) {
+
+  .xl\:max-w-md {
+    max-width: 28rem;
+  }
 
   .xl\:grid-cols-4 {
     grid-template-columns: repeat(4, minmax(0, 1fr));

@@ -2,7 +2,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { getCategories } from '@/lib/strapi';
+import { getCategories, getBreakingNews } from '@/lib/strapi';
 import Script from 'next/script';
 
 const inter = Inter({
@@ -43,12 +43,15 @@ export const metadata = {
 export const revalidate = 60;
 
 export default async function RootLayout({ children }) {
-  const categories = await getCategories();
+  const [categories, breakingNews] = await Promise.all([
+    getCategories(),
+    getBreakingNews(),
+  ]);
 
   return (
     <html lang="id" className={inter.variable}>
       <body className="min-h-screen flex flex-col">
-        <Header categories={categories} />
+        <Header categories={categories} breakingNews={breakingNews} />
         <main className="flex-1">{children}</main>
         <Footer categories={categories} />
         {GA_ID && (

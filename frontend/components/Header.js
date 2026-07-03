@@ -25,7 +25,7 @@ function chunkArray(arr, size) {
 }
 
 /* ════════════════════════════════════════════════════════════════════════════ */
-export default function Header({ categories = [] }) {
+export default function Header({ categories = [], breakingNews = null }) {
   const [mobileOpen,  setMobileOpen]  = useState(false);
   const [searchOpen,  setSearchOpen]  = useState(false);
   const [expandedCat, setExpandedCat] = useState(null); // mobile accordion
@@ -117,8 +117,27 @@ export default function Header({ categories = [] }) {
               </span>
             </Link>
 
+            {/* Breaking news badge — muncul jika ada artikel breaking */}
+            {breakingNews && (
+              <Link
+                href={`/artikel/${breakingNews.slug}`}
+                className="breaking-badge hidden sm:flex items-center gap-2 ml-4 max-w-xs lg:max-w-sm xl:max-w-md group"
+                title={breakingNews.title}
+              >
+                <span className="shrink-0 flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-sm">
+                  <span className="breaking-dot text-white">
+                    <span className="breaking-dot-inner" />
+                  </span>
+                  Breaking
+                </span>
+                <span className="text-gray-300 text-xs font-medium truncate group-hover:text-white transition-colors duration-200">
+                  {breakingNews.title}
+                </span>
+              </Link>
+            )}
+
             {/* Kanan: tanggal + search desktop */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 ml-auto">
               <span className="hidden lg:block text-xs text-gray-400 tabular-nums" suppressHydrationWarning>
                 {new Intl.DateTimeFormat('id-ID', {
                   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',

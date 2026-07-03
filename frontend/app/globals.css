@@ -137,6 +137,52 @@
   opacity: 0;
 }
 
+/* ─── Breaking news badge ───────────────────────────────────────────────────── */
+@keyframes breaking-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+
+@keyframes breaking-ring {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+@keyframes breaking-slide-in {
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.breaking-badge {
+  animation: breaking-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.breaking-dot {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.breaking-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: breaking-ring 1.4s ease-out infinite;
+}
+
+.breaking-dot-inner {
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: currentColor;
+  animation: breaking-pulse 1.4s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
 /* ─── Nav item hover lift ───────────────────────────────────────────────────── */
 .nav-item-link {
   position: relative;
