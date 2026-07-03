@@ -18,13 +18,23 @@ async function fetchStrapi(path, params = {}, options = {}) {
   if (STRAPI_API_TOKEN) headers['Authorization'] = `Bearer ${STRAPI_API_TOKEN}`;
 
   try {
-    const res = await fetch(url.toString(), {
+    let res = await fetch(url.toString(), {
       headers,
       next: { revalidate: options.revalidate ?? DEFAULT_REVALIDATE },
       ...options.fetchOptions,
-      // Timeout 10 detik agar tidak hang saat Strapi belum ready
       signal: AbortSignal.timeout(10000),
     });
+
+    // Jika token invalid (401), coba ulang tanpa token (public API)
+    if (res.status === 401 && STRAPI_API_TOKEN) {
+      const publicHeaders = { 'Content-Type': 'application/json' };
+      res = await fetch(url.toString(), {
+        headers: publicHeaders,
+        next: { revalidate: options.revalidate ?? DEFAULT_REVALIDATE },
+        ...options.fetchOptions,
+        signal: AbortSignal.timeout(10000),
+      });
+    }
 
     if (!res.ok) {
       console.error(`[strapi] ${res.status} ${res.statusText} — ${url.toString()}`);
