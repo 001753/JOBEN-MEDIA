@@ -1,36 +1,81 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
-export default function Header({ categories = [] }) {
-  const [mobileOpen, setMobileOpen]   = useState(false);
-  const [searchOpen, setSearchOpen]   = useState(false);
-  const [expandedCat, setExpandedCat] = useState(null);
-  const [hoveredCat, setHoveredCat]   = useState(null);
-  const [scrolled, setScrolled]       = useState(false);
-  const [query, setQuery]             = useState('');
-  const searchRef  = useRef(null);
-  const hoverTimer = useRef(null);
-  const pathname   = usePathname();
-  const router     = useRouter();
+/* ─── Label singkat di nav bar ─────────────────────────────────────────────── */
+const NAV_SHORT = {
+  'artificial-intelligence': 'AI',
+  'software-development':    'Software Dev',
+  'kripto-blockchain':       'Kripto',
+  'teknologi-masa-depan':    'Tek. Masa Depan',
+  'cyber-security':          'Cyber Security',
+};
 
+function navLabel(cat) {
+  return NAV_SHORT[cat.slug] ?? cat.name;
+}
+
+/* ─── Split children ke kolom ──────────────────────────────────────────────── */
+function chunkArray(arr, size) {
+  const out = [];
+  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  return out;
+}
+
+/* ════════════════════════════════════════════════════════════════════════════ */
+export default function Header({ categories = [] }) {
+  const [mobileOpen,  setMobileOpen]  = useState(false);
+  const [searchOpen,  setSearchOpen]  = useState(false);
+  const [expandedCat, setExpandedCat] = useState(null); // mobile accordion
+  const [activeMenu,  setActiveMenu]  = useState(null); // desktop mega-menu
+  const [scrolled,    setScrolled]    = useState(false);
+  const [query,       setQuery]       = useState('');
+
+  const searchRef   = useRef(null);
+  const closeTimer  = useRef(null);
+  const pathname    = usePathname();
+  const router      = useRouter();
+
+  /* tutup semua saat navigasi */
   useEffect(() => {
     setMobileOpen(false);
     setSearchOpen(false);
     setExpandedCat(null);
+    setActiveMenu(null);
   }, [pathname]);
 
+  /* shadow on scroll */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    const fn = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', fn, { passive: true });
+    return () => window.removeEventListener('scroll', fn);
   }, []);
 
+  /* auto-focus search */
   useEffect(() => {
     if (searchOpen) searchRef.current?.focus();
   }, [searchOpen]);
+
+  /* lock body scroll saat mobile menu buka */
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileOpen]);
+
+  const openMenu  = useCallback((slug) => {
+    clearTimeout(closeTimer.current);
+    setActiveMenu(slug);
+  }, []);
+
+  const scheduleClose = useCallback(() => {
+    closeTimer.current = setTimeout(() => setActiveMenu(null), 120);
+  }, []);
+
+  const cancelClose = useCallback(() => {
+    clearTimeout(closeTimer.current);
+  }, []);
 
   function handleSearch(e) {
     e.preventDefault();
@@ -41,218 +86,349 @@ export default function Header({ categories = [] }) {
     setQuery('');
   }
 
-  function handleMouseEnter(slug) {
-    clearTimeout(hoverTimer.current);
-    setHoveredCat(slug);
-  }
-
-  function handleMouseLeave() {
-    hoverTimer.current = setTimeout(() => setHoveredCat(null), 150);
-  }
-
-  const isActive = (href) => pathname === href || pathname.startsWith(href + '/');
+  const isActive = (href) =>
+    pathname === href || pathname.startsWith(href + '/');
 
   return (
-    <header className="sticky top-0 z-50">
-      {/* ── Top brand bar ──────────────────────────────────────────────── */}
-      <div className="bg-[#0a0a0a] text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-12">
-          <Link href="/" className="flex items-center gap-2 group shrink-0">
-            <span className="bg-brand-700 text-white font-black text-lg px-2.5 py-0.5 rounded tracking-tight leading-none group-hover:bg-brand-800 transition-colors">
-              JOBEN
-            </span>
-            <span className="font-bold text-white text-sm tracking-widest uppercase">NEWS</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-4 text-xs text-gray-400">
-            <span suppressHydrationWarning>
-              {new Intl.DateTimeFormat('id-ID', {
-                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-                timeZone: 'Asia/Jakarta',
-              }).format(new Date())}
-            </span>
+    <>
+      {/* ════════════════════════════════════════════════════════════════════
+          DESKTOP OVERLAY: klik di luar tutup menu
+      ════════════════════════════════════════════════════════════════════ */}
+      {activeMenu && (
+        <div
+          className="fixed inset-0 z-40"
+          onClick={() => setActiveMenu(null)}
+        />
+      )}
+
+      <header className={`sticky top-0 z-50 transition-shadow duration-200 ${scrolled ? 'shadow-lg' : ''}`}>
+
+        {/* ══ Brand bar hitam ══════════════════════════════════════════════ */}
+        <div className="bg-[#0a0a0a] text-white">
+          <div className="max-w-[1400px] mx-auto px-4 lg:px-8 flex items-center justify-between h-[46px]">
+
+            {/* Logo */}
+            <Link href="/" className="flex items-center gap-2 group shrink-0">
+              <span className="bg-red-600 text-white font-black text-xl px-3 py-0.5 rounded-sm tracking-tight leading-none group-hover:bg-red-700 transition-colors select-none">
+                JOBEN
+              </span>
+              <span className="font-bold text-white text-sm tracking-[0.2em] uppercase hidden sm:inline">
+                NEWS
+              </span>
+            </Link>
+
+            {/* Kanan: tanggal + search desktop */}
+            <div className="flex items-center gap-4">
+              <span className="hidden lg:block text-xs text-gray-400 tabular-nums" suppressHydrationWarning>
+                {new Intl.DateTimeFormat('id-ID', {
+                  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+                  timeZone: 'Asia/Jakarta',
+                }).format(new Date())}
+              </span>
+
+              {/* Search bar desktop — inline di brand bar */}
+              <div className="hidden md:flex items-center">
+                {searchOpen ? (
+                  <form onSubmit={handleSearch} className="flex items-center gap-2">
+                    <input
+                      ref={searchRef}
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      placeholder="Cari berita…"
+                      className="bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-full px-4 py-1 text-sm w-52 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => { setSearchOpen(false); setQuery(''); }}
+                      className="text-gray-400 hover:text-white transition-colors p-1"
+                      aria-label="Tutup pencarian"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </form>
+                ) : (
+                  <button
+                    onClick={() => setSearchOpen(true)}
+                    className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors text-xs"
+                    aria-label="Cari"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    <span>Cari</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Hamburger mobile */}
+              <button
+                onClick={() => setMobileOpen(!mobileOpen)}
+                className="md:hidden p-1 text-gray-300 hover:text-white"
+                aria-label="Menu"
+              >
+                {mobileOpen
+                  ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  : <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                }
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* ── Nav bar ────────────────────────────────────────────────────── */}
-      <div className={`bg-white border-b border-gray-200 transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-11 gap-1">
+        {/* ══ Nav bar putih — DESKTOP ONLY ════════════════════════════════ */}
+        <div className="hidden md:block bg-white border-b border-gray-200">
+          <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
+            <nav className="flex items-stretch h-10" aria-label="Navigasi utama">
 
-            {/* Desktop nav */}
-            <nav className="hidden md:flex items-center gap-0.5 overflow-x-auto flex-1 min-w-0 scrollbar-none">
+              {/* Beranda */}
               <Link
                 href="/"
-                className={`px-3 py-2 text-sm font-semibold rounded transition-colors whitespace-nowrap ${
-                  pathname === '/' ? 'text-brand-700 bg-brand-50' : 'text-gray-600 hover:text-brand-700 hover:bg-gray-50'
+                className={`flex items-center px-3 text-[11px] font-bold uppercase tracking-wide border-b-2 transition-colors whitespace-nowrap ${
+                  pathname === '/'
+                    ? 'border-red-600 text-red-600'
+                    : 'border-transparent text-gray-600 hover:text-red-600 hover:border-red-400'
                 }`}
               >
                 Beranda
               </Link>
 
-              {categories.map((cat) => {
-                const hasChildren = cat.children?.length > 0;
-                const active = isActive(`/kategori/${cat.slug}`);
+              {/* Divider */}
+              <div className="w-px bg-gray-100 my-2 mx-0.5" />
+
+              {categories.map((cat, idx) => {
+                const hasChildren = (cat.children?.length ?? 0) > 0;
+                const active      = isActive(`/kategori/${cat.slug}`);
+                const menuOpen    = activeMenu === cat.slug;
+                const cols        = hasChildren ? chunkArray(cat.children, 5) : [];
+                // item di 3 terakhir → dropdown right-align agar tidak keluar layar
+                const alignRight  = idx >= categories.length - 3;
+
                 return (
                   <div
                     key={cat.slug}
-                    className="relative"
-                    onMouseEnter={() => hasChildren && handleMouseEnter(cat.slug)}
-                    onMouseLeave={handleMouseLeave}
+                    className="relative flex items-stretch"
+                    onMouseEnter={() => hasChildren ? openMenu(cat.slug) : setActiveMenu(null)}
+                    onMouseLeave={scheduleClose}
                   >
+                    {/* Nav item */}
                     <Link
                       href={`/kategori/${cat.slug}`}
-                      className={`flex items-center gap-1 px-3 py-2 text-sm font-semibold rounded transition-colors whitespace-nowrap ${
-                        active ? 'text-brand-700 bg-brand-50' : 'text-gray-600 hover:text-brand-700 hover:bg-gray-50'
+                      className={`flex items-center gap-1 px-3 text-[11px] font-bold uppercase tracking-wide border-b-2 transition-colors whitespace-nowrap ${
+                        active
+                          ? 'border-red-600 text-red-600'
+                          : menuOpen
+                          ? 'border-red-400 text-red-600'
+                          : 'border-transparent text-gray-600 hover:text-red-600 hover:border-red-400'
                       }`}
                     >
-                      {cat.name}
+                      {navLabel(cat)}
                       {hasChildren && (
-                        <svg className="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <svg
+                          className={`w-2.5 h-2.5 transition-transform duration-150 ${menuOpen ? 'rotate-180' : ''}`}
+                          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                         </svg>
                       )}
                     </Link>
 
-                    {/* Dropdown subkategori */}
-                    {hasChildren && hoveredCat === cat.slug && (
+                    {/* ── Mega-menu / dropdown ──────────────────────────────── */}
+                    {hasChildren && menuOpen && (
                       <div
-                        className="absolute top-full left-0 mt-0 bg-white border border-gray-100 rounded-xl shadow-xl py-3 z-50 min-w-[200px]"
-                        onMouseEnter={() => handleMouseEnter(cat.slug)}
-                        onMouseLeave={handleMouseLeave}
+                        className={`absolute top-full z-50 bg-white border border-gray-200 shadow-2xl rounded-b-xl overflow-hidden ${
+                          alignRight ? 'right-0' : 'left-0'
+                        }`}
+                        style={{ minWidth: cols.length > 1 ? `${cols.length * 180}px` : '200px' }}
+                        onMouseEnter={cancelClose}
+                        onMouseLeave={scheduleClose}
                       >
-                        <p className="px-4 pb-2 text-[10px] font-black uppercase tracking-widest text-gray-400 border-b border-gray-100 mb-1">
-                          {cat.name}
-                        </p>
-                        {cat.children.map((sub) => (
+                        {/* Header merah */}
+                        <div className="bg-red-600 px-4 py-2 flex items-center justify-between">
+                          <span className="text-white font-black text-[10px] uppercase tracking-widest">
+                            {cat.name}
+                          </span>
                           <Link
-                            key={sub.slug}
-                            href={`/kategori/${sub.slug}`}
-                            className={`block px-4 py-1.5 text-sm transition-colors whitespace-nowrap ${
-                              isActive(`/kategori/${sub.slug}`)
-                                ? 'text-brand-700 font-semibold bg-brand-50'
-                                : 'text-gray-600 hover:text-brand-700 hover:bg-gray-50'
-                            }`}
+                            href={`/kategori/${cat.slug}`}
+                            className="text-red-100 hover:text-white text-[10px] font-semibold"
                           >
-                            {sub.name}
+                            Lihat semua →
                           </Link>
-                        ))}
+                        </div>
+
+                        {/* Grid subkategori */}
+                        <div className="flex gap-0 divide-x divide-gray-100">
+                          {cols.map((col, ci) => (
+                            <div key={ci} className="flex flex-col py-2 min-w-[175px]">
+                              {col.map((sub) => (
+                                <Link
+                                  key={sub.slug}
+                                  href={`/kategori/${sub.slug}`}
+                                  className={`px-4 py-2 text-[12px] transition-colors flex items-center gap-2 group ${
+                                    isActive(`/kategori/${sub.slug}`)
+                                      ? 'text-red-600 font-bold bg-red-50'
+                                      : 'text-gray-700 hover:text-red-600 hover:bg-gray-50'
+                                  }`}
+                                >
+                                  <span className="w-1 h-1 rounded-full bg-gray-300 group-hover:bg-red-500 transition-colors shrink-0" />
+                                  {sub.name}
+                                </Link>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     )}
                   </div>
                 );
               })}
             </nav>
-
-            {/* Search */}
-            <div className="ml-auto flex items-center">
-              {searchOpen ? (
-                <form onSubmit={handleSearch} className="flex items-center gap-2">
-                  <input
-                    ref={searchRef}
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Cari berita..."
-                    className="border border-gray-300 rounded-full px-4 py-1.5 text-sm w-48 md:w-64 focus:outline-none focus:ring-2 focus:ring-brand-600 focus:border-transparent"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => { setSearchOpen(false); setQuery(''); }}
-                    className="p-1.5 text-gray-400 hover:text-gray-600"
-                    aria-label="Tutup pencarian"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </form>
-              ) : (
-                <button
-                  onClick={() => setSearchOpen(true)}
-                  className="p-2 text-gray-500 hover:text-brand-700 transition-colors"
-                  aria-label="Buka pencarian"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </button>
-              )}
-            </div>
-
-            {/* Mobile burger */}
-            <button
-              onClick={() => setMobileOpen(!mobileOpen)}
-              className="md:hidden p-2 text-gray-500 hover:text-gray-700 ml-1"
-              aria-label="Menu"
-            >
-              {mobileOpen ? (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
           </div>
         </div>
 
-        {/* ── Mobile menu ──────────────────────────────────────────────── */}
-        {mobileOpen && (
-          <div className="md:hidden border-t border-gray-100 bg-white max-h-[75vh] overflow-y-auto">
-            <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-0.5">
-              <Link href="/" className="px-3 py-2 text-sm font-semibold text-gray-700 hover:text-brand-700 hover:bg-gray-50 rounded">
-                Beranda
-              </Link>
-              {categories.map((cat) => {
-                const hasChildren = cat.children?.length > 0;
-                const open = expandedCat === cat.slug;
-                return (
-                  <div key={cat.slug}>
-                    <div className="flex items-center">
-                      <Link
-                        href={`/kategori/${cat.slug}`}
-                        className="flex-1 px-3 py-2 text-sm font-semibold text-gray-700 hover:text-brand-700 hover:bg-gray-50 rounded-l"
+      </header>
+
+      {/* ════════════════════════════════════════════════════════════════════
+          MOBILE DRAWER — slide in dari kiri
+      ════════════════════════════════════════════════════════════════════ */}
+
+      {/* Overlay */}
+      <div
+        className={`fixed inset-0 z-[60] bg-black/60 md:hidden transition-opacity duration-300 ${
+          mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setMobileOpen(false)}
+      />
+
+      {/* Drawer panel */}
+      <div
+        className={`fixed top-0 left-0 z-[70] h-full w-[320px] max-w-[85vw] bg-white shadow-2xl flex flex-col md:hidden
+          transition-transform duration-300 ease-in-out ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+      >
+        {/* Drawer header */}
+        <div className="bg-[#0a0a0a] flex items-center justify-between px-4 h-[46px] shrink-0">
+          <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
+            <span className="bg-red-600 text-white font-black text-lg px-2.5 py-0.5 rounded-sm">JOBEN</span>
+            <span className="text-white font-bold text-xs tracking-widest">NEWS</span>
+          </Link>
+          <button
+            onClick={() => setMobileOpen(false)}
+            className="p-1 text-gray-300 hover:text-white"
+            aria-label="Tutup menu"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Search mobile */}
+        <div className="px-4 py-3 border-b border-gray-100">
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Cari berita…"
+              className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+            <button type="submit" className="bg-red-600 text-white rounded-full w-9 h-9 flex items-center justify-center shrink-0">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </button>
+          </form>
+        </div>
+
+        {/* Nav items */}
+        <nav className="flex-1 overflow-y-auto py-2">
+          <Link
+            href="/"
+            onClick={() => setMobileOpen(false)}
+            className={`flex items-center px-5 py-3 text-sm font-semibold border-l-4 transition-colors ${
+              pathname === '/'
+                ? 'border-red-600 text-red-600 bg-red-50'
+                : 'border-transparent text-gray-800 hover:text-red-600 hover:bg-gray-50'
+            }`}
+          >
+            Beranda
+          </Link>
+
+          {categories.map((cat) => {
+            const hasChildren = (cat.children?.length ?? 0) > 0;
+            const open        = expandedCat === cat.slug;
+            const active      = isActive(`/kategori/${cat.slug}`);
+
+            return (
+              <div key={cat.slug} className="border-t border-gray-50">
+                <div className="flex items-stretch">
+                  {/* Link nama kategori */}
+                  <Link
+                    href={`/kategori/${cat.slug}`}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex-1 flex items-center px-5 py-3 text-sm font-semibold border-l-4 transition-colors ${
+                      active
+                        ? 'border-red-600 text-red-600 bg-red-50'
+                        : 'border-transparent text-gray-800 hover:text-red-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {cat.name}
+                  </Link>
+                  {/* Tombol expand */}
+                  {hasChildren && (
+                    <button
+                      onClick={() => setExpandedCat(open ? null : cat.slug)}
+                      className={`px-4 flex items-center transition-colors ${
+                        open ? 'text-red-600' : 'text-gray-400 hover:text-red-600'
+                      }`}
+                      aria-label={open ? 'Tutup' : 'Buka subkategori'}
+                    >
+                      <svg
+                        className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
                       >
-                        {cat.name}
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+
+                {/* Sub-kategori list */}
+                {hasChildren && open && (
+                  <div className="bg-gray-50 border-l-4 border-red-200 ml-5">
+                    {cat.children.map((sub) => (
+                      <Link
+                        key={sub.slug}
+                        href={`/kategori/${sub.slug}`}
+                        onClick={() => setMobileOpen(false)}
+                        className={`flex items-center gap-2 px-5 py-2.5 text-sm transition-colors ${
+                          isActive(`/kategori/${sub.slug}`)
+                            ? 'text-red-600 font-semibold bg-red-50'
+                            : 'text-gray-600 hover:text-red-600 hover:bg-white'
+                        }`}
+                      >
+                        <span className="w-1 h-1 rounded-full bg-gray-400 shrink-0" />
+                        {sub.name}
                       </Link>
-                      {hasChildren && (
-                        <button
-                          onClick={() => setExpandedCat(open ? null : cat.slug)}
-                          className="px-2 py-2 text-gray-400 hover:text-brand-700"
-                          aria-label={open ? 'Tutup' : 'Buka sub-kategori'}
-                        >
-                          <svg
-                            className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </button>
-                      )}
-                    </div>
-                    {hasChildren && open && (
-                      <div className="ml-4 mb-1 border-l-2 border-brand-100 pl-3">
-                        {cat.children.map((sub) => (
-                          <Link
-                            key={sub.slug}
-                            href={`/kategori/${sub.slug}`}
-                            className="block px-2 py-1.5 text-sm text-gray-500 hover:text-brand-700 hover:bg-gray-50 rounded"
-                          >
-                            {sub.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
+                )}
+              </div>
+            );
+          })}
+        </nav>
+
+        {/* Footer drawer */}
+        <div className="px-5 py-4 border-t border-gray-100 text-xs text-gray-400">
+          © {new Date().getFullYear()} JOBEN NEWS
+        </div>
       </div>
-    </header>
+    </>
   );
 }
