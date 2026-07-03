@@ -1,5 +1,20 @@
+modules = ["nodejs-20"]
 [agent]
 expertMode = true
 
 [nix]
 channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+DATABASE_CLIENT = "sqlite"
+DATABASE_FILENAME = ".tmp/data.db"
+HOST = "0.0.0.0"
+NEXTJS_REVALIDATION_URL = "https://news.jobenapp.cloud/api/revalidate"
+NODE_ENV = "development"
+PORT = "1337"
+PUBLIC_URL = "http://localhost:1337"
+R2_BUCKET_NAME = "joben-news"
+R2_ENDPOINT = "https://6ffcdac7c1cf3d08b80450851f6646a3.r2.cloudflarestorage.com"
+R2_PUBLIC_URL = "https://pub-eb6a0f12e3b748628e7fb3494cb105a4.r2.dev"

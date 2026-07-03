@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+build/
+dist/
+.strapi/
+
+# Environment variables — JANGAN commit ke GitHub
+.env
+.env.local
+.env.production
+.env.development
+
+# Database lokal (SQLite dev)
+.tmp/
+
+# Upload lokal (semua media di R2, bukan di repo)
+public/uploads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+
+# Replit spesifik (jangan diabaikan)
+# .replit — tetap di-commit
