@@ -161,7 +161,7 @@ export async function searchArticles(keyword, page = 1, pageSize = 20) {
       'pagination[page]': page,
       'pagination[pageSize]': pageSize,
     },
-    { revalidate: 0, fetchOptions: { cache: 'no-store' } }
+    { fetchOptions: { cache: 'no-store' } }
   );
   return res ?? { data: [], meta: { pagination: { total: 0, pageCount: 0 } } };
 }
@@ -197,6 +197,45 @@ export async function getCategoryBySlug(slug) {
     { revalidate: 300 }
   );
   return res?.data?.[0] ?? null;
+}
+
+export async function getAllTags() {
+  const res = await fetchStrapi(
+    '/tags',
+    {
+      'sort[0]': 'name:asc',
+      'pagination[pageSize]': 100,
+    },
+    { revalidate: 300 }
+  );
+  return res?.data ?? [];
+}
+
+export async function getTagBySlug(slug) {
+  const res = await fetchStrapi(
+    '/tags',
+    {
+      'filters[slug][$eq]': slug,
+      'pagination[pageSize]': 1,
+    },
+    { revalidate: 120 }
+  );
+  return res?.data?.[0] ?? null;
+}
+
+export async function getArticlesByTag(tagSlug, page = 1, pageSize = 20) {
+  const res = await fetchStrapi(
+    `/articles?${ARTICLE_POPULATE}`,
+    {
+      'filters[editorial_status][$eq]': 'published',
+      'filters[tags][slug][$eq]': tagSlug,
+      'sort[0]': 'publishedAt:desc',
+      'pagination[page]': page,
+      'pagination[pageSize]': pageSize,
+    },
+    { revalidate: 60 }
+  );
+  return res ?? { data: [], meta: { pagination: { total: 0, pageCount: 0, page: 1 } } };
 }
 
 export async function getPageBySlug(slug) {
