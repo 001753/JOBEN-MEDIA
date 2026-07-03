@@ -21,6 +21,11 @@ R2_ENDPOINT = "https://6ffcdac7c1cf3d08b80450851f6646a3.r2.cloudflarestorage.com
 R2_PUBLIC_URL = "https://pub-eb6a0f12e3b748628e7fb3494cb105a4.r2.dev"
 STRAPI_API_URL = "http://localhost:3001"
 NEXT_PUBLIC_SITE_URL = "https://news.jobenapp.cloud"
+APP_KEYS = "cigHILnfFC7h+TmXW4QawN5/0wvEHNMroQZS59QMVOo=,jC6MdNwESpcjIImX5CYHZgIcfrnmLI059KvFf94gpc4=,yRyWf/BZvYjVqWkLupJPJwEhnm9K3TCrEBUrLdLsZx4=,+N1iXctX1t173qdlP+YWxBAuTrOGKVanjqbgb14XXKQ="
+API_TOKEN_SALT = "+dESl7ckHTEyamoDWieC3QNccTjlEfPztnUOm5f0A40="
+ADMIN_JWT_SECRET = "z76rU+Csx4Bxk343Gm6QjTK6DCIjS6pOo8Oa1Czje0g="
+JWT_SECRET = "NIjvRAf2ONvkuVrRLJdm+drdCtLaUdmiCDB/1kL/XE4="
+TRANSFER_TOKEN_SALT = "EzYw7Glrr+vIdygejexBIHosd7m7X7oVecklkFIgsfo="
 
 [workflows]
 runButton = "Project"
@@ -47,7 +52,7 @@ outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd frontend && npm run dev"
+args = "cd frontend && npx next dev -p 5000"
 waitForPort = 5000
 
 [[workflows.workflow]]
