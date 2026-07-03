@@ -2,3 +2,4 @@
 - [Article API design](article-api-design.md) — editorial_status ↔ publishedAt state machine, Strapi v5 flat response shape, documentId for ownership checks
 - [Monorepo port layout](monorepo-ports.md) — Strapi on 3001 (console), Next.js on 5000 (webview); must use --ignore-scripts on npm install in frontend/
 - [Strapi v5 admin roles bootstrap](strapi-admin-roles.md) — use strapi.db.query('admin::role') not strapi.service('admin::role'); roleService.findAll() does not exist in v5
+- [Strapi v5 upload & Next.js quirks](strapi-upload-nextjs-quirks.md) — upload via AWS SDK directly (not strapi upload service); populate[content]=true causes 400; BlocksRenderer needs 'use client'

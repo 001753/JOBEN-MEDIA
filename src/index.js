@@ -48,6 +48,8 @@ module.exports = {
     await configureAdminRoles(strapi);
     const { seedCategoriesAndTags } = require('./seeds/categories-tags');
     await seedCategoriesAndTags(strapi);
+    const { seedArticleJuli2026 } = require('./seeds/article-juli-2026');
+    await seedArticleJuli2026(strapi);
   },
 };
 

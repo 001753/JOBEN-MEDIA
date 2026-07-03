@@ -133,7 +133,7 @@ export async function getArticlesByCategory(categorySlug, page = 1, pageSize = 1
 
 export async function getArticleBySlug(slug) {
   const res = await fetchStrapi(
-    `/articles?${ARTICLE_POPULATE}&populate[content]=true`,
+    `/articles?${ARTICLE_POPULATE}`,
     {
       'filters[slug][$eq]': slug,
       'filters[editorial_status][$eq]': 'published',

@@ -1,3 +1,5 @@
+'use client';
+
 import { BlocksRenderer as StrapiBlocksRenderer } from '@strapi/blocks-react-renderer';
 import Image from 'next/image';
 import { slugify } from '@/lib/extractHeadings';
@@ -26,7 +28,6 @@ function makeSlugTracker() {
 export default function BlocksRenderer({ content }) {
   if (!content) return null;
 
-  /* Satu counter per render pass — aman karena server renders are synchronous */
   const trackSlug = makeSlugTracker();
 
   return (
