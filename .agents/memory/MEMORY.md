@@ -1,2 +1,3 @@
 - [Strapi v5 setup quirks](strapi-v5-quirks.md) — esbuild missing, i18n plugin removed, admin config in admin.js not app.js, S3 in s3Options wrapper, CORS no `enabled` field
 - [Article API design](article-api-design.md) — editorial_status ↔ publishedAt state machine, Strapi v5 flat response shape, documentId for ownership checks
+- [Monorepo port layout](monorepo-ports.md) — Strapi on 3001 (console), Next.js on 5000 (webview); must use --ignore-scripts on npm install in frontend/
