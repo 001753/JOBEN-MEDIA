@@ -9,15 +9,18 @@ module.exports = ({ env }) => ({
     config: {
       provider: 'aws-s3',
       providerOptions: {
-        credentials: {
-          accessKeyId: env('R2_ACCESS_KEY_ID'),
-          secretAccessKey: env('R2_SECRET_ACCESS_KEY'),
-        },
-        region: 'auto',
-        endpoint: env('R2_ENDPOINT'),
-        forcePathStyle: true,
-        params: {
-          Bucket: env('R2_BUCKET_NAME'),
+        // s3Options: wrapper wajib di Strapi v5 (deprecation warning jika di root)
+        s3Options: {
+          credentials: {
+            accessKeyId: env('R2_ACCESS_KEY_ID'),
+            secretAccessKey: env('R2_SECRET_ACCESS_KEY'),
+          },
+          region: 'auto',
+          endpoint: env('R2_ENDPOINT'),
+          forcePathStyle: true,
+          params: {
+            Bucket: env('R2_BUCKET_NAME'),
+          },
         },
       },
       actionOptions: {

@@ -32,16 +32,17 @@ module.exports = [
     },
   },
   {
+    // strapi::cors — Strapi v5: hapus `enabled` (deprecated), selalu aktif jika ada di array
     name: 'strapi::cors',
     config: {
-      enabled: true,
       headers: '*',
       origin: [
-        'https://news.jobenapp.cloud',    // Production frontend
+        'https://news.jobenapp.cloud',     // Production frontend
         'https://cms.news.jobenapp.cloud', // CMS sendiri (untuk admin panel)
-        'http://localhost:3000',           // Next.js development
-        'http://localhost:3001',           // Alternatif dev
-        'http://localhost:1337',           // Strapi development
+        'http://localhost:3000',            // Next.js development
+        'http://localhost:3001',            // Alternatif dev
+        'http://localhost:1337',            // Strapi development
+        'http://localhost:5000',            // Replit preview port
       ],
     },
   },

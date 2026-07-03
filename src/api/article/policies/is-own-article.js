@@ -5,7 +5,10 @@
  *
  * Membatasi Penulis hanya bisa update/delete artikel milik sendiri.
  * Editor dan Super Admin bisa edit artikel siapa saja.
- * Terapkan policy ini HANYA pada route update (PUT) dan delete (DELETE).
+ *
+ * Strapi v5: route param ctx.params.id berisi documentId (string UUID).
+ * Gunakan strapi.db.query dengan where: { documentId } atau
+ * strapi.documents() untuk Document Service API.
  */
 
 module.exports = async (policyContext, config, { strapi }) => {
@@ -22,37 +25,47 @@ module.exports = async (policyContext, config, { strapi }) => {
   }
 
   // Untuk Penulis (dan role lain): cek kepemilikan artikel
-  const articleId = policyContext.params?.id;
+  // Strapi v5: ctx.params.id = documentId (UUID string)
+  const documentId = policyContext.params?.id;
 
-  if (!articleId) return false;
+  if (!documentId) return false;
 
   // Cari profil Author milik user yang login
   const author = await strapi.db.query('api::author.author').findOne({
     where: { user: { id: user.id } },
-    select: ['id'],
+    select: ['id', 'documentId'],
   });
 
   if (!author) {
-    // User tidak punya profil Author — tolak dengan pesan informatif
     policyContext.badRequest(
       'Akun Anda belum memiliki profil Author. Hubungi Super Admin.'
     );
     return false;
   }
 
-  // Cari artikel yang hendak diedit
-  const article = await strapi.db.query('api::article.article').findOne({
-    where: { id: articleId },
-    populate: { author: { select: ['id'] } },
-  });
+  // Cari artikel via documentId (Strapi v5 Document Service)
+  let article;
+  try {
+    article = await strapi.documents('api::article.article').findOne({
+      documentId,
+      populate: { author: { fields: ['id', 'documentId'] } },
+    });
+  } catch (err) {
+    strapi.log.error(`[is-own-article] Gagal query artikel documentId=${documentId}: ${err.message}`);
+    return false;
+  }
 
   if (!article) {
     policyContext.notFound('Artikel tidak ditemukan.');
     return false;
   }
 
-  // Cek apakah article.author === author milik user yang login
-  if (article.author?.id !== author.id) {
+  // Cek apakah author artikel === author milik user yang login
+  // Bandingkan via documentId untuk konsistensi Strapi v5
+  const articleAuthorDocId = article.author?.documentId;
+  const userAuthorDocId   = author.documentId;
+
+  if (!articleAuthorDocId || articleAuthorDocId !== userAuthorDocId) {
     policyContext.forbidden('Anda hanya dapat mengedit artikel yang Anda buat sendiri.');
     return false;
   }

@@ -4,13 +4,29 @@
  * Lifecycle hooks untuk Article
  *
  * Hook A — State Machine editorial_status ↔ publishedAt (Strapi native draft/publish)
- * Hook B — Enforce satu breaking news aktif sekaligus
+ * Hook B — Enforce satu breaking news aktif sekaligus (atomic updateMany)
  * Hook C — Webhook on-demand revalidation ke Next.js setelah publish/update/delete
  */
 
 module.exports = {
   // ─────────────────────────────────────────────────────────────────────────
-  // BEFORE UPDATE — validasi state machine + enforce breaking news
+  // BEFORE CREATE — set publishedAt berdasarkan editorial_status awal
+  // ─────────────────────────────────────────────────────────────────────────
+  beforeCreate(event) {
+    const { data } = event.params;
+
+    if (data.editorial_status === 'published') {
+      if (!data.publishedAt) {
+        event.params.data.publishedAt = new Date();
+      }
+    } else {
+      // draft / review — pastikan publishedAt null
+      event.params.data.publishedAt = null;
+    }
+  },
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // BEFORE UPDATE — state machine + breaking news enforcement
   // ─────────────────────────────────────────────────────────────────────────
   async beforeUpdate(event) {
     const { data, where } = event.params;
@@ -20,12 +36,10 @@ module.exports = {
       const newStatus = data.editorial_status;
 
       if (newStatus === 'published') {
-        // editorial_status=published → publishedAt harus terisi (set ke now() jika kosong)
         if (!data.publishedAt) {
           event.params.data.publishedAt = new Date();
         }
       } else if (newStatus === 'draft' || newStatus === 'review') {
-        // editorial_status=draft/review → publishedAt harus null (unpublish)
         event.params.data.publishedAt = null;
       }
     }
@@ -35,57 +49,35 @@ module.exports = {
       if (data.publishedAt) {
         event.params.data.editorial_status = 'published';
       } else {
-        // publishedAt di-set null → kembalikan ke draft
         event.params.data.editorial_status = 'draft';
       }
     }
 
     // ── Hook B: Enforce satu breaking news aktif sekaligus ─────────────────
+    // Strategi atomik: selalu reset semua artikel LAIN dulu sebelum set artikel ini.
+    // UpdateMany + check dilakukan tanpa gap "check → update" sehingga mitigasi race condition.
     if (data.is_breaking_news === true) {
-      const articleId = where.id;
+      const currentId = where.id;
 
-      try {
-        // Cari semua artikel lain yang is_breaking_news = true
-        const currentBreaking = await strapi.db.query('api::article.article').findMany({
-          where: {
-            is_breaking_news: true,
-            id: { $ne: articleId },
-          },
-          select: ['id', 'title'],
-        });
-
-        if (currentBreaking.length > 0) {
-          // Reset semua artikel breaking news yang ada
-          await strapi.db.query('api::article.article').updateMany({
+      if (currentId) {
+        try {
+          const resetCount = await strapi.db.query('api::article.article').updateMany({
             where: {
               is_breaking_news: true,
-              id: { $ne: articleId },
+              id: { $ne: currentId },
             },
             data: { is_breaking_news: false },
           });
 
-          strapi.log.info(
-            `[Breaking News] Reset ${currentBreaking.length} artikel: ` +
-            currentBreaking.map(a => `"${a.title}" (id:${a.id})`).join(', ')
-          );
+          if (resetCount?.count > 0) {
+            strapi.log.info(
+              `[Breaking News] Reset ${resetCount.count} artikel breaking news sebelumnya.`
+            );
+          }
+        } catch (err) {
+          strapi.log.error(`[Breaking News] Gagal reset artikel lain: ${err.message}`);
         }
-      } catch (err) {
-        strapi.log.error(`[Breaking News] Gagal reset artikel lain: ${err.message}`);
       }
-    }
-  },
-
-  // ─────────────────────────────────────────────────────────────────────────
-  // BEFORE CREATE — set publishedAt berdasarkan editorial_status awal
-  // ─────────────────────────────────────────────────────────────────────────
-  beforeCreate(event) {
-    const { data } = event.params;
-
-    // Artikel baru biasanya draft — pastikan publishedAt null
-    if (!data.editorial_status || data.editorial_status !== 'published') {
-      event.params.data.publishedAt = null;
-    } else if (data.editorial_status === 'published' && !data.publishedAt) {
-      event.params.data.publishedAt = new Date();
     }
   },
 
@@ -101,7 +93,6 @@ module.exports = {
 
   async afterUpdate(event) {
     const { result } = event;
-    // Revalidate jika artikel published, atau baru saja di-unpublish (result.publishedAt null tapi status berubah)
     await triggerRevalidation(strapi, result);
   },
 
@@ -113,8 +104,8 @@ module.exports = {
 
 /**
  * Kirim HTTP POST ke Next.js /api/revalidate untuk invalidasi cache ISR.
- * Jika gagal: log error, jangan throw (jangan batalkan operasi Strapi).
  * Retry 1x setelah 2 detik jika request pertama gagal.
+ * Jika gagal: log error saja, jangan throw (operasi Strapi tetap berlanjut).
  */
 async function triggerRevalidation(strapi, article) {
   const url    = process.env.NEXTJS_REVALIDATION_URL;
@@ -147,7 +138,6 @@ async function triggerRevalidation(strapi, article) {
     strapi.log.info(`[Revalidation] Berhasil: slug="${article.slug}"`);
   } catch (err) {
     strapi.log.warn(`[Revalidation] Gagal (percobaan 1): ${err.message}. Retry dalam 2 detik...`);
-    // Retry 1x
     await new Promise(resolve => setTimeout(resolve, 2000));
     try {
       await doRequest();
