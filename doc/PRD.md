@@ -1,9 +1,9 @@
 # Product Requirements Document (PRD)
 # Portal Berita Online — JOBEN NEWS
 
-**Versi:** 1.3 (Update Progress)
-**Tanggal:** 3 Juli 2026
-**Status:** In Progress — Fase 1 & 2 selesai secara kode, pending runtime setup
+**Versi:** 1.4 (Update Implementasi Lengkap)
+**Tanggal:** 4 Juli 2026
+**Status:** In Progress — Fase 0–3 selesai secara kode & runtime; Fase 4 (cPanel deploy) pending
 **Domain:** news.jobenapp.cloud
 
 ---
