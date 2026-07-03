@@ -108,7 +108,7 @@ export default function Header({ categories = [], breakingNews = null }) {
               <span className="bg-red-600 text-white font-black text-xl px-3 py-0.5 rounded-sm tracking-tight leading-none group-hover:bg-red-700 transition-colors duration-200 select-none">
                 JOBEN
               </span>
-              <span className="font-bold text-white text-sm tracking-[0.2em] uppercase hidden sm:inline">
+              <span className="news-shimmer font-bold text-sm tracking-[0.2em] uppercase hidden sm:inline">
                 NEWS
               </span>
             </Link>
@@ -313,7 +313,7 @@ export default function Header({ categories = [], breakingNews = null }) {
         <div className="bg-[#0a0a0a] flex items-center justify-between px-4 h-[46px] shrink-0">
           <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
             <span className="bg-red-600 text-white font-black text-lg px-2.5 py-0.5 rounded-sm">JOBEN</span>
-            <span className="text-white font-bold text-xs tracking-widest">NEWS</span>
+            <span className="news-shimmer font-bold text-xs tracking-widest">NEWS</span>
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
