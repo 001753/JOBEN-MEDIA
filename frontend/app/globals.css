@@ -457,6 +457,12 @@ html.dark ::-webkit-scrollbar-track { background-color: #1e293b !important; }
 html.dark ::-webkit-scrollbar-thumb { background-color: #475569 !important; }
 html.dark ::-webkit-scrollbar-thumb:hover { background-color: #64748b !important; }
 
+/* ── TOC dark mode ─────────────────────────────────────────────────────── */
+html.dark .toc-card               { background-color: #1e293b !important; box-shadow: 0 1px 4px rgba(0,0,0,0.4) !important; }
+html.dark .toc-item               { color: #94a3b8; }
+html.dark .toc-item:hover         { background-color: rgba(255,255,255,0.05) !important; color: #e2e8f0 !important; }
+html.dark .toc-item.bg-brand-50   { background-color: rgba(193,15,15,0.15) !important; color: #f87171 !important; }
+
 /* ── Footer ──────────────────────────────────────────────────────────────── */
 html.dark footer .bg-gray-900 { background-color: #020617 !important; }
 html.dark footer .bg-gray-800 { background-color: #0a0a0a !important; }

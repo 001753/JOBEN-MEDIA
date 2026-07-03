@@ -6,6 +6,8 @@ import { ArticleCardGrid } from '@/components/ArticleCard';
 import { AdLeaderboard, AdRectangle } from '@/components/AdSlot';
 import BlocksRenderer from '@/components/BlocksRenderer';
 import ReadProgressBar from '@/components/ReadProgressBar';
+import TableOfContents from '@/components/TableOfContents';
+import { extractHeadings } from '@/lib/extractHeadings';
 
 export const revalidate = 60;
 
@@ -48,9 +50,10 @@ export default async function ArticlePage({ params }) {
     getPopularArticles(5),
   ]);
 
-  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://news.jobenapp.cloud';
-  const img = getImageUrl(article.cover_image);
-  const authorImg = getImageUrl(article.author?.photo);
+  const SITE_URL   = process.env.NEXT_PUBLIC_SITE_URL || 'https://news.jobenapp.cloud';
+  const img        = getImageUrl(article.cover_image);
+  const authorImg  = getImageUrl(article.author?.photo);
+  const headings   = extractHeadings(article.content);
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -231,6 +234,14 @@ export default async function ArticlePage({ params }) {
 
           {/* ======= SIDEBAR ======= */}
           <aside className="lg:col-span-1 space-y-6">
+
+            {/* Daftar Isi — tampil jika artikel punya ≥2 heading h2/h3 */}
+            {headings.length >= 2 && (
+              <div className="lg:sticky lg:top-24">
+                <TableOfContents headings={headings} />
+              </div>
+            )}
+
             <AdRectangle />
 
             {popularArticles.length > 0 && (
