@@ -20,7 +20,6 @@ module.exports = {
         event.params.data.publishedAt = new Date();
       }
     } else {
-      // draft / review — pastikan publishedAt null
       event.params.data.publishedAt = null;
     }
   },
@@ -36,32 +35,31 @@ module.exports = {
       const newStatus = data.editorial_status;
 
       if (newStatus === 'published') {
+        // Otomatis set publishedAt jika belum ada
         if (!data.publishedAt) {
           event.params.data.publishedAt = new Date();
         }
       } else if (newStatus === 'draft' || newStatus === 'review') {
+        // Otomatis kosongkan publishedAt saat unpublish/kembali ke draft
         event.params.data.publishedAt = null;
       }
     }
 
-    // Validasi kebalikan: jika publishedAt di-set manual, sinkronkan editorial_status
+    // Validasi kebalikan: jika publishedAt di-set manual tanpa editorial_status,
+    // sinkronkan editorial_status secara otomatis
     if (data.publishedAt !== undefined && data.editorial_status === undefined) {
-      if (data.publishedAt) {
-        event.params.data.editorial_status = 'published';
-      } else {
-        event.params.data.editorial_status = 'draft';
-      }
+      event.params.data.editorial_status = data.publishedAt ? 'published' : 'draft';
     }
 
     // ── Hook B: Enforce satu breaking news aktif sekaligus ─────────────────
-    // Strategi atomik: selalu reset semua artikel LAIN dulu sebelum set artikel ini.
-    // UpdateMany + check dilakukan tanpa gap "check → update" sehingga mitigasi race condition.
+    // Strategi atomik: reset semua artikel LAIN sebelum set artikel ini.
+    // Mitigasi race condition: tidak ada gap antara check dan update.
     if (data.is_breaking_news === true) {
       const currentId = where.id;
 
       if (currentId) {
         try {
-          const resetCount = await strapi.db.query('api::article.article').updateMany({
+          const resetResult = await strapi.db.query('api::article.article').updateMany({
             where: {
               is_breaking_news: true,
               id: { $ne: currentId },
@@ -69,9 +67,9 @@ module.exports = {
             data: { is_breaking_news: false },
           });
 
-          if (resetCount?.count > 0) {
+          if (resetResult?.count > 0) {
             strapi.log.info(
-              `[Breaking News] Reset ${resetCount.count} artikel breaking news sebelumnya.`
+              `[Breaking News] Reset ${resetResult.count} artikel breaking news sebelumnya.`
             );
           }
         } catch (err) {
@@ -82,68 +80,87 @@ module.exports = {
   },
 
   // ─────────────────────────────────────────────────────────────────────────
-  // AFTER CREATE/UPDATE/DELETE — webhook on-demand revalidation ke Next.js
+  // AFTER CREATE — webhook revalidation jika artikel langsung published
   // ─────────────────────────────────────────────────────────────────────────
   async afterCreate(event) {
     const { result } = event;
     if (result.editorial_status === 'published') {
-      await triggerRevalidation(strapi, result);
+      await triggerRevalidation(result.id, result.slug);
     }
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // AFTER UPDATE — webhook revalidation untuk semua perubahan artikel
+  // (published dan unpublish — keduanya perlu update cache frontend)
+  // ─────────────────────────────────────────────────────────────────────────
   async afterUpdate(event) {
     const { result } = event;
-    await triggerRevalidation(strapi, result);
+    await triggerRevalidation(result.id, result.slug);
   },
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // AFTER DELETE — hapus cache artikel yang dihapus dari frontend
+  // ─────────────────────────────────────────────────────────────────────────
   async afterDelete(event) {
     const { result } = event;
-    await triggerRevalidation(strapi, result);
+    await triggerRevalidation(result.id, result.slug);
   },
 };
 
 /**
  * Kirim HTTP POST ke Next.js /api/revalidate untuk invalidasi cache ISR.
+ * Mengambil categorySlug dari database karena result lifecycle tidak populate relasi.
  * Retry 1x setelah 2 detik jika request pertama gagal.
- * Jika gagal: log error saja, jangan throw (operasi Strapi tetap berlanjut).
+ * Jika gagal: log error saja, jangan throw (operasi Strapi tetap berhasil).
  */
-async function triggerRevalidation(strapi, article) {
+async function triggerRevalidation(articleId, slug) {
   const url    = process.env.NEXTJS_REVALIDATION_URL;
   const secret = process.env.REVALIDATION_SECRET;
 
-  if (!url || !secret) return; // Belum dikonfigurasi (normal di development)
+  if (!url || !secret) return; // Belum dikonfigurasi — normal di dev lokal
 
-  const payload = JSON.stringify({
-    secret,
-    slug: article.slug,
-    categorySlug: article.category?.slug ?? null,
-  });
+  // Fetch categorySlug dari DB karena lifecycle result tidak populate relasi
+  let categorySlug = null;
+  if (articleId) {
+    try {
+      const full = await strapi.db.query('api::article.article').findOne({
+        where: { id: articleId },
+        populate: { category: { select: ['slug'] } },
+      });
+      categorySlug = full?.category?.slug ?? null;
+    } catch (_) {
+      // Tidak fatal — lanjutkan tanpa categorySlug
+    }
+  }
+
+  const payload = JSON.stringify({ secret, slug, categorySlug });
 
   const doRequest = async () => {
-    const response = await fetch(url, {
+    const res = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: payload,
+      signal: AbortSignal.timeout(8000), // timeout 8 detik
     });
 
-    if (!response.ok) {
-      const body = await response.text();
-      throw new Error(`HTTP ${response.status}: ${body}`);
+    if (!res.ok) {
+      const body = await res.text().catch(() => '(no body)');
+      throw new Error(`HTTP ${res.status}: ${body}`);
     }
-    return response;
+    return res;
   };
 
   try {
     await doRequest();
-    strapi.log.info(`[Revalidation] Berhasil: slug="${article.slug}"`);
+    strapi.log.info(`[Revalidation] OK: slug="${slug}", category="${categorySlug}"`);
   } catch (err) {
-    strapi.log.warn(`[Revalidation] Gagal (percobaan 1): ${err.message}. Retry dalam 2 detik...`);
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    strapi.log.warn(`[Revalidation] Gagal (percobaan 1): ${err.message}. Retry 2s...`);
+    await new Promise(r => setTimeout(r, 2000));
     try {
       await doRequest();
-      strapi.log.info(`[Revalidation] Retry berhasil: slug="${article.slug}"`);
+      strapi.log.info(`[Revalidation] Retry berhasil: slug="${slug}"`);
     } catch (retryErr) {
-      strapi.log.error(`[Revalidation] Retry gagal: ${retryErr.message}`);
+      strapi.log.error(`[Revalidation] Retry gagal untuk slug="${slug}": ${retryErr.message}`);
     }
   }
 }

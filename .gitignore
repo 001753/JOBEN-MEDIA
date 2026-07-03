@@ -1,34 +1,49 @@
-# Dependencies
+# ── Dependencies ─────────────────────────────────────────────
 node_modules/
 
-# Build outputs
+# ── Build outputs (di-generate ulang di server) ───────────────
 build/
 dist/
 .strapi/
+.cache/
 
-# Environment variables — JANGAN commit ke GitHub
+# ── Environment variables — JANGAN commit ke GitHub ───────────
 .env
 .env.local
+.env.development.local
+.env.test.local
+.env.production.local
 .env.production
 .env.development
+# .env.example BOLEH di-commit (tidak ada nilai sensitif)
 
-# Database lokal (SQLite dev)
+# ── Database lokal (SQLite dev) ───────────────────────────────
 .tmp/
+*.db
+*.sqlite
 
-# Upload lokal (semua media di R2, bukan di repo)
+# ── Upload lokal (media di Cloudflare R2, bukan di repo) ─────
 public/uploads/
 
-# Logs
+# ── Logs ──────────────────────────────────────────────────────
 *.log
 npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# OS
+# ── OS ────────────────────────────────────────────────────────
 .DS_Store
 Thumbs.db
+._*
 
-# Editor
+# ── Editor ────────────────────────────────────────────────────
 .vscode/
 .idea/
+*.swp
+*~
 
-# Replit spesifik (jangan diabaikan)
-# .replit — tetap di-commit
+# ── Replit (tidak perlu di repo GitHub) ───────────────────────
+.replit
+replit.nix
+.upm/
+.config/

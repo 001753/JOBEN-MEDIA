@@ -19,4 +19,12 @@ description: Non-obvious gotchas discovered when setting up Strapi v5.50.0 in Re
 
 **Author → User relation must be unidirectional**: Cannot use `inversedBy: "author"` pointing to `plugin::users-permissions.user` because the User model doesn't have an `author` attribute. Use a plain unidirectional `oneToOne` relation (no `inversedBy`).
 
-**Why:** Discovered during initial Strapi startup failures on Replit — each error required a separate fix cycle.
+**Node.js version**: Strapi v5.50.0 requires Node >=20. Node 18 fails with `Array.prototype.toSorted is not a function`. After upgrading to nodejs-20 module, run `npm rebuild better-sqlite3` to recompile native addon.
+
+**Lifecycle result does not populate relations**: In `afterCreate`/`afterUpdate`/`afterDelete`, `event.result` only contains direct fields — NOT related data (category.slug, author.name, etc.). Must do a separate `strapi.db.query().findOne({ populate: ... })` inside the lifecycle if related data is needed (e.g., for webhook payload).
+
+**Admin create-user CLI**: `node_modules/.bin/strapi admin:create-user` can run while app is also running (SQLite allows it). Returns "User already exists" if email is taken.
+
+**Bootstrap public permissions**: Set in `src/index.js` bootstrap() via `strapi.query('plugin::users-permissions.permission').create(...)`. Make it idempotent by checking existing permissions first — runs on every startup but skips if already configured.
+
+**Why:** Discovered during initial Strapi startup failures and feature build on Replit — each error required a separate fix cycle.

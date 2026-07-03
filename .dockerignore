@@ -1,0 +1,45 @@
+# Dependencies — di-install ulang di container
+node_modules/
+
+# Environment variables — JANGAN masuk ke image
+.env
+.env.*
+!.env.example
+
+# Database lokal dev (SQLite)
+.tmp/
+
+# Build artifacts yang akan di-generate ulang
+build/
+dist/
+.strapi/
+
+# Upload lokal (media di Cloudflare R2, bukan di repo/image)
+public/uploads/
+
+# Git
+.git/
+.gitignore
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dokumentasi (tidak perlu di production image)
+doc/
+*.md
+!README.md
+
+# Test files
+__tests__/
+*.test.js
+*.spec.js
+
+# CI/CD config
+.github/
