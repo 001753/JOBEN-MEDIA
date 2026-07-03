@@ -45,6 +45,8 @@ module.exports = {
   // ─────────────────────────────────────────────────────────────────────────
   async bootstrap({ strapi }) {
     await configurePublicPermissions(strapi);
+    const { seedCategoriesAndTags } = require('./seeds/categories-tags');
+    await seedCategoriesAndTags(strapi);
   },
 };
 

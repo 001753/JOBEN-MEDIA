@@ -5,17 +5,21 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 
 export default function Header({ categories = [] }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [scrolled, setScrolled]     = useState(false);
-  const [query, setQuery]           = useState('');
-  const searchRef = useRef(null);
-  const pathname  = usePathname();
-  const router    = useRouter();
+  const [mobileOpen, setMobileOpen]   = useState(false);
+  const [searchOpen, setSearchOpen]   = useState(false);
+  const [expandedCat, setExpandedCat] = useState(null);
+  const [hoveredCat, setHoveredCat]   = useState(null);
+  const [scrolled, setScrolled]       = useState(false);
+  const [query, setQuery]             = useState('');
+  const searchRef  = useRef(null);
+  const hoverTimer = useRef(null);
+  const pathname   = usePathname();
+  const router     = useRouter();
 
   useEffect(() => {
     setMobileOpen(false);
     setSearchOpen(false);
+    setExpandedCat(null);
   }, [pathname]);
 
   useEffect(() => {
@@ -37,24 +41,30 @@ export default function Header({ categories = [] }) {
     setQuery('');
   }
 
+  function handleMouseEnter(slug) {
+    clearTimeout(hoverTimer.current);
+    setHoveredCat(slug);
+  }
+
+  function handleMouseLeave() {
+    hoverTimer.current = setTimeout(() => setHoveredCat(null), 150);
+  }
+
   const isActive = (href) => pathname === href || pathname.startsWith(href + '/');
 
   return (
     <header className="sticky top-0 z-50">
-      {/* Top brand bar */}
+      {/* ── Top brand bar ──────────────────────────────────────────────── */}
       <div className="bg-[#0a0a0a] text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-12">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group shrink-0">
             <span className="bg-brand-700 text-white font-black text-lg px-2.5 py-0.5 rounded tracking-tight leading-none group-hover:bg-brand-800 transition-colors">
               JOBEN
             </span>
             <span className="font-bold text-white text-sm tracking-widest uppercase">NEWS</span>
           </Link>
-
-          {/* Desktop top-right */}
           <div className="hidden md:flex items-center gap-4 text-xs text-gray-400">
-            <span id="live-date" suppressHydrationWarning>
+            <span suppressHydrationWarning>
               {new Intl.DateTimeFormat('id-ID', {
                 weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
                 timeZone: 'Asia/Jakarta',
@@ -64,45 +74,80 @@ export default function Header({ categories = [] }) {
         </div>
       </div>
 
-      {/* Nav bar */}
-      <div
-        className={`bg-white border-b border-gray-200 transition-shadow duration-200 ${
-          scrolled ? 'shadow-md' : ''
-        }`}
-      >
+      {/* ── Nav bar ────────────────────────────────────────────────────── */}
+      <div className={`bg-white border-b border-gray-200 transition-shadow duration-200 ${scrolled ? 'shadow-md' : ''}`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-11 gap-1">
-            {/* Categories */}
+
+            {/* Desktop nav */}
             <nav className="hidden md:flex items-center gap-0.5 overflow-x-auto flex-1 min-w-0 scrollbar-none">
               <Link
                 href="/"
                 className={`px-3 py-2 text-sm font-semibold rounded transition-colors whitespace-nowrap ${
-                  pathname === '/'
-                    ? 'text-brand-700 bg-brand-50'
-                    : 'text-gray-600 hover:text-brand-700 hover:bg-gray-50'
+                  pathname === '/' ? 'text-brand-700 bg-brand-50' : 'text-gray-600 hover:text-brand-700 hover:bg-gray-50'
                 }`}
               >
                 Beranda
               </Link>
-              {categories.map((cat) => (
-                <Link
-                  key={cat.slug}
-                  href={`/kategori/${cat.slug}`}
-                  className={`px-3 py-2 text-sm font-semibold rounded transition-colors whitespace-nowrap ${
-                    isActive(`/kategori/${cat.slug}`)
-                      ? 'text-brand-700 bg-brand-50'
-                      : 'text-gray-600 hover:text-brand-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {cat.name}
-                </Link>
-              ))}
+
+              {categories.map((cat) => {
+                const hasChildren = cat.children?.length > 0;
+                const active = isActive(`/kategori/${cat.slug}`);
+                return (
+                  <div
+                    key={cat.slug}
+                    className="relative"
+                    onMouseEnter={() => hasChildren && handleMouseEnter(cat.slug)}
+                    onMouseLeave={handleMouseLeave}
+                  >
+                    <Link
+                      href={`/kategori/${cat.slug}`}
+                      className={`flex items-center gap-1 px-3 py-2 text-sm font-semibold rounded transition-colors whitespace-nowrap ${
+                        active ? 'text-brand-700 bg-brand-50' : 'text-gray-600 hover:text-brand-700 hover:bg-gray-50'
+                      }`}
+                    >
+                      {cat.name}
+                      {hasChildren && (
+                        <svg className="w-3 h-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      )}
+                    </Link>
+
+                    {/* Dropdown subkategori */}
+                    {hasChildren && hoveredCat === cat.slug && (
+                      <div
+                        className="absolute top-full left-0 mt-0 bg-white border border-gray-100 rounded-xl shadow-xl py-3 z-50 min-w-[200px]"
+                        onMouseEnter={() => handleMouseEnter(cat.slug)}
+                        onMouseLeave={handleMouseLeave}
+                      >
+                        <p className="px-4 pb-2 text-[10px] font-black uppercase tracking-widest text-gray-400 border-b border-gray-100 mb-1">
+                          {cat.name}
+                        </p>
+                        {cat.children.map((sub) => (
+                          <Link
+                            key={sub.slug}
+                            href={`/kategori/${sub.slug}`}
+                            className={`block px-4 py-1.5 text-sm transition-colors whitespace-nowrap ${
+                              isActive(`/kategori/${sub.slug}`)
+                                ? 'text-brand-700 font-semibold bg-brand-50'
+                                : 'text-gray-600 hover:text-brand-700 hover:bg-gray-50'
+                            }`}
+                          >
+                            {sub.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </nav>
 
             {/* Search */}
             <div className="ml-auto flex items-center">
               {searchOpen ? (
-                <form onSubmit={handleSearch} className="flex items-center gap-2 animate-fade-in">
+                <form onSubmit={handleSearch} className="flex items-center gap-2">
                   <input
                     ref={searchRef}
                     value={query}
@@ -154,22 +199,56 @@ export default function Header({ categories = [] }) {
           </div>
         </div>
 
-        {/* Mobile menu */}
+        {/* ── Mobile menu ──────────────────────────────────────────────── */}
         {mobileOpen && (
-          <div className="md:hidden border-t border-gray-100 bg-white animate-fade-in">
-            <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-1">
+          <div className="md:hidden border-t border-gray-100 bg-white max-h-[75vh] overflow-y-auto">
+            <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col gap-0.5">
               <Link href="/" className="px-3 py-2 text-sm font-semibold text-gray-700 hover:text-brand-700 hover:bg-gray-50 rounded">
                 Beranda
               </Link>
-              {categories.map((cat) => (
-                <Link
-                  key={cat.slug}
-                  href={`/kategori/${cat.slug}`}
-                  className="px-3 py-2 text-sm font-semibold text-gray-700 hover:text-brand-700 hover:bg-gray-50 rounded"
-                >
-                  {cat.name}
-                </Link>
-              ))}
+              {categories.map((cat) => {
+                const hasChildren = cat.children?.length > 0;
+                const open = expandedCat === cat.slug;
+                return (
+                  <div key={cat.slug}>
+                    <div className="flex items-center">
+                      <Link
+                        href={`/kategori/${cat.slug}`}
+                        className="flex-1 px-3 py-2 text-sm font-semibold text-gray-700 hover:text-brand-700 hover:bg-gray-50 rounded-l"
+                      >
+                        {cat.name}
+                      </Link>
+                      {hasChildren && (
+                        <button
+                          onClick={() => setExpandedCat(open ? null : cat.slug)}
+                          className="px-2 py-2 text-gray-400 hover:text-brand-700"
+                          aria-label={open ? 'Tutup' : 'Buka sub-kategori'}
+                        >
+                          <svg
+                            className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                    {hasChildren && open && (
+                      <div className="ml-4 mb-1 border-l-2 border-brand-100 pl-3">
+                        {cat.children.map((sub) => (
+                          <Link
+                            key={sub.slug}
+                            href={`/kategori/${sub.slug}`}
+                            className="block px-2 py-1.5 text-sm text-gray-500 hover:text-brand-700 hover:bg-gray-50 rounded"
+                          >
+                            {sub.name}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}

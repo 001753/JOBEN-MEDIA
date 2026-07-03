@@ -1,0 +1,112 @@
+# Struktur Hierarki Media Teknologi
+
+```text
+Teknologi
+│
+├── Berita
+│   ├── Nasional
+│   ├── Global
+│   ├── Industri
+│   ├── Regulasi
+│   ├── Startup
+│   └── Rilis Produk
+│
+├── Artificial Intelligence (AI)
+│   ├── Generative AI
+│   ├── AI Agent
+│   ├── Large Language Model (LLM)
+│   ├── Machine Learning
+│   ├── Computer Vision
+│   ├── Robotics AI
+│   ├── AI Open Source
+│   ├── AI Bisnis
+│   └── Prompt Engineering
+│
+├── Startup
+│   ├── Pendanaan
+│   ├── Unicorn
+│   ├── Venture Capital
+│   ├── IPO
+│   ├── SaaS
+│   ├── Fintech
+│   ├── E-Commerce
+│   └── Founder Story
+│
+├── Software Development
+│   ├── Web Development
+│   ├── Mobile Development
+│   ├── Backend
+│   ├── Frontend
+│   ├── DevOps
+│   ├── Cloud
+│   ├── Database
+│   ├── API
+│   ├── Open Source
+│   └── Framework
+│
+├── Cyber Security
+│   ├── Data Breach
+│   ├── Malware
+│   ├── Ransomware
+│   ├── Vulnerability
+│   ├── Bug Bounty
+│   ├── Digital Privacy
+│   ├── Hacking Ethics
+│   └── Security Tips
+│
+├── Gadget
+│   ├── Smartphone
+│   ├── Laptop
+│   ├── Tablet
+│   ├── Smartwatch
+│   ├── Wearable
+│   ├── Smart Home
+│   ├── Review Gadget
+│   └── Aksesori
+│
+├── Kripto & Blockchain
+│   ├── Bitcoin
+│   ├── Ethereum
+│   ├── Altcoin
+│   ├── Blockchain
+│   ├── Web3
+│   ├── DeFi
+│   ├── NFT
+│   ├── Stablecoin
+│   ├── Exchange
+│   └── Regulasi Kripto
+│
+├── Teknologi Masa Depan
+│   ├── Quantum Computing
+│   ├── Robot Humanoid
+│   ├── Space Technology
+│   ├── Autonomous Vehicle
+│   ├── Internet of Things (IoT)
+│   ├── Smart City
+│   ├── Green Technology
+│   ├── Biotechnology
+│   ├── Semiconductor
+│   └── AR / VR / Mixed Reality
+│
+├── Tutorial
+│   ├── AI
+│   ├── Programming
+│   ├── Linux
+│   ├── Windows
+│   ├── Android
+│   ├── iPhone
+│   ├── Cloud
+│   ├── Networking
+│   └── Produktivitas
+│
+└── Opini
+    ├── Editorial
+    ├── Analisis
+    ├── Tren Industri
+    ├── Perspektif
+    └── Kolom Pakar
+```
+
+Untuk media yang berfokus pada perkembangan teknologi, saya juga menyarankan menambahkan beberapa **tag** lintas kategori agar artikel lebih mudah ditemukan tanpa menambah kategori baru, misalnya: **OpenAI, Google, Microsoft, Apple, NVIDIA, Meta, Tesla, Samsung, xAI, Anthropic, DeepSeek, Linux, Windows, Android, iOS, ChatGPT, Gemini, Claude, Copilot, GitHub, Docker, Kubernetes, Raspberry Pi, Arduino, Raspberry Pi, Bitcoin, Ethereum, Solana, dan XRP**.
+
+Dengan struktur ini, situs tetap sederhana untuk dinavigasi, tetapi cukup fleksibel untuk mengakomodasi tren teknologi baru di masa depan tanpa harus sering mengubah kategori utama.

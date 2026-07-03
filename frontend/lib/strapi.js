@@ -169,8 +169,12 @@ export async function getCategories() {
   const res = await fetchStrapi(
     '/categories',
     {
+      'filters[parent][$null]': 'true',
       'sort[0]': 'name:asc',
       'pagination[pageSize]': 50,
+      'populate[children][fields][0]': 'name',
+      'populate[children][fields][1]': 'slug',
+      'populate[children][sort]': 'name:asc',
     },
     { revalidate: 300 }
   );
@@ -183,6 +187,11 @@ export async function getCategoryBySlug(slug) {
     {
       'filters[slug][$eq]': slug,
       'pagination[pageSize]': 1,
+      'populate[parent][fields][0]': 'name',
+      'populate[parent][fields][1]': 'slug',
+      'populate[children][fields][0]': 'name',
+      'populate[children][fields][1]': 'slug',
+      'populate[children][sort]': 'name:asc',
     },
     { revalidate: 300 }
   );
