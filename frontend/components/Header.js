@@ -101,7 +101,7 @@ export default function Header({ categories = [] }) {
         />
       )}
 
-      <header className={`sticky top-0 z-50 transition-shadow duration-200 ${scrolled ? 'shadow-lg' : ''}`}>
+      <header className={`sticky top-0 z-50 transition-shadow duration-300 ${scrolled ? 'shadow-lg' : ''}`}>
 
         {/* ══ Brand bar hitam ══════════════════════════════════════════════ */}
         <div className="bg-[#0a0a0a] text-white">
@@ -109,7 +109,7 @@ export default function Header({ categories = [] }) {
 
             {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <span className="bg-red-600 text-white font-black text-xl px-3 py-0.5 rounded-sm tracking-tight leading-none group-hover:bg-red-700 transition-colors select-none">
+              <span className="bg-red-600 text-white font-black text-xl px-3 py-0.5 rounded-sm tracking-tight leading-none group-hover:bg-red-700 transition-colors duration-200 select-none">
                 JOBEN
               </span>
               <span className="font-bold text-white text-sm tracking-[0.2em] uppercase hidden sm:inline">
@@ -135,12 +135,12 @@ export default function Header({ categories = [] }) {
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       placeholder="Cari berita…"
-                      className="bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-full px-4 py-1 text-sm w-52 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-full px-4 py-1 text-sm w-52 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
                     />
                     <button
                       type="button"
                       onClick={() => { setSearchOpen(false); setQuery(''); }}
-                      className="text-gray-400 hover:text-white transition-colors p-1"
+                      className="text-gray-400 hover:text-white transition-colors duration-200 p-1"
                       aria-label="Tutup pencarian"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -151,10 +151,10 @@ export default function Header({ categories = [] }) {
                 ) : (
                   <button
                     onClick={() => setSearchOpen(true)}
-                    className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors text-xs"
+                    className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors duration-200 text-xs group"
                     aria-label="Cari"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
@@ -166,7 +166,7 @@ export default function Header({ categories = [] }) {
               {/* Hamburger mobile */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden p-1 text-gray-300 hover:text-white"
+                className="md:hidden p-1 text-gray-300 hover:text-white transition-colors duration-200"
                 aria-label="Menu"
               >
                 {mobileOpen
@@ -190,7 +190,7 @@ export default function Header({ categories = [] }) {
               {/* Beranda */}
               <Link
                 href="/"
-                className={`flex items-center px-3 text-[11px] font-bold uppercase tracking-wide border-b-2 transition-colors whitespace-nowrap ${
+                className={`nav-item-link flex items-center px-3 text-[11px] font-bold uppercase tracking-wide border-b-2 whitespace-nowrap ${
                   pathname === '/'
                     ? 'border-red-600 text-red-600'
                     : 'border-transparent text-gray-600 hover:text-red-600 hover:border-red-400'
@@ -207,7 +207,7 @@ export default function Header({ categories = [] }) {
                 const active      = isActive(`/kategori/${cat.slug}`);
                 const menuOpen    = activeMenu === cat.slug;
                 const cols        = hasChildren ? chunkArray(cat.children, 5) : [];
-                // item di 3 terakhir → dropdown right-align agar tidak keluar layar
+                /* item di 3 terakhir → dropdown right-align agar tidak keluar layar */
                 const alignRight  = idx >= categories.length - 3;
 
                 return (
@@ -220,7 +220,7 @@ export default function Header({ categories = [] }) {
                     {/* Nav item */}
                     <Link
                       href={`/kategori/${cat.slug}`}
-                      className={`flex items-center gap-1 px-3 text-[11px] font-bold uppercase tracking-wide border-b-2 transition-colors whitespace-nowrap ${
+                      className={`nav-item-link flex items-center gap-1 px-3 text-[11px] font-bold uppercase tracking-wide border-b-2 whitespace-nowrap ${
                         active
                           ? 'border-red-600 text-red-600'
                           : menuOpen
@@ -231,7 +231,7 @@ export default function Header({ categories = [] }) {
                       {navLabel(cat)}
                       {hasChildren && (
                         <svg
-                          className={`w-2.5 h-2.5 transition-transform duration-150 ${menuOpen ? 'rotate-180' : ''}`}
+                          className={`w-2.5 h-2.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${menuOpen ? 'rotate-180' : ''}`}
                           fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
@@ -242,7 +242,8 @@ export default function Header({ categories = [] }) {
                     {/* ── Mega-menu / dropdown ──────────────────────────────── */}
                     {hasChildren && menuOpen && (
                       <div
-                        className={`absolute top-full z-50 bg-white border border-gray-200 shadow-2xl rounded-b-xl overflow-hidden ${
+                        key={`menu-${cat.slug}`}
+                        className={`nav-dropdown-enter absolute top-full z-50 bg-white border border-gray-200 shadow-2xl rounded-b-xl overflow-hidden ${
                           alignRight ? 'right-0' : 'left-0'
                         }`}
                         style={{ minWidth: cols.length > 1 ? `${cols.length * 180}px` : '200px' }}
@@ -256,7 +257,7 @@ export default function Header({ categories = [] }) {
                           </span>
                           <Link
                             href={`/kategori/${cat.slug}`}
-                            className="text-red-100 hover:text-white text-[10px] font-semibold"
+                            className="text-red-100 hover:text-white text-[10px] font-semibold transition-colors duration-150"
                           >
                             Lihat semua →
                           </Link>
@@ -266,18 +267,21 @@ export default function Header({ categories = [] }) {
                         <div className="flex gap-0 divide-x divide-gray-100">
                           {cols.map((col, ci) => (
                             <div key={ci} className="flex flex-col py-2 min-w-[175px]">
-                              {col.map((sub) => (
+                              {col.map((sub, si) => (
                                 <Link
                                   key={sub.slug}
                                   href={`/kategori/${sub.slug}`}
-                                  className={`px-4 py-2 text-[12px] transition-colors flex items-center gap-2 group ${
+                                  className={`nav-sub-item px-4 py-2 text-[12px] flex items-center gap-2 group ${
                                     isActive(`/kategori/${sub.slug}`)
                                       ? 'text-red-600 font-bold bg-red-50'
                                       : 'text-gray-700 hover:text-red-600 hover:bg-gray-50'
                                   }`}
+                                  style={{ animationDelay: `${(ci * col.length + si) * 28}ms` }}
                                 >
-                                  <span className="w-1 h-1 rounded-full bg-gray-300 group-hover:bg-red-500 transition-colors shrink-0" />
-                                  {sub.name}
+                                  <span className="w-1 h-1 rounded-full bg-gray-300 group-hover:bg-red-500 transition-colors duration-200 shrink-0" />
+                                  <span className="transition-transform duration-150 group-hover:translate-x-0.5">
+                                    {sub.name}
+                                  </span>
                                 </Link>
                               ))}
                             </div>
@@ -309,7 +313,7 @@ export default function Header({ categories = [] }) {
       {/* Drawer panel */}
       <div
         className={`fixed top-0 left-0 z-[70] h-full w-[320px] max-w-[85vw] bg-white shadow-2xl flex flex-col md:hidden
-          transition-transform duration-300 ease-in-out ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+          transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         {/* Drawer header */}
         <div className="bg-[#0a0a0a] flex items-center justify-between px-4 h-[46px] shrink-0">
@@ -319,7 +323,7 @@ export default function Header({ categories = [] }) {
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
-            className="p-1 text-gray-300 hover:text-white"
+            className="p-1 text-gray-300 hover:text-white transition-colors duration-200"
             aria-label="Tutup menu"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -335,9 +339,9 @@ export default function Header({ categories = [] }) {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Cari berita…"
-              className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
             />
-            <button type="submit" className="bg-red-600 text-white rounded-full w-9 h-9 flex items-center justify-center shrink-0">
+            <button type="submit" className="bg-red-600 hover:bg-red-700 text-white rounded-full w-9 h-9 flex items-center justify-center shrink-0 transition-colors duration-200">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -351,10 +355,10 @@ export default function Header({ categories = [] }) {
           <Link
             href="/"
             onClick={() => setMobileOpen(false)}
-            className={`flex items-center px-5 py-3 text-sm font-semibold border-l-4 transition-colors ${
+            className={`flex items-center px-5 py-3 text-sm font-semibold border-l-4 transition-all duration-200 ${
               pathname === '/'
                 ? 'border-red-600 text-red-600 bg-red-50'
-                : 'border-transparent text-gray-800 hover:text-red-600 hover:bg-gray-50'
+                : 'border-transparent text-gray-800 hover:text-red-600 hover:bg-gray-50 hover:border-red-200 hover:pl-6'
             }`}
           >
             Beranda
@@ -372,10 +376,10 @@ export default function Header({ categories = [] }) {
                   <Link
                     href={`/kategori/${cat.slug}`}
                     onClick={() => setMobileOpen(false)}
-                    className={`flex-1 flex items-center px-5 py-3 text-sm font-semibold border-l-4 transition-colors ${
+                    className={`flex-1 flex items-center px-5 py-3 text-sm font-semibold border-l-4 transition-all duration-200 ${
                       active
                         ? 'border-red-600 text-red-600 bg-red-50'
-                        : 'border-transparent text-gray-800 hover:text-red-600 hover:bg-gray-50'
+                        : 'border-transparent text-gray-800 hover:text-red-600 hover:bg-gray-50 hover:border-red-200 hover:pl-6'
                     }`}
                   >
                     {cat.name}
@@ -384,13 +388,13 @@ export default function Header({ categories = [] }) {
                   {hasChildren && (
                     <button
                       onClick={() => setExpandedCat(open ? null : cat.slug)}
-                      className={`px-4 flex items-center transition-colors ${
+                      className={`px-4 flex items-center transition-colors duration-200 ${
                         open ? 'text-red-600' : 'text-gray-400 hover:text-red-600'
                       }`}
                       aria-label={open ? 'Tutup' : 'Buka subkategori'}
                     >
                       <svg
-                        className={`w-4 h-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+                        className={`w-4 h-4 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? 'rotate-180' : ''}`}
                         fill="none" stroke="currentColor" viewBox="0 0 24 24"
                       >
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -399,19 +403,20 @@ export default function Header({ categories = [] }) {
                   )}
                 </div>
 
-                {/* Sub-kategori list */}
-                {hasChildren && open && (
-                  <div className="bg-gray-50 border-l-4 border-red-200 ml-5">
-                    {cat.children.map((sub) => (
+                {/* Sub-kategori list — smooth height transition */}
+                {hasChildren && (
+                  <div className={`mobile-sub-wrapper bg-gray-50 border-l-4 border-red-200 ml-5 ${open ? 'open' : 'closed'}`}>
+                    {cat.children.map((sub, si) => (
                       <Link
                         key={sub.slug}
                         href={`/kategori/${sub.slug}`}
                         onClick={() => setMobileOpen(false)}
-                        className={`flex items-center gap-2 px-5 py-2.5 text-sm transition-colors ${
+                        className={`flex items-center gap-2 px-5 py-2.5 text-sm transition-all duration-150 ${
                           isActive(`/kategori/${sub.slug}`)
                             ? 'text-red-600 font-semibold bg-red-50'
-                            : 'text-gray-600 hover:text-red-600 hover:bg-white'
+                            : 'text-gray-600 hover:text-red-600 hover:bg-white hover:pl-6'
                         }`}
+                        style={open ? { transitionDelay: `${si * 20}ms` } : {}}
                       >
                         <span className="w-1 h-1 rounded-full bg-gray-400 shrink-0" />
                         {sub.name}
