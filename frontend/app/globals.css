@@ -255,6 +255,25 @@
   @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-6 text-sm;
 }
 
+/* ─── Search overlay animations ─────────────────────────────────────────── */
+@keyframes search-overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes search-panel-in {
+  from { opacity: 0; transform: translateY(-16px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)     scale(1); }
+}
+
+.search-overlay-enter {
+  animation: search-overlay-in 0.18s ease forwards;
+}
+
+.search-panel-enter {
+  animation: search-panel-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 /* ─── Page transition: enter animation ──────────────────────────────────── */
 @keyframes page-enter {
   from {

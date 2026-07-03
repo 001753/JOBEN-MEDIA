@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import SearchOverlay from '@/components/SearchOverlay';
 
 /* ─── Label singkat di nav bar ─────────────────────────────────────────────── */
 const NAV_SHORT = {
@@ -33,7 +34,6 @@ export default function Header({ categories = [], breakingNews = null }) {
   const [scrolled,    setScrolled]    = useState(false);
   const [query,       setQuery]       = useState('');
 
-  const searchRef   = useRef(null);
   const closeTimer  = useRef(null);
   const pathname    = usePathname();
   const router      = useRouter();
@@ -52,11 +52,6 @@ export default function Header({ categories = [], breakingNews = null }) {
     window.addEventListener('scroll', fn, { passive: true });
     return () => window.removeEventListener('scroll', fn);
   }, []);
-
-  /* auto-focus search */
-  useEffect(() => {
-    if (searchOpen) searchRef.current?.focus();
-  }, [searchOpen]);
 
   /* lock body scroll saat mobile menu buka */
   useEffect(() => {
@@ -145,42 +140,18 @@ export default function Header({ categories = [], breakingNews = null }) {
                 }).format(new Date())}
               </span>
 
-              {/* Search bar desktop — inline di brand bar */}
-              <div className="hidden md:flex items-center">
-                {searchOpen ? (
-                  <form onSubmit={handleSearch} className="flex items-center gap-2">
-                    <input
-                      ref={searchRef}
-                      value={query}
-                      onChange={(e) => setQuery(e.target.value)}
-                      placeholder="Cari berita…"
-                      className="bg-gray-800 border border-gray-600 text-white placeholder-gray-500 rounded-full px-4 py-1 text-sm w-52 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => { setSearchOpen(false); setQuery(''); }}
-                      className="text-gray-400 hover:text-white transition-colors duration-200 p-1"
-                      aria-label="Tutup pencarian"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </form>
-                ) : (
-                  <button
-                    onClick={() => setSearchOpen(true)}
-                    className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors duration-200 text-xs group"
-                    aria-label="Cari"
-                  >
-                    <svg className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    <span>Cari</span>
-                  </button>
-                )}
-              </div>
+              {/* Tombol Cari — membuka SearchOverlay */}
+              <button
+                onClick={() => setSearchOpen(true)}
+                className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors duration-200 text-xs group"
+                aria-label="Cari berita"
+              >
+                <svg className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span className="hidden lg:inline">Cari</span>
+              </button>
 
               {/* Hamburger mobile */}
               <button
@@ -453,6 +424,14 @@ export default function Header({ categories = [], breakingNews = null }) {
           © {new Date().getFullYear()} JOBEN NEWS
         </div>
       </div>
+
+      {/* ════════════════════════════════════════════════════════════════════
+          SEARCH OVERLAY — fullscreen, real-time results
+      ════════════════════════════════════════════════════════════════════ */}
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+      />
     </>
   );
 }
