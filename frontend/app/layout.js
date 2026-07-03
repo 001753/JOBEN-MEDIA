@@ -5,6 +5,8 @@ import Footer from '@/components/Footer';
 import { getCategories, getBreakingNews } from '@/lib/strapi';
 import Script from 'next/script';
 import BackToTop from '@/components/BackToTop';
+import NavigationProgress from '@/components/NavigationProgress';
+import PageTransition from '@/components/PageTransition';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -52,8 +54,11 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="id" className={inter.variable}>
       <body className="min-h-screen flex flex-col">
+        <NavigationProgress />
         <Header categories={categories} breakingNews={breakingNews} />
-        <main className="flex-1">{children}</main>
+        <main className="flex-1">
+          <PageTransition>{children}</PageTransition>
+        </main>
         <Footer categories={categories} />
         <BackToTop />
         {GA_ID && (
