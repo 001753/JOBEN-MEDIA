@@ -133,12 +133,15 @@ async function triggerRevalidation(articleId, slug) {
     }
   }
 
-  const payload = JSON.stringify({ secret, slug, categorySlug });
+  const payload = JSON.stringify({ model: 'article', slug, categorySlug });
 
   const doRequest = async () => {
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${secret}`,
+      },
       body: payload,
       signal: AbortSignal.timeout(8000), // timeout 8 detik
     });

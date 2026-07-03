@@ -22,6 +22,8 @@ async function fetchStrapi(path, params = {}, options = {}) {
       headers,
       next: { revalidate: options.revalidate ?? DEFAULT_REVALIDATE },
       ...options.fetchOptions,
+      // Timeout 10 detik agar tidak hang saat Strapi belum ready
+      signal: AbortSignal.timeout(10000),
     });
 
     if (!res.ok) {
@@ -31,7 +33,10 @@ async function fetchStrapi(path, params = {}, options = {}) {
 
     return res.json();
   } catch (err) {
-    console.error(`[strapi] Fetch error: ${err.message}`);
+    // Graceful fallback — jangan crash Next.js saat Strapi belum ready atau down
+    if (err.name !== 'AbortError') {
+      console.warn(`[strapi] Tidak dapat terhubung ke Strapi (${STRAPI_API_URL}): ${err.message}`);
+    }
     return null;
   }
 }
