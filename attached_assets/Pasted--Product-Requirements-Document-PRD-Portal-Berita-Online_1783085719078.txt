@@ -1,0 +1,598 @@
+# Product Requirements Document (PRD)
+# Portal Berita Online
+
+**Versi:** 1.1 (Revisi Hosting)
+**Tanggal:** 3 Juli 2026
+**Status:** Draft
+**Domain:** news.jobenapp.cloud
+
+---
+
+## 0. Ringkasan Revisi (v1.0 → v1.1)
+
+Revisi ini **hanya** mengubah aspek lingkungan/infrastruktur. Seluruh scope produk, persona, user story, dan kebutuhan fungsional non-infrastruktur **tidak berubah**.
+
+| Aspek | v1.0 (sebelumnya) | v1.1 (revisi ini) |
+|---|---|---|
+| Hosting utama | VPS milik sendiri | **cPanel / shared hosting**, dengan fondasi siap migrasi ke **cloud server / Google Cloud** |
+| Database | PostgreSQL Neon/Supabase | **PostgreSQL bawaan cPanel** (koneksi localhost) |
+| Domain | domain-utama.com (placeholder) | **news.jobenapp.cloud** (frontend) & **cms.news.jobenapp.cloud** (CMS/API) |
+| Proses server | PM2 + Nginx (root access VPS) | **cPanel "Setup Node.js App" (Passenger)** — tanpa root access |
+| Media storage | Cloudflare R2 | Tidak berubah — Cloudflare R2 (S3-compatible, independen dari pilihan hosting) |
+| Kesiapan scale-up | — | Ditambahkan: pondasi migrasi ke Google Cloud (Dockerfile, dokumentasi env var, panduan migrasi DB) disiapkan sejak awal tanpa menghambat go-live di cPanel |
+
+> **Asumsi nama subdomain:** `cms.news.jobenapp.cloud` digunakan untuk Strapi (CMS/API). Jika Anda menginginkan nama lain (mis. `api.news.jobenapp.cloud`), sesuaikan konsisten di seluruh dokumen ini.
+
+---
+
+## 1. Ringkasan Eksekutif
+
+Membangun portal media berita online (sejenis detik.com, CNBC Indonesia, CNN Indonesia) dengan sistem redaksi formal (>5 orang), menggunakan arsitektur headless CMS. Target monetisasi utama adalah Google AdSense, dengan fondasi teknis yang mendukung SEO tinggi, kecepatan loading, dan skalabilitas untuk traffic besar.
+
+### 1.1 Tujuan Produk
+- Menyediakan platform publikasi berita yang cepat, SEO-friendly, dan mudah dikelola tim redaksi
+- Mencapai kelayakan approval Google AdSense
+- Membangun fondasi yang bisa scale ke traffic tinggi tanpa rombak ulang arsitektur — dimulai dari shared hosting (biaya rendah) dengan jalur migrasi yang sudah disiapkan ke cloud server/Google Cloud saat traffic tumbuh
+
+### 1.2 Target Pengguna
+| Tipe Pengguna | Kebutuhan |
+|---|---|
+| Pembaca (publik) | Akses berita cepat, mudah dibaca di mobile, navigasi jelas |
+| Wartawan/Penulis | Input & edit draft berita dengan mudah |
+| Editor/Redaktur | Review, approve, publish, kelola breaking news |
+| Super Admin | Kelola user, role, kategori, pengaturan situs |
+| Pengiklan (via AdSense) | Slot iklan yang tidak mengganggu UX tapi visible |
+
+---
+
+## 2. Lingkup Produk (Scope)
+
+### 2.1 Dalam Lingkup (In-Scope) — Fase 1 (MVP)
+- CMS redaksi (Strapi) dengan role-based access
+- Frontend publik (Next.js) — homepage, halaman artikel, kategori, search
+- Sistem kategori & tag berita
+- Upload media (gambar/video) ke Cloudflare R2
+- SEO dasar (sitemap, schema markup, meta tag dinamis)
+- Integrasi Google AdSense
+- Halaman legal wajib (Privacy Policy, About, Redaksi, Contact)
+
+### 2.2 Di Luar Lingkup (Out-of-Scope) — Fase 1
+- Live streaming video
+- Sistem komentar pembaca
+- Aplikasi mobile native (iOS/Android)
+- Push notification
+- Sistem membership/subscription berbayar
+- Multi-bahasa
+
+*(Item di atas masuk roadmap Fase 2/3, lihat Bagian 8)*
+
+---
+
+## 3. Persona & User Stories
+
+### 3.1 Wartawan/Penulis
+- Sebagai wartawan, saya ingin menulis draft artikel dengan editor teks kaya (rich text) agar bisa menyisipkan gambar dan format dengan mudah.
+- Sebagai wartawan, saya ingin submit artikel untuk direview, bukan langsung publish, agar terjaga kontrol kualitas.
+
+### 3.2 Editor/Redaktur
+- Sebagai editor, saya ingin melihat daftar artikel berstatus "menunggu review" agar bisa cepat approve/tolak.
+- Sebagai editor, saya ingin menandai artikel sebagai "Breaking News" agar tampil di posisi utama homepage.
+
+### 3.3 Pembaca
+- Sebagai pembaca, saya ingin homepage memuat cepat (<3 detik) di koneksi mobile agar tidak kabur ke situs lain.
+- Sebagai pembaca, saya ingin mencari berita berdasarkan kata kunci atau kategori.
+- Sebagai pembaca, saya ingin membagikan artikel ke media sosial dengan mudah.
+
+### 3.4 Super Admin
+- Sebagai admin, saya ingin mengatur siapa saja yang punya akses publish agar konten terkontrol.
+- Sebagai admin, saya ingin melihat statistik artikel (views) untuk evaluasi performa konten.
+
+---
+
+## 4. Kebutuhan Fungsional (Functional Requirements)
+
+### 4.1 Modul CMS / Redaksi (Strapi)
+| ID | Kebutuhan | Prioritas |
+|---|---|---|
+| F-01 | Role-based access: Super Admin, Editor, Penulis, Kontributor Media | Must Have |
+| F-02 | Content-type Article: judul, slug otomatis, isi (rich text), gambar cover, kategori, tag, penulis, status (draft/review/published), tanggal publish | Must Have |
+| F-03 | Alur approval: Draft → Review → Published | Must Have |
+| F-04 | Manajemen kategori & tag (CRUD) | Must Have |
+| F-05 | Upload gambar/video langsung tersimpan ke Cloudflare R2 | Must Have |
+| F-06 | Fitur "Breaking News" / artikel pin di homepage | Should Have |
+| F-07 | Riwayat revisi artikel (versioning) | Could Have |
+| F-08 | Multi-editor dapat mengedit artikel berbeda secara bersamaan | Should Have |
+
+### 4.2 Modul Frontend Publik (Next.js)
+| ID | Kebutuhan | Prioritas |
+|---|---|---|
+| F-09 | Homepage dengan headline utama, breaking news ticker, kategori berita | Must Have |
+| F-10 | Halaman detail artikel dengan gambar, isi, related articles, share button | Must Have |
+| F-11 | Halaman kategori (listing berita per kategori) dengan pagination | Must Have |
+| F-12 | Fitur pencarian berita | Must Have |
+| F-13 | Desain responsif (mobile-first, karena mayoritas trafik media adalah mobile) | Must Have |
+| F-14 | Sitemap.xml otomatis update | Must Have |
+| F-15 | Schema markup `NewsArticle` (JSON-LD) di tiap artikel | Must Have |
+| F-16 | Integrasi slot iklan Google AdSense (header, in-article, sidebar) | Must Have |
+| F-17 | Halaman statis: About, Contact, Privacy Policy, Redaksi/Editorial Team | Must Have |
+| F-18 | Open Graph tag otomatis (agar tampil bagus saat dibagikan ke medsos) | Should Have |
+| F-19 | Dark mode | Could Have |
+
+### 4.3 Modul Infrastruktur *(direvisi)*
+| ID | Kebutuhan | Prioritas |
+|---|---|---|
+| F-20 | Database **PostgreSQL bawaan cPanel** ("PostgreSQL Databases"), koneksi lokal (`localhost`) ke Strapi karena Strapi berjalan di server cPanel yang sama | Must Have |
+| F-21 | Storage media di Cloudflare R2, terhubung via plugin upload provider Strapi (S3-compatible) — independen dari pilihan hosting | Must Have |
+| F-22 | CDN & DNS via Cloudflare, proxy untuk `news.jobenapp.cloud` dan `cms.news.jobenapp.cloud` | Must Have |
+| F-23 | Caching / ISR di Next.js agar artikel ter-update berkala tanpa rebuild manual; proses Node.js dijaga tetap aktif di cPanel (Passenger) agar revalidation ISR konsisten (lihat F-24 & mitigasi idle di Bagian 9) | Must Have |
+| F-24 | Backup otomatis database (cPanel Backup Wizard/JetBackup) + cron job `pg_dump` terjadwal sebagai lapisan kedua | Should Have |
+| F-25 | **Kesiapan migrasi ke cloud/Google Cloud**: Dockerfile, dokumentasi environment variable terpusat, dan panduan migrasi database disiapkan sejak awal tanpa mengubah cara kerja aplikasi di cPanel saat ini | Should Have |
+
+---
+
+## 5. Kebutuhan Non-Fungsional
+
+| Kategori | Target |
+|---|---|
+| **Performa** | Homepage load < 3 detik di 4G; Core Web Vitals lolos (LCP < 2.5s, CLS < 0.1) |
+| **Skalabilitas** | Fase awal (cPanel shared hosting): kapasitas dibatasi resource quota hosting, dimitigasi dengan caching agresif via Cloudflare + ISR. Fase lanjutan: pondasi migrasi ke Google Cloud (Cloud Run/Compute Engine dengan autoscaling) sudah disiapkan (lihat Bagian 6.2 & 10.7) untuk menangani lonjakan traffic besar tanpa rombak arsitektur |
+| **SEO** | 100% artikel ter-index Google dalam < 24 jam sejak publish |
+| **Keamanan** | Role-based access control, HTTPS wajib (AutoSSL cPanel/Cloudflare), rate limiting API Strapi |
+| **Ketersediaan (Uptime)** | Target 99.5% |
+| **Kepatuhan AdSense** | Konten orisinal, tanpa konten terlarang (kekerasan eksplisit, dewasa, dsb), UX bersih dari iklan mengganggu |
+
+---
+
+## 6. Arsitektur Teknis
+
+### 6.1 Arsitektur Saat Ini — cPanel / Shared Hosting
+
+```
+Cloudflare (DNS + CDN + SSL Proxy)
+        │
+        ├── news.jobenapp.cloud ───────► cPanel Node.js App #1: Next.js (SSR/ISR)
+        │
+        └── cms.news.jobenapp.cloud ───► cPanel Node.js App #2: Strapi (CMS/API)
+                                                  │
+                                                  ├──► PostgreSQL bawaan cPanel
+                                                  │     (koneksi localhost, tanpa SSL)
+                                                  │
+                                                  └──► Cloudflare R2 (media gambar/video,
+                                                        S3-compatible)
+```
+
+**Stack:**
+- Hosting: **cPanel Shared Hosting**, fitur **"Setup Node.js App" (Passenger)** untuk menjalankan Node.js tanpa akses root
+- CMS: Strapi (role-based, headless) — dijalankan sebagai Node.js App di subdomain `cms.news.jobenapp.cloud`
+- Frontend: Next.js (App Router, ISR) — dijalankan sebagai Node.js App di domain utama `news.jobenapp.cloud`
+- Database: **PostgreSQL bawaan cPanel** (fitur "PostgreSQL Databases"), koneksi `localhost` karena satu server dengan Strapi
+- Media Storage: Cloudflare R2 (tidak berubah, tidak terpengaruh pilihan hosting)
+- CDN/DNS: Cloudflare
+- Domain: `news.jobenapp.cloud` (frontend) & `cms.news.jobenapp.cloud` (CMS/API)
+- Monetisasi: Google AdSense
+
+### 6.2 Jalur Migrasi ke Cloud Server / Google Cloud (Fondasi)
+
+Disiapkan sejak awal agar bisa dieksekusi kapan saja tanpa rombak arsitektur:
+
+```
+cPanel Node.js App (Strapi + Next.js)
+        │  dikemas ulang via Dockerfile yang sudah disiapkan
+        ▼
+Google Cloud
+        ├── Cloud Run / Compute Engine ── menjalankan container Strapi & Next.js
+        ├── Cloud SQL for PostgreSQL ──── hasil migrasi via pg_dump/pg_restore
+        └── Cloudflare R2 tetap dipakai (S3-compatible, tidak perlu migrasi storage)
+
+DNS & CDN tetap Cloudflare — saat migrasi cukup ubah A/CNAME record dari IP
+shared hosting ke endpoint Cloud Run/Compute Engine (gunakan TTL rendah
+sebelum migrasi untuk meminimalkan downtime).
+```
+
+Prinsip desain agar migrasi ini mulus:
+- Semua kredensial & konfigurasi lewat **environment variable** (tidak ada hardcode path/host khusus cPanel di kode aplikasi)
+- Media selalu di Cloudflare R2 (S3-compatible) — tidak pernah disimpan di local disk server, sehingga tidak ada beban migrasi storage
+- Dockerfile untuk Strapi & Next.js disiapkan sejak Fase 1 (lihat prompt 10.7), meskipun tidak dijalankan di cPanel
+
+---
+
+## 7. Metrik Keberhasilan (Success Metrics)
+
+| Metrik | Target Fase 1 (3 bulan pertama) |
+|---|---|
+| Jumlah artikel published | 150+ artikel |
+| Waktu load homepage | < 3 detik |
+| Approval Google AdSense | Diterima |
+| Index rate di Google Search Console | > 90% artikel ter-index |
+| Bounce rate | < 60% |
+| Uptime | > 99% |
+
+---
+
+## 8. Roadmap & Prioritas
+
+### 🟢 Fase 0 — Persiapan (Minggu 1)
+1. Setup akun & tools: domain `news.jobenapp.cloud` (sudah ada), akun hosting cPanel, buat subdomain `cms.news.jobenapp.cloud`, aktifkan Cloudflare (DNS + CDN), siapkan GitHub repo
+2. Tentukan struktur kategori berita & editorial guideline (SOP redaksi)
+3. Rekrut/briefing tim redaksi (role: siapa jadi editor, siapa penulis)
+
+### 🟡 Fase 1 — Fondasi Teknis (Minggu 2-4)
+4. Buat database **PostgreSQL via cPanel** (menu "PostgreSQL Databases"): buat database, buat user, assign privilege ALL — catat nama database & user (format umum: `cpaneluser_namadb`)
+5. Install & konfigurasi Strapi (development di Replit/local dulu boleh, deployment ke cPanel dilakukan di Fase 4)
+6. Buat content-type: Article, Category, Tag, Author, Page
+7. Setup role & permission (Super Admin, Editor, Penulis, Kontributor)
+8. Setup Cloudflare R2 + hubungkan plugin upload provider ke Strapi
+9. Testing alur upload gambar/video dari Strapi ke R2
+
+### 🟤 Fase Paralel — Fondasi Migrasi Cloud (opsional, berjalan bersamaan, tidak menunda go-live)
+9a. Siapkan Dockerfile untuk Strapi & Next.js (disimpan di repo, tidak dijalankan di cPanel)
+9b. Dokumentasikan seluruh environment variable dalam `.env.example` sebagai sumber tunggal
+9c. Susun `MIGRATION.md`: langkah pg_dump/pg_restore ke Cloud SQL dan deploy container ke Cloud Run/Compute Engine
+
+### 🟠 Fase 2 — Frontend Dasar (Minggu 4-6)
+10. Setup project Next.js, hubungkan API ke Strapi
+11. Bangun homepage (headline, breaking news, kategori)
+12. Bangun halaman detail artikel
+13. Bangun halaman kategori & search
+14. Implementasi desain responsif (mobile-first)
+
+### 🔵 Fase 3 — SEO & Kepatuhan AdSense (Minggu 6-7)
+15. Implementasi sitemap.xml otomatis
+16. Tambahkan schema markup NewsArticle (JSON-LD)
+17. Tambahkan Open Graph meta tag
+18. Buat halaman wajib: About, Contact, Privacy Policy, Redaksi
+19. Setup Google Search Console + submit sitemap (`https://news.jobenapp.cloud/sitemap.xml`)
+
+### 🟣 Fase 4 — Deployment & Konten (Minggu 7-9)
+20. Buat **2 Node.js App terpisah** di cPanel via "Setup Node.js App":
+    - App Strapi → application root project backend, application URL `cms.news.jobenapp.cloud`
+    - App Next.js → application root project frontend, application URL `news.jobenapp.cloud`
+21. Jalankan `npm install` & build production (`strapi build` / `next build`) lewat interface cPanel atau Terminal SSH, lalu restart masing-masing app
+22. Arahkan DNS via Cloudflare (A record ke IP shared hosting untuk kedua host, proxy aktif) dan aktifkan SSL (AutoSSL cPanel atau Cloudflare Universal SSL)
+23. Redaksi mulai isi konten (target 20-30 artikel awal sebelum daftar AdSense)
+24. QA menyeluruh: cek kecepatan, mobile, broken link, serta pastikan Node.js App tidak idle/sleep (lihat mitigasi di Bagian 9)
+
+### ⚪ Fase 5 — Monetisasi & Go-Live (Minggu 9-10)
+25. Daftar Google AdSense
+26. Pasang slot iklan (header, in-article, sidebar) setelah approve
+27. Soft launch — pantau traffic, uptime, error log, dan **resource usage cPanel** (CPU/RAM/proses)
+28. Public launch / promosi
+
+### Roadmap Lanjutan (Fase 2 Produk — setelah stabil)
+- Sistem komentar pembaca
+- Push notification (web push)
+- Newsletter/email digest
+- Video streaming terintegrasi (Cloudflare Stream)
+- Aplikasi mobile (native/PWA)
+- Dashboard analitik internal untuk redaksi (artikel terpopuler, dsb)
+- **Migrasi ke Google Cloud** (eksekusi jalur migrasi di Bagian 6.2 & prompt 10.7) apabila traffic sudah melampaui kapasitas shared hosting
+
+---
+
+## 9. Risiko & Mitigasi
+
+| Risiko | Dampak | Mitigasi |
+|---|---|---|
+| Traffic melonjak tiba-tiba (berita viral) menyebabkan server lambat/down | Tinggi | Gunakan CDN Cloudflare, ISR di Next.js untuk kurangi beban server asal; jika kapasitas shared hosting cPanel terlampaui, eksekusi migrasi ke Google Cloud (pondasi sudah disiapkan di Bagian 6.2 & 10.7) |
+| **Keterbatasan resource shared hosting cPanel** (kuota CPU/RAM/jumlah proses per akun) menyebabkan aplikasi lambat atau di-suspend hosting provider | Tinggi | Pantau pemakaian resource secara berkala di cPanel; upgrade paket hosting, atau jalankan migrasi ke Google Cloud sesuai fondasi yang sudah disiapkan |
+| **Proses Node.js (Passenger) idle/berhenti** saat tidak ada trafik, menyebabkan cold start atau ISR tertunda | Sedang | Setup cron job (via cPanel "Cron Jobs") yang melakukan ping berkala (mis. tiap 10 menit) ke endpoint frontend & API agar proses tetap aktif |
+| Konten dianggap duplikat/plagiat saat review AdSense | Tinggi | SOP redaksi wajib artikel orisinal, tidak copy-paste dari media lain |
+| Tim redaksi belum familiar dengan Strapi | Sedang | Buat panduan/SOP internal + sesi training singkat |
+| Video besar membebani storage R2 | Sedang | Kompres video sebelum upload, evaluasi Cloudflare Stream jika volume naik |
+| Approval AdSense ditolak karena halaman legal belum lengkap | Sedang | Pastikan Privacy Policy, About, Contact sudah live sebelum daftar |
+
+---
+
+## 10. Prompt untuk Replit AI (Per Tahap Pengembangan)
+
+Gunakan prompt berikut secara berurutan sesuai roadmap di Bagian 8. Jalankan satu prompt per sesi/project Replit agar AI tidak kebingungan mengerjakan banyak hal sekaligus. Sesuaikan nama project dan kredensial sebelum dipakai — domain dan struktur database di bawah sudah disesuaikan dengan lingkungan cPanel + `news.jobenapp.cloud`.
+
+### 10.1 Prompt — Setup Strapi CMS (Fase 1)
+
+```
+Saya ingin membangun backend CMS untuk portal berita menggunakan Strapi (headless CMS).
+Backend ini nantinya akan dijalankan di cPanel shared hosting via fitur
+"Setup Node.js App" (Passenger), pada subdomain cms.news.jobenapp.cloud.
+
+Buatkan project Strapi baru dengan konfigurasi berikut:
+
+1. Database: PostgreSQL bawaan cPanel ("PostgreSQL Databases"), koneksi LOKAL
+   (karena Strapi dan database berada di server cPanel yang sama). Gunakan
+   environment variable berikut yang akan saya isi manual di panel cPanel:
+   DATABASE_CLIENT=postgres, DATABASE_HOST=localhost, DATABASE_PORT=5432,
+   DATABASE_NAME, DATABASE_USERNAME, DATABASE_PASSWORD (format nama database
+   dan user cPanel biasanya berprefix username cPanel, contoh:
+   cpaneluser_newsdb / cpaneluser_newsuser), DATABASE_SSL=false (koneksi
+   localhost tidak memerlukan SSL).
+
+2. Buatkan Content-Type berikut beserta field-nya:
+
+   a. Article
+      - title (Text, required)
+      - slug (UID, based on title)
+      - content (Rich Text)
+      - excerpt (Text, short summary untuk meta description)
+      - cover_image (Media, single, gambar)
+      - video_url (Text, opsional untuk embed video)
+      - category (Relation, many-to-one ke Category)
+      - tags (Relation, many-to-many ke Tag)
+      - author (Relation, many-to-one ke Author)
+      - status (Enumeration: draft, review, published)
+      - is_breaking_news (Boolean, default false)
+      - views_count (Number, default 0)
+      - published_at (Date)
+
+   b. Category
+      - name (Text, required)
+      - slug (UID)
+      - description (Text)
+
+   c. Tag
+      - name (Text, required)
+      - slug (UID)
+
+   d. Author
+      - name (Text, required)
+      - photo (Media, single)
+      - bio (Text)
+      - role (Enumeration: penulis, editor, admin)
+
+   e. Page (untuk halaman statis: About, Privacy Policy, Contact, Redaksi)
+      - title (Text, required)
+      - slug (UID)
+      - content (Rich Text)
+
+3. Setup Role & Permission (di menu Users & Permissions Plugin):
+   - Super Admin: akses penuh ke semua content-type
+   - Editor: bisa create, update, publish/unpublish Article; tidak bisa hapus user
+   - Penulis: hanya bisa create dan update Article miliknya sendiri, TIDAK bisa mengubah
+     status menjadi "published" (hanya bisa set ke draft/review)
+   - Kontributor Media: hanya akses upload media, tidak bisa edit artikel
+
+4. Aktifkan REST API dan GraphQL API untuk semua content-type di atas agar bisa
+   diakses dari frontend Next.js di domain news.jobenapp.cloud.
+
+5. Konfigurasi CORS di config/middlewares.js agar API bisa diakses dari
+   https://news.jobenapp.cloud (frontend production) dan http://localhost:3000
+   (development).
+
+6. Karena akan dijalankan di cPanel Node.js Selector (Passenger), buatkan file
+   startup terpisah (mis. server.js) di root project yang menjalankan Strapi
+   dan memastikan Strapi listen di PORT dari process.env.PORT (bukan port
+   default 1337 yang hardcode, karena cPanel akan menetapkan port sendiri
+   secara otomatis). Jelaskan file mana yang harus saya set sebagai
+   "Application startup file" di panel cPanel.
+
+Setelah selesai, jelaskan juga cara saya generate API Token untuk akses read-only
+dari frontend Next.js.
+```
+
+### 10.2 Prompt — Integrasi Cloudflare R2 sebagai Storage Media (Fase 1)
+
+```
+Project Strapi saya sudah berjalan. Sekarang saya ingin mengganti default upload
+provider (local storage) menjadi Cloudflare R2, karena saya akan deploy ini ke
+production (cPanel shared hosting) dan tidak ingin media tersimpan di local disk
+server — selain lebih hemat kuota disk hosting, ini juga membuat media tidak
+perlu ikut dimigrasi jika suatu saat pindah ke server/cloud lain.
+
+Tolong:
+1. Install provider upload yang kompatibel dengan Cloudflare R2 (R2 mendukung
+   S3-compatible API, jadi gunakan provider AWS S3 seperti
+   @strapi/provider-upload-aws-s3, dikonfigurasi untuk endpoint R2)
+2. Buatkan file konfigurasi config/plugins.js dengan environment variable berikut
+   yang akan saya isi manual di panel cPanel: R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY,
+   R2_ENDPOINT, R2_BUCKET_NAME, R2_PUBLIC_URL
+3. Pastikan konfigurasi mendukung upload gambar dan video dengan ukuran file
+   hingga 100MB
+4. Tambahkan validasi tipe file yang diizinkan: jpg, jpeg, png, webp, mp4, mov
+5. Setelah dikonfigurasi, jelaskan cara testing upload dari admin panel Strapi
+   (https://cms.news.jobenapp.cloud/admin) untuk memastikan file benar-benar
+   tersimpan di R2, bukan local disk.
+```
+
+### 10.3 Prompt — Frontend Next.js: Setup & Homepage (Fase 2)
+
+```
+Saya ingin membangun frontend portal berita menggunakan Next.js (App Router)
+yang mengambil data dari Strapi CMS via REST API. Frontend ini nantinya
+di-deploy di domain utama news.jobenapp.cloud, mengambil data dari
+Strapi yang berjalan di subdomain cms.news.jobenapp.cloud.
+
+Buatkan project Next.js dengan struktur berikut:
+
+1. Setup dasar:
+   - Next.js versi terbaru dengan App Router
+   - Tailwind CSS untuk styling
+   - Environment variable NEXT_PUBLIC_STRAPI_API_URL=https://cms.news.jobenapp.cloud
+     dan STRAPI_API_TOKEN
+   - Buatkan file lib/strapi.js berisi fungsi fetch ke Strapi API (untuk
+     mengambil articles, categories, tags) dengan penanganan error yang baik
+
+2. Halaman Homepage (app/page.js):
+   - Section headline utama (1 artikel terbesar, ambil dari artikel dengan
+     is_breaking_news = true, atau artikel terbaru jika tidak ada breaking news)
+   - Ticker/banner breaking news di bagian atas jika ada artikel is_breaking_news
+   - Grid artikel terbaru dikelompokkan per kategori (misal 4 artikel per kategori)
+   - Setiap card artikel menampilkan: gambar thumbnail, judul, kategori, tanggal
+     publish, excerpt singkat
+   - Desain mobile-first, responsif penuh (breakpoint mobile, tablet, desktop)
+   - Gunakan Next.js Image component untuk optimasi gambar dari Cloudflare R2
+
+3. Gunakan ISR (Incremental Static Regeneration) dengan revalidate setiap
+   60 detik agar homepage tetap fresh tanpa perlu rebuild manual tiap ada
+   artikel baru.
+
+4. Buatkan juga komponen reusable: Header (dengan navigasi kategori),
+   Footer (dengan link ke About, Privacy Policy, Contact, Redaksi), dan
+   ArticleCard.
+
+Style/tone desain: bersih, modern, mirip portal berita seperti detik.com/CNN,
+dengan warna dominan yang tegas untuk kategori breaking news (merah) dan
+warna netral untuk konten biasa.
+```
+
+### 10.4 Prompt — Halaman Detail Artikel & Kategori (Fase 2)
+
+```
+Lanjutan dari project Next.js portal berita saya (domain production:
+news.jobenapp.cloud). Sekarang buatkan:
+
+1. Halaman detail artikel (app/artikel/[slug]/page.js):
+   - Fetch artikel dari Strapi berdasarkan slug
+   - Tampilkan: judul, gambar cover, nama penulis + foto, tanggal publish,
+     kategori, isi artikel (render dari Rich Text Strapi), tag terkait
+   - Tambahkan tombol share ke WhatsApp, Facebook, Twitter/X
+   - Tambahkan section "Artikel Terkait" (related articles) berdasarkan
+     kategori yang sama, tampilkan 4 artikel
+   - Tambahkan generateMetadata() untuk SEO: title, description (dari excerpt),
+     Open Graph tags (og:title, og:image, og:description) dengan base URL
+     https://news.jobenapp.cloud, dan Twitter Card
+   - Tambahkan JSON-LD schema markup tipe "NewsArticle" (termasuk headline,
+     image, datePublished, dateModified, author, publisher) untuk keperluan
+     Google News/Discover
+   - Gunakan generateStaticParams + ISR (revalidate 60 detik)
+
+2. Halaman kategori (app/kategori/[slug]/page.js):
+   - Tampilkan daftar artikel dalam kategori tersebut, dengan pagination
+     (10 artikel per halaman)
+   - Tampilkan nama kategori sebagai judul halaman
+
+3. Halaman pencarian (app/cari/page.js):
+   - Search box yang query ke Strapi API berdasarkan title/content
+   - Tampilkan hasil pencarian dalam bentuk list card artikel
+
+4. Pastikan seluruh halaman ini mobile-responsive dan loading cepat.
+```
+
+### 10.5 Prompt — SEO, Sitemap, dan Halaman Legal (Fase 3)
+
+```
+Lanjutan project Next.js portal berita (domain production: news.jobenapp.cloud).
+Sekarang saya butuh kelengkapan SEO dan halaman legal untuk keperluan
+pendaftaran Google AdSense:
+
+1. Buatkan app/sitemap.js yang generate sitemap.xml secara dinamis (base URL
+   https://news.jobenapp.cloud), mengambil seluruh artikel published dari
+   Strapi API beserta lastmod date, urutkan dari terbaru.
+
+2. Buatkan app/robots.js yang mengizinkan crawler mengakses seluruh halaman
+   publik dan mereferensikan https://news.jobenapp.cloud/sitemap.xml.
+
+3. Buatkan halaman statis berikut, datanya diambil dari content-type "Page"
+   di Strapi (buat komponen generic app/[slug]/page.js yang fetch page
+   berdasarkan slug):
+   - /about (Tentang Kami)
+   - /privacy-policy (Kebijakan Privasi)
+   - /contact (Kontak)
+   - /redaksi (Susunan Redaksi, tampilkan daftar Author dengan role editor/admin)
+
+4. Tambahkan metadata default di app/layout.js (title template, description
+   default, favicon, Open Graph default dengan base URL
+   https://news.jobenapp.cloud) agar seluruh halaman punya SEO dasar yang
+   baik walau tidak di-override.
+
+5. Siapkan slot placeholder untuk Google AdSense di 3 posisi: setelah header
+   (leaderboard), di tengah isi artikel (in-article), dan di sidebar halaman
+   kategori. Gunakan komponen terpisah bernama AdSlot.js yang nanti tinggal
+   saya isi kode AdSense resminya setelah akun disetujui.
+```
+
+### 10.6 Prompt — Deployment ke cPanel/Shared Hosting (Fase 4)
+
+```
+Saya akan deploy project Strapi dan Next.js ini ke shared hosting cPanel
+(bukan VPS), menggunakan fitur "Setup Node.js App" (Passenger) yang tersedia
+di cPanel. Saya TIDAK punya akses root/SSH penuh seperti di VPS.
+
+Domain yang dipakai:
+- news.jobenapp.cloud    → Next.js (frontend)
+- cms.news.jobenapp.cloud → Strapi (CMS/API)
+
+Tolong bantu saya siapkan:
+
+1. Untuk Strapi:
+   - File startup (server.js) yang kompatibel dengan cPanel Node.js
+     Selector/Passenger, memastikan Strapi listen di process.env.PORT (port
+     di-generate otomatis oleh cPanel, BUKAN port 1337 yang hardcode)
+   - Checklist environment variable yang harus diisi di menu "Setup Node.js
+     App" > Environment Variables: DATABASE_CLIENT=postgres,
+     DATABASE_HOST=localhost, DATABASE_PORT=5432, DATABASE_NAME,
+     DATABASE_USERNAME, DATABASE_PASSWORD, DATABASE_SSL=false,
+     R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_ENDPOINT, R2_BUCKET_NAME,
+     R2_PUBLIC_URL, APP_KEYS, API_TOKEN_SALT, ADMIN_JWT_SECRET, JWT_SECRET,
+     TRANSFER_TOKEN_SALT
+   - Urutan command yang perlu dijalankan lewat Terminal cPanel/SSH (jika
+     tersedia) setelah app dibuat: npm install, npm run build (build admin
+     panel Strapi), lalu restart app dari panel cPanel
+
+2. Untuk Next.js:
+   - File startup (server.js) custom yang menjalankan Next.js secara
+     programmatic (menggunakan next()), listen di process.env.PORT, agar
+     kompatibel dengan Passenger
+   - Checklist environment variable: NEXT_PUBLIC_STRAPI_API_URL=https://cms.news.jobenapp.cloud,
+     STRAPI_API_TOKEN, NODE_ENV=production
+   - Urutan command build production: npm run build, lalu restart app dari
+     panel cPanel
+
+3. Buatkan dokumentasi langkah-langkah di panel cPanel (bukan command SSH
+   murni, karena tidak semua shared hosting mengizinkan SSH) untuk:
+   - Membuat subdomain cms.news.jobenapp.cloud
+   - Membuat PostgreSQL Database + User di menu "PostgreSQL Databases", lalu
+     assign user ke database dengan privilege ALL
+   - Membuat 2 Node.js App terpisah (satu untuk news.jobenapp.cloud, satu
+     untuk cms.news.jobenapp.cloud) di menu "Setup Node.js App"
+   - Mengaktifkan SSL (AutoSSL) untuk kedua domain/subdomain
+   - Membuat Cron Job sederhana (via menu "Cron Jobs") yang melakukan ping
+     ke https://cms.news.jobenapp.cloud/api dan https://news.jobenapp.cloud
+     setiap 10 menit, untuk mencegah proses Node di-idle oleh Passenger
+
+4. Jelaskan juga keterbatasan yang perlu saya waspadai di shared hosting:
+   batas resource CPU/RAM/jumlah proses per akun cPanel, dan indikator kapan
+   sebaiknya saya mempertimbangkan upgrade/migrasi ke VPS atau Google Cloud.
+```
+
+### 10.7 Prompt — Fondasi Migrasi ke Google Cloud (opsional, disiapkan sejak awal)
+
+```
+Saya ingin menyiapkan pondasi agar project Strapi dan Next.js ini suatu saat
+bisa dipindahkan dari cPanel shared hosting ke Google Cloud, tanpa merombak
+arsitektur. Untuk saat ini, file-file berikut TIDAK akan dijalankan dulu di
+cPanel (cPanel tetap memakai Node.js Selector seperti prompt 10.6), tapi
+disiapkan sebagai pondasi migrasi ke depan.
+
+Tolong buatkan:
+
+1. Dockerfile untuk Strapi (multi-stage build, production-ready, expose port
+   dari environment variable PORT)
+2. Dockerfile untuk Next.js (multi-stage build, mode "standalone" output,
+   expose port dari environment variable PORT)
+3. File .env.example untuk masing-masing project yang mendaftar SEMUA
+   environment variable yang dipakai (database, R2, app keys, API URL),
+   sebagai dokumentasi tunggal supaya gampang dipindah ke lingkungan mana pun
+   (cPanel, Google Cloud, atau lainnya)
+4. Dokumen singkat MIGRATION.md berisi langkah migrasi:
+   - Cara export database dari PostgreSQL cPanel (pg_dump) dan restore ke
+     Cloud SQL for PostgreSQL di Google Cloud (pg_restore)
+   - Cara deploy Dockerfile di atas ke Cloud Run atau Compute Engine
+   - Konfirmasi bahwa Cloudflare R2 tidak perlu dimigrasi karena sudah
+     S3-compatible dan independen dari lokasi hosting
+   - Langkah update DNS di Cloudflare (ubah A/CNAME record dari IP shared
+     hosting ke endpoint Cloud Run/Compute Engine) tanpa downtime signifikan
+     (gunakan TTL rendah sebelum migrasi)
+
+Pastikan kode aplikasi tetap 100% berjalan normal di cPanel Node.js Selector;
+Dockerfile dan dokumen ini hanya pondasi tambahan, bukan pengganti deployment
+cPanel saat ini.
+```
+
+> **Catatan penggunaan:** jalankan prompt 10.1 dan 10.2 terlebih dulu di satu project Replit (backend Strapi). Setelah backend berjalan dan API bisa diakses, baru buka project Replit terpisah untuk frontend dan jalankan prompt 10.3 sampai 10.5 secara berurutan. Prompt 10.6 dipakai saat pindah dari Replit ke cPanel produksi. Prompt 10.7 bisa dijalankan kapan saja secara paralel (opsional) sebagai persiapan migrasi ke Google Cloud, dan tidak menghambat go-live di cPanel.
+
+---
+
+## 11. Catatan Tambahan
+
+- Prioritas "Must Have" pada Bagian 4 adalah syarat minimum agar situs bisa go-live dan layak didaftarkan ke AdSense.
+- Rekomendasi: jangan daftar AdSense sebelum minimal 20-30 artikel orisinal published dan seluruh halaman legal aktif.
+- Development CMS/Strapi bisa dimulai di Replit, namun untuk production akan dijalankan di **cPanel shared hosting** (`news.jobenapp.cloud` & `cms.news.jobenapp.cloud`) via fitur "Setup Node.js App".
+- Karena hosting awal adalah shared hosting, pantau kuota resource (CPU/RAM/proses) secara berkala di cPanel. Jalur migrasi ke cloud server/Google Cloud sudah disiapkan pondasinya (Bagian 6.2 & 10.7) sehingga saat traffic tumbuh, migrasi bisa dilakukan tanpa menulis ulang aplikasi dari nol.
