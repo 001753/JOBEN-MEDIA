@@ -43,6 +43,8 @@ module.exports = [
         'http://localhost:3001',            // Alternatif dev
         'http://localhost:1337',            // Strapi development
         'http://localhost:5000',            // Replit preview port
+        /\.replit\.dev$/,                   // Replit preview domains
+        /\.pike\.replit\.dev$/,             // Replit pike preview domains
       ],
     },
   },

@@ -1,0 +1,70 @@
+Packages terinstall. Jalankan workflow sekarang.
+
+
+4 actions
+esbuild missing — install it explicitly.
+
+
+8 actions
+Error: relasi inversedBy: "author" tidak bisa ada di User plugin tanpa extend. Fix: jadikan relasi unidirectional.
+
+
+6 actions
+Strapi berjalan! ✔ Sekarang fix warnings dari log dan ambil screenshot.
+
+
+4 actions
+Strapi admin panel berjalan dengan baik! Sekarang fix 3 warnings: rename config/app.js → config/admin.js, fix S3 config wrapper, dan add esbuild ke package.json.
+
+
+3 actions
+Fix semua warnings dalam satu batch.
+
+
+7 actions
+Config sudah diupdate. Restart workflow untuk pick up perubahan.
+
+
+4 actions
+Strapi berjalan bersih — semua warning kritis hilang. Hapus config/app.js lama (sudah digantikan config/admin.js) lalu jalankan code review.
+
+
+4 actions
+Fix semua 4 critical issues dari code review sekarang.
+
+
+5 actions
+Restart workflow untuk verifikasi semua fixes.
+
+
+4 actions
+Strapi berjalan bersih. Simpan memory dan selesaikan task.
+
+
+8 actions
+Semua selesai! Berikut ringkasan apa yang dikerjakan:
+
+Yang berhasil dibangun:
+
+File	Status
+src/index.js	R2 URL transformer (private endpoint → public URL)
+src/api/article/	Schema, lifecycles, controller, policy, routes, services
+src/api/category/, tag/, author/, page/	Schema + default controller/routes/services
+config/admin.js	Menggantikan app.js — semua keys di tempat yang benar
+config/plugins.js	S3 options dibungkus dalam s3Options (fixed warning)
+config/middlewares.js	CORS tanpa enabled deprecated
+.env.example	Template aman untuk di-commit ke GitHub
+replit.md	Dokumentasi project
+Env vars & Secrets: semua tersimpan di Replit Secrets.
+
+Issues yang ditemukan & diperbaiki:
+
+@strapi/plugin-i18n tidak ada di v5 — dihapus
+esbuild perlu di-install eksplisit
+Relasi Author→User harus unidirectional (tidak bisa inversedBy ke plugin User)
+Response shape Strapi v5 flat (data.field, bukan data.attributes.field) — difix di controller findOne
+Ownership policy menggunakan documentId (v5) bukan numeric id
+Breaking news enforcement diubah ke atomic updateMany tanpa pre-check (mitigasi race condition)
+Strapi admin panel sudah bisa diakses di preview Replit → /admin. Langkah selanjutnya: buat akun administrator pertama lewat form registrasi yang muncul.
+
+

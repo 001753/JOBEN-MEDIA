@@ -1,4 +1,4 @@
-modules = ["nodejs-18"]
+modules = ["nodejs-20"]
 [agent]
 expertMode = true
 stack = "BEST_EFFORT_FALLBACK"
@@ -15,7 +15,7 @@ HOST = "0.0.0.0"
 NEXTJS_REVALIDATION_URL = "https://news.jobenapp.cloud/api/revalidate"
 NODE_ENV = "development"
 PORT = "5000"
-PUBLIC_URL = "http://localhost:1337"
+PUBLIC_URL = "https://42cafb18-05c5-4535-a4bb-51ae9a7d3f23-00-qz871157o4dj.pike.replit.dev"
 R2_BUCKET_NAME = "joben-news"
 R2_ENDPOINT = "https://6ffcdac7c1cf3d08b80450851f6646a3.r2.cloudflarestorage.com"
 R2_PUBLIC_URL = "https://pub-eb6a0f12e3b748628e7fb3494cb105a4.r2.dev"
@@ -36,13 +36,13 @@ args = "Start application"
 name = "Start application"
 author = "agent"
 
+[workflows.workflow.metadata]
+outputType = "webview"
+
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run develop"
 waitForPort = 5000
-
-[workflows.workflow.metadata]
-outputType = "webview"
 
 [[ports]]
 localPort = 5000
