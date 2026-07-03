@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { getCategories, getBreakingNews } from '@/lib/strapi';
 import Script from 'next/script';
+import BackToTop from '@/components/BackToTop';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -54,6 +55,7 @@ export default async function RootLayout({ children }) {
         <Header categories={categories} breakingNews={breakingNews} />
         <main className="flex-1">{children}</main>
         <Footer categories={categories} />
+        <BackToTop />
         {GA_ID && (
           <>
             <Script
