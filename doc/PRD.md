@@ -1,10 +1,127 @@
 # Product Requirements Document (PRD)
 # Portal Berita Online — JOBEN NEWS
 
-**Versi:** 1.2 (Revisi Teknis)
+**Versi:** 1.3 (Update Progress)
 **Tanggal:** 3 Juli 2026
-**Status:** Draft
+**Status:** In Progress — Fase 1 & 2 selesai secara kode, pending runtime setup
 **Domain:** news.jobenapp.cloud
+
+---
+
+## STATUS IMPLEMENTASI (per 3 Juli 2026)
+
+> Bagian ini mencatat apa yang sudah dan belum dikerjakan berdasarkan kondisi kode terakhir di Replit.
+
+---
+
+### BACKEND — Strapi v5
+
+#### ✅ Sudah Selesai (Kode)
+
+| Item PRD | File | Keterangan |
+|---|---|---|
+| F-02: Content-type Article (semua field) | `src/api/article/content-types/article/schema.json` | title, slug, content, excerpt, cover_image, video_url, category, tags, author, editorial_status, is_breaking_news, breaking_news_priority, publishedAt — semua ada |
+| F-04: Content-type Category, Tag | `src/api/category/`, `src/api/tag/` | Schema + CRUD routes lengkap |
+| F-04: Content-type Author, Page | `src/api/author/`, `src/api/page/` | Schema + CRUD routes lengkap |
+| F-03: State machine editorial_status ↔ publishedAt (Hook A) | `src/api/article/content-types/article/lifecycles.js` | beforeCreate + beforeUpdate: sinkronisasi otomatis |
+| F-06: Satu breaking news aktif sekaligus (Hook B) | `lifecycles.js` (beforeUpdate) | updateMany atomik — reset artikel lain |
+| F-25: Webhook on-demand revalidation ke Next.js (Hook C) | `lifecycles.js` (afterCreate/Update/Delete) | retry 1x setelah 2 detik, graceful fail |
+| F-01: Custom policy self-edit untuk Penulis | `src/api/article/policies/is-own-article.js` | Terpasang di route update + delete (Strapi v5 documentId) |
+| F-05: Cloudflare R2 upload provider | `config/plugins.js` | AWS S3-compatible, forcePathStyle, region auto |
+| F-05: Transformasi URL R2 private → public CDN | `src/index.js` | lifecycle subscribe pada plugin::upload.file |
+| Public API permissions (bootstrap) | `src/index.js` | idempotent — skip jika sudah ada |
+| Database SQLite (dev) / PostgreSQL (prod) | `config/database.js` | Dikontrol via env DATABASE_CLIENT |
+| Server config (host, port, PUBLIC_URL) | `config/server.js` | |
+| JWT + users-permissions config | `config/plugins.js` | expiresIn 7d |
+| .env.example lengkap | `.env.example` | Semua env var terdokumentasi |
+| Dockerfile (fondasi cloud migration) | `Dockerfile` | Siap pakai, tidak dijalankan di cPanel |
+| Panduan migrasi cloud | `MIGRATION.md` | pg_dump/pg_restore + Cloud Run |
+
+#### ❌ Belum Selesai / Pending
+
+| Item | Keterangan | Blocker |
+|---|---|---|
+| Strapi security secrets | APP_KEYS, API_TOKEN_SALT, ADMIN_JWT_SECRET, JWT_SECRET, TRANSFER_TOKEN_SALT belum diset di Replit Secrets | Perlu input user via Replit Secrets tab |
+| R2 credentials | R2_ACCESS_KEY_ID dan R2_SECRET_ACCESS_KEY belum diset | Perlu diisi user dari dashboard Cloudflare R2 |
+| STRAPI_API_TOKEN | Belum digenerate — perlu Strapi berjalan + login admin + buat API Token | Runtime task (bukan kode) |
+| F-01: Setup role Strapi Admin UI | Super Admin, Editor, Penulis, Kontributor — konfigurasi permission di UI | Runtime task setelah Strapi berhasil start |
+| F-07: Article versioning | Out of scope Fase 1 | Roadmap Fase 2 |
+| F-08: Multi-editor lock | Out of scope Fase 1 (Should Have) | Roadmap Fase 2 |
+
+#### ⚠️ Bug Ditemukan — Perlu Fix
+
+| Bug | Detail |
+|---|---|
+| **Mismatch webhook revalidation** | `lifecycles.js` mengirim secret di **body JSON** (`{ secret, slug, categorySlug }`), tapi `frontend/app/api/revalidate/route.js` mengecek secret di **`Authorization: Bearer` header** → setiap webhook akan return 401. Selain itu, `lifecycles.js` tidak mengirim field `model`, sehingga route.js tidak tahu path mana yang harus direvalidasi. Perlu diselaraskan salah satunya. |
+
+---
+
+### FRONTEND — Next.js (App Router)
+
+#### ✅ Sudah Selesai (Kode)
+
+| Item PRD | File | Keterangan |
+|---|---|---|
+| F-09: Homepage — headline, breaking news ticker kondisional, grid kategori | `app/page.js` | Breaking ticker hanya muncul jika ada artikel breaking |
+| F-10: Halaman detail artikel — gambar, isi, related, share | `app/artikel/[slug]/page.js` | JSON-LD NewsArticle, OG tags, BlocksRenderer |
+| F-11: Halaman kategori + pagination | `app/kategori/[slug]/page.js`, `components/Pagination.js` | |
+| F-12: Fitur pencarian keyword | `app/cari/page.js`, `lib/strapi.js` (searchArticles) | LIKE query via Strapi $containsi |
+| F-13: Desain responsif mobile-first | Seluruh komponen (Tailwind CSS) | |
+| F-14: Sitemap.xml otomatis | `app/sitemap.js` | Dinamis dari Strapi |
+| F-15: JSON-LD NewsArticle schema markup | `app/artikel/[slug]/page.js` | |
+| F-16: AdSlot komponen (placeholder) | `components/AdSlot.js` | Placeholder siap; kode AdSense resmi diisi setelah approve |
+| F-17: Halaman statis (About, Privacy, Contact) | `app/[slug]/page.js` | Diambil dari Strapi content-type Page |
+| F-17: Halaman Redaksi | `app/redaksi/page.js` | |
+| F-18: Open Graph + Twitter Card | `app/layout.js`, `app/artikel/[slug]/page.js` | Global default + per-artikel override |
+| F-19: Halaman 404 kustom | `app/not-found.js` | |
+| F-19: Halaman 500 / error kustom | `app/error.js` | |
+| F-20: GA4 integrasi | `app/layout.js` (Script tag), `lib/analytics.js` | gtag.js load via next/script strategy afterInteractive |
+| F-25: ISR dua lapisan | `revalidate = 60` di semua page + `app/api/revalidate/route.js` | |
+| robots.js | `app/robots.js` | |
+| Header, Footer, BreakingNewsTicker | `components/` | |
+| ArticleCard (4 varian), CategorySection | `components/` | |
+| BlocksRenderer (Strapi Blocks) | `components/BlocksRenderer.js` | |
+| lib/strapi.js — semua fetch functions | `lib/strapi.js` | getLatestArticles, getBreakingNews, searchArticles, dll |
+| Security headers | `next.config.js` | X-Content-Type-Options, X-Frame-Options, Referrer-Policy |
+| Image domains Cloudflare R2 | `next.config.js` | remotePatterns untuk pub-*.r2.dev |
+
+#### ❌ Belum Selesai / Partial
+
+| Item | Keterangan |
+|---|---|
+| GA4 events: `share_click`, `breaking_news_click` | `analytics.js` hanya ada trackArticleView dan trackSearch. Event share_click dan breaking_news_click belum terpasang di komponen Header/artikel/ticker (perlu dicek dan tambahkan) |
+| NEXT_PUBLIC_GA_MEASUREMENT_ID | Belum diset di env vars — GA4 tidak aktif sampai diisi |
+| AdSense kode resmi | Placeholder sudah ada, kode resmi dimasukkan setelah AdSense approve (sesuai rencana Fase 5) |
+| @next/third-parties untuk GA4 | PRD menyebut `@next/third-parties`, implementasi menggunakan `next/script` manual — fungsional sama, bisa dipertahankan |
+| F-21: Dark mode | Out of scope Fase 1 (Could Have) |
+
+---
+
+### RINGKASAN FASE
+
+| Fase PRD | Status |
+|---|---|
+| 🟢 Fase 0 — Persiapan | Sebagian (domain ada, Replit setup selesai; hosting cPanel & GitHub push belum) |
+| 🟡 Fase 1 — Fondasi Teknis (Backend) | ✅ **Kode selesai** — pending: secrets diset, Strapi start, role setup manual |
+| 🟤 Fase Paralel — Cloud Foundation | ✅ Selesai (Dockerfile + MIGRATION.md ada) |
+| 🟠 Fase 2 — Frontend Dasar | ✅ **Kode selesai** — semua halaman, komponen, ISR, 404/500 |
+| 🔵 Fase 3 — SEO, Analitik, AdSense | 🔶 **Sebagian** — sitemap/OG/JSON-LD/robots selesai; GA4 perlu Measurement ID + 2 events; AdSlot placeholder siap |
+| 🟣 Fase 4 — Deployment & Konten | ❌ Belum — cPanel deploy, DNS, konten redaksi |
+| ⚪ Fase 5 — Monetisasi & Go-Live | ❌ Belum |
+
+---
+
+### LANGKAH BERIKUTNYA (urutan prioritas)
+
+1. **Set secrets Strapi** di Replit Secrets: `APP_KEYS`, `API_TOKEN_SALT`, `ADMIN_JWT_SECRET`, `JWT_SECRET`, `TRANSFER_TOKEN_SALT`
+2. **Set credentials R2** di Replit Secrets: `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`
+3. **Fix bug webhook mismatch** — selaraskan cara pengiriman secret antara lifecycles.js dan route.js
+4. **Start Strapi** → login admin → setup roles & permissions → generate `STRAPI_API_TOKEN` read-only
+5. **Set** `STRAPI_API_TOKEN` dan `REVALIDATION_SECRET` di Replit Secrets
+6. **Set** `NEXT_PUBLIC_GA_MEASUREMENT_ID` setelah akun GA4 dibuat
+7. **Tambah** GA4 events `share_click` dan `breaking_news_click` di komponen
+8. **Isi konten** awal: Kategori, Author, beberapa artikel → test end-to-end
+9. **Deploy ke cPanel** (Fase 4)
 
 ---
 
