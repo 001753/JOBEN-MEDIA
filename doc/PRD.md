@@ -1,5 +1,5 @@
 # Product Requirements Document (PRD)
-# Portal Berita Online — JOBEN MEDIA
+# Portal Berita Online — JOBEN NEWS
 
 **Versi:** 1.2 (Revisi Teknis)
 **Tanggal:** 3 Juli 2026

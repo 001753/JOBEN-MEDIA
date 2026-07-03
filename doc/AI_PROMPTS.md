@@ -1,4 +1,4 @@
-# AI Implementation Prompts — JOBEN MEDIA Portal Berita
+# AI Implementation Prompts — JOBEN NEWS Portal Berita
 # Panduan Pengembangan Berbasis Replit → GitHub → cPanel
 
 **Versi:** 1.2
@@ -390,7 +390,7 @@ Fetch artikel dari Strapi berdasarkan slug. Tampilkan:
     kecuali artikel yang sedang dibaca. Tampilkan dalam format ArticleCard kecil.
 
 Metadata SEO (via generateMetadata()):
-  - title: `${artikel.title} | JOBEN MEDIA`
+  - title: `${artikel.title} | JOBEN NEWS`
   - description: artikel.excerpt
   - openGraph:
       title, description, images: [cover_image URL], type: 'article',
@@ -403,7 +403,7 @@ JSON-LD schema markup (tambahkan di <head> via script tag):
   Field wajib:
     headline, image, datePublished, dateModified (= updatedAt dari Strapi),
     author: { @type: "Person", name: author.name },
-    publisher: { @type: "Organization", name: "JOBEN MEDIA",
+    publisher: { @type: "Organization", name: "JOBEN NEWS",
                  logo: { @type: "ImageObject", url: "https://news.jobenapp.cloud/logo.png" } },
     url: `https://news.jobenapp.cloud/artikel/${slug}`,
     description: excerpt
@@ -420,7 +420,7 @@ generateStaticParams: ambil 50 artikel terbaru untuk pre-render saat build.
 - Pagination sederhana: tombol "Sebelumnya" / "Berikutnya" dengan query param ?page=N
 - Layout dua kolom: daftar artikel (kiri, lebar), sidebar (kanan, sempit)
 - Sidebar berisi: komponen AdSlot position="sidebar"
-- generateMetadata(): title = `${kategori.name} — Berita Terkini | JOBEN MEDIA`
+- generateMetadata(): title = `${kategori.name} — Berita Terkini | JOBEN NEWS`
 - ISR: export const revalidate = 60
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -436,7 +436,7 @@ generateStaticParams: ambil 50 artikel terbaru untuk pre-render saat build.
 - Pagination jika hasil > 20
 - Halaman ini menggunakan client component untuk search box (agar URL berubah
   saat user submit tanpa page reload penuh), tapi daftar hasil bisa server component
-- generateMetadata(): title = `Hasil pencarian: "${keyword}" | JOBEN MEDIA`
+- generateMetadata(): title = `Hasil pencarian: "${keyword}" | JOBEN NEWS`
 - Halaman pencarian TIDAK menggunakan ISR (data harus selalu fresh)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -527,7 +527,7 @@ berdasarkan slug. Halaman yang harus tersedia:
                        bukan dari content-type Page (fetch dari Author API)
 
 generateStaticParams: buat untuk slug: about, privacy-policy, contact
-generateMetadata(): title = `${page.title} | JOBEN MEDIA`
+generateMetadata(): title = `${page.title} | JOBEN NEWS`
 ISR: revalidate = 3600 (halaman legal jarang berubah)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -535,10 +535,10 @@ ISR: revalidate = 3600 (halaman legal jarang berubah)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Tambahkan metadata default:
-  - title: { default: 'JOBEN MEDIA', template: '%s | JOBEN MEDIA' }
+  - title: { default: 'JOBEN NEWS', template: '%s | JOBEN NEWS' }
   - description: 'Portal berita terkini Indonesia'
   - metadataBase: new URL('https://news.jobenapp.cloud')
-  - openGraph default: type 'website', site_name 'JOBEN MEDIA',
+  - openGraph default: type 'website', site_name 'JOBEN NEWS',
     image default (logo situs)
   - favicon: /favicon.ico
   - Canonical URL otomatis per halaman
@@ -773,8 +773,8 @@ build dilakukan di Replit, hasil di-push ke GitHub, lalu di-pull ke cPanel.
 **Di Replit — inisialisasi repo:**
 ```bash
 git init
-git remote add origin https://github.com/<username>/joben-media-backend.git
-git remote add origin https://github.com/<username>/joben-media-frontend.git
+git remote add origin https://github.com/<username>/joben-news-backend.git
+git remote add origin https://github.com/<username>/joben-news-frontend.git
 # (dua repo terpisah untuk Strapi dan Next.js, atau satu monorepo)
 ```
 
@@ -782,8 +782,8 @@ git remote add origin https://github.com/<username>/joben-media-frontend.git
 ```bash
 # Masuk via Terminal cPanel atau SSH
 cd ~/  # atau ke folder yang ditunjuk cPanel sebagai app root
-git clone https://github.com/<username>/joben-media-backend.git backend
-git clone https://github.com/<username>/joben-media-frontend.git frontend
+git clone https://github.com/<username>/joben-news-backend.git backend
+git clone https://github.com/<username>/joben-news-frontend.git frontend
 ```
 
 ### Alur Update Rutin
