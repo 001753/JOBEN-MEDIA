@@ -1,0 +1,144 @@
+Oke! Monorepo dengan Next.js di folder frontend/. Saya akan bangun keseluruhan frontend sekarang — arsitektur presisi, desain CNN Indonesia-style, modern dan profesional. Ini akan membutuhkan waktu karena banyak file, tapi saya kerjakan semua sekaligus.
+
+
+3 actions
+Mari tulis semua file secara paralel dalam beberapa batch besar.
+
+
+19 actions
+Lanjut batch besar — semua halaman utama sekaligus.
+
+
+15 actions
+Hampir selesai! Sekarang saya perlu membuat jsconfig, update .replit untuk port, install packages, dan setup workflows.
+
+
+4 actions
+Sekarang update .replit untuk mengatur dua port dan workflows, lalu install dependencies frontend.
+
+
+9 actions
+Sekarang install semua dependencies frontend:
+
+
+Show less
+
+Ran cd
+
+Checking package availability
+
+Ran npm show
+
+Updating @strapi/blocks-react-renderer version
+
+Ran npm show
+
+Planning package.json updates
+
+Ran npm show
+
+Updating package dependencies
+
+Edited package.json
+
+Planning next steps for setup
+
+Ran cd
+
+Diagnosing installation failures
+
+Ran cd
+
+Planning workflow startup and validation (7 seconds)
+Dependencies installed! Sekarang start kedua workflow — CMS dulu, lalu frontend.
+
+
+4 actions
+Strapi berjalan di port 3001! Sekarang start frontend Next.js:
+
+
+3 actions
+next not found karena node_modules belum terinstall dengan sempurna. Saya cek dan perbaiki:
+
+
+3 actions
+Instalasi tidak lengkap — hanya 3 package yang terinstall. Saya bersihkan dan install ulang:
+
+
+2 actions
+Masalah husky di @strapi/blocks-react-renderer. Saya install dengan --ignore-scripts:
+
+
+2 actions
+388 packages terinstall. Sekarang start frontend:
+
+
+6 actions
+Frontend berjalan! Saya ambil screenshot untuk melihat hasilnya:
+
+
+2 actions
+Halaman terrender tapi Tailwind CSS belum ter-apply dan ada 1 error. Saya debug:
+
+
+2 actions
+Compilation berhasil (626 modules). Ada hydration error di <head>. Saya fix layout.js dulu, lalu screenshot ulang:
+
+
+4 actions
+Frontend berjalan sempurna! Desain CNN Indonesia-style sudah muncul — header gelap dengan badge merah JOBEN, navigasi putih bersih, dan halaman menampilkan "Belum ada artikel" karena database masih kosong.
+
+Mari update memory dan berikan panduan selanjutnya.
+
+
+3 actions
+Frontend JOBEN NEWS sudah berjalan dengan desain CNN Indonesia-style! 🎉 Berikut ringkasan lengkap:
+
+✅ Yang Sudah Selesai Sekarang
+Monorepo Structure
+joben-news/                     ← satu repo
+├── (root)   → Strapi CMS       → port 3001 (admin panel)
+├── frontend/ → Next.js         → port 5000 (preview utama)
+│   ├── app/
+│   │   ├── page.js             ← Homepage CNN-style
+│   │   ├── artikel/[slug]/     ← Halaman artikel + JSON-LD SEO
+│   │   ├── kategori/[slug]/    ← Halaman kategori + pagination
+│   │   ├── cari/               ← Pencarian real-time
+│   │   ├── redaksi/            ← Susunan redaksi
+│   │   ├── [slug]/             ← Halaman statis (About, Privacy, dll)
+│   │   ├── api/revalidate/     ← Webhook ISR dari Strapi
+│   │   ├── sitemap.js          ← Sitemap dinamis
+│   │   └── robots.js
+│   ├── components/
+│   │   ├── Header.js           ← Dark header + search + mobile menu
+│   │   ├── Footer.js           ← Dark footer + kategori + sosmed
+│   │   ├── BreakingNewsTicker  ← Ticker merah animasi
+│   │   ├── ArticleCard.js      ← 4 varian: Hero, Compact, Grid, Horizontal
+│   │   ├── CategorySection.js  ← Layout featured + side list
+│   │   └── AdSlot.js           ← Slot iklan 728×90, 300×250, mobile
+│   └── lib/
+│       ├── strapi.js           ← Semua fetch functions + formatDate
+│       └── analytics.js        ← GA4 helpers
+└── .agents/memory/             ← Memory persisten antar sesi
+
+Cara Akses di Replit
+Service	Port	Akses
+Frontend (preview)	5000	Preview utama → tampilan berita
+Strapi Admin	3001	Workflow "Start CMS" → /admin
+🔜 Langkah Selanjutnya Sebelum Go Live
+1. Login ke Strapi Admin — gunakan workflow "Start CMS" lalu buka /admin:
+
+Buat role Editor dan Penulis dengan permissions yang tepat
+Generate API Token read-only untuk frontend (Settings → API Tokens)
+Tambah sekret STRAPI_API_TOKEN di Replit Secrets setelah token dibuat
+2. Isi Konten Awal:
+
+Category: Politik, Ekonomi, Olahraga, Teknologi, Hiburan, dll
+Author: profil redaksi
+Page: tentang-kami, kebijakan-privasi, pedoman-siber, kontak
+Artikel perdana → setelah dipublish, homepage langsung hidup!
+3. Untuk Production di cPanel:
+
+Strapi: jalankan dari root dengan node server.js (PORT dari Passenger)
+Frontend: jalankan dari frontend/ dengan node server.js (PORT dari Passenger)
+Ubah env vars production: STRAPI_API_URL=https://cms.news.jobenapp.cloud, NEXTJS_REVALIDATION_URL=https://news.jobenapp.cloud/api/revalidate
