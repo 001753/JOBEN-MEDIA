@@ -5,6 +5,7 @@ import { getArticleBySlug, getRelatedArticles, getPopularArticles, getImageUrl, 
 import { ArticleCardGrid } from '@/components/ArticleCard';
 import { AdLeaderboard, AdRectangle } from '@/components/AdSlot';
 import BlocksRenderer from '@/components/BlocksRenderer';
+import ReadProgressBar from '@/components/ReadProgressBar';
 
 export const revalidate = 60;
 
@@ -72,6 +73,7 @@ export default async function ArticlePage({ params }) {
 
   return (
     <>
+      <ReadProgressBar />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
