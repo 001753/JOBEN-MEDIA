@@ -35,51 +35,55 @@ export default async function CategoryPage({ params, searchParams }) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-      {/* ── Breadcrumb (jika subkategori) ──────────────────────────────── */}
+      {/* ── Breadcrumb ──────────────────────────────────────────────────── */}
       {hasParent && (
-        <nav className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+        <nav className="flex items-center gap-2 text-sm mb-4" style={{ color: 'var(--text-faint)' }}>
           <Link href="/" className="hover:text-brand-700 transition-colors">Beranda</Link>
           <span>/</span>
           <Link href={`/kategori/${category.parent.slug}`} className="hover:text-brand-700 transition-colors">
             {category.parent.name}
           </Link>
           <span>/</span>
-          <span className="text-gray-600 font-medium">{category.name}</span>
+          <span className="font-medium" style={{ color: 'var(--text-muted)' }}>{category.name}</span>
         </nav>
       )}
 
       {/* ── Header kategori ──────────────────────────────────────────────── */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-1.5 h-8 bg-brand-700 rounded-full" />
-          <h1 className="text-3xl md:text-4xl font-black text-dark">{category.name}</h1>
+          <div className="section-accent-bar" />
+          <h1 className="text-3xl md:text-4xl font-black" style={{ color: 'var(--text-primary)' }}>
+            {category.name}
+          </h1>
         </div>
         {category.description && (
-          <p className="text-gray-500 text-base mt-2 ml-5">{category.description}</p>
+          <p className="text-base mt-2 ml-5" style={{ color: 'var(--text-muted)' }}>
+            {category.description}
+          </p>
         )}
-        <p className="text-sm text-gray-400 mt-1 ml-5">{totalArticles} artikel</p>
+        <p className="text-sm mt-1 ml-5" style={{ color: 'var(--text-faint)' }}>
+          {totalArticles} artikel
+        </p>
       </div>
 
-      {/* ── Pill subkategori (jika kategori induk) ───────────────────────── */}
+      {/* ── Pill subkategori ─────────────────────────────────────────────── */}
       {hasChildren && (
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2">
+        <div className="mb-6 flex flex-wrap gap-2">
+          <Link
+            href={`/kategori/${category.slug}`}
+            className="px-3 py-1.5 rounded-full text-sm font-semibold bg-brand-700 text-white transition-colors"
+          >
+            Semua
+          </Link>
+          {category.children.map((sub) => (
             <Link
-              href={`/kategori/${category.slug}`}
-              className="px-3 py-1.5 rounded-full text-sm font-semibold bg-brand-700 text-white"
+              key={sub.slug}
+              href={`/kategori/${sub.slug}`}
+              className="cat-pill"
             >
-              Semua
+              {sub.name}
             </Link>
-            {category.children.map((sub) => (
-              <Link
-                key={sub.slug}
-                href={`/kategori/${sub.slug}`}
-                className="px-3 py-1.5 rounded-full text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-brand-50 hover:text-brand-700 transition-colors"
-              >
-                {sub.name}
-              </Link>
-            ))}
-          </div>
+          ))}
         </div>
       )}
 
@@ -101,13 +105,14 @@ export default async function CategoryPage({ params, searchParams }) {
         </>
       ) : (
         <div className="py-20 text-center">
-          <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-100 rounded-full mb-4">
-            <svg className="w-7 h-7 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-full mb-4"
+            style={{ background: 'var(--bg-sub-nav)', border: '1px solid var(--border)' }}>
+            <svg className="w-7 h-7" style={{ color: 'var(--text-faint)' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                 d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
             </svg>
           </div>
-          <p className="text-gray-400 text-lg">Belum ada artikel di kategori ini.</p>
+          <p className="text-lg" style={{ color: 'var(--text-faint)' }}>Belum ada artikel di kategori ini.</p>
           {hasParent && (
             <Link
               href={`/kategori/${category.parent.slug}`}

@@ -57,7 +57,7 @@ export default async function RootLayout({ children }) {
       <head>
         <script dangerouslySetInnerHTML={{ __html: ANTI_FOUC }} suppressHydrationWarning />
       </head>
-      <body className="min-h-screen flex flex-col" style={{ background: '#020817' }}>
+      <body className="min-h-screen flex flex-col">
         {/* Fixed animated layers — below all content */}
         <AnimatedBackground />
         <TechGrid />
