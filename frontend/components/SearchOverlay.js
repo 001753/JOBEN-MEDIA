@@ -18,7 +18,13 @@ function timeAgo(dateString) {
 
 /* ══════════════════════════════════════════════════════════════════════════ */
 export default function SearchOverlay({ open, onClose }) {
-  const router = useRouter();
+  let router;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- guards against a Next.js edge case where the router context is unavailable during static prerendering of built-in error pages; hooks are still called unconditionally on every render.
+    router = useRouter();
+  } catch {
+    router = null;
+  }
 
   const [query,    setQuery]    = useState('');
   const [results,  setResults]  = useState([]);
@@ -261,7 +267,7 @@ export default function SearchOverlay({ open, onClose }) {
         <div className="px-5 py-3 border-t border-gray-100 bg-gray-50 flex items-center justify-between">
           {searched && results.length === 0 && !loading ? (
             <p className="text-sm text-gray-500">
-              Tidak ada hasil untuk <span className="font-semibold text-gray-700">"{query}"</span>
+              Tidak ada hasil untuk <span className="font-semibold text-gray-700">&quot;{query}&quot;</span>
             </p>
           ) : searched && total > results.length ? (
             <p className="text-xs text-gray-400">

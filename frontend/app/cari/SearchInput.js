@@ -11,9 +11,19 @@ import { trackSearch } from '@/lib/analytics';
  * - Input menjaga posisi kursor
  */
 export default function SearchInput({ defaultValue = '' }) {
-  const router        = useRouter();
-  const pathname      = usePathname();
-  const searchParams  = useSearchParams();
+  let router, pathname, searchParams;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- guards against a Next.js edge case where the router context is unavailable during static prerendering of built-in error pages; hooks are still called unconditionally on every render.
+    router       = useRouter();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    pathname     = usePathname();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    searchParams = useSearchParams();
+  } catch {
+    router       = null;
+    pathname     = '/cari';
+    searchParams = new URLSearchParams();
+  }
   const [isPending, startTransition] = useTransition();
   const [value, setValue] = useState(defaultValue);
   const debounceRef   = useRef(null);

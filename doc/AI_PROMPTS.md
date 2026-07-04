@@ -788,24 +788,39 @@ git clone https://github.com/<username>/joben-news-frontend.git frontend
 
 ### Alur Update Rutin
 
+Build **selalu dilakukan di Replit**, bukan di cPanel — shared hosting punya
+limit resource (CPU/RAM per proses) yang sering membuat `npm run build`
+gagal/timeout di sana. Hasil build (`build/` untuk Strapi, `frontend/.next/`
+untuk Next.js) ikut di-commit & di-push ke GitHub, jadi cPanel tinggal
+`git pull` + restart tanpa build ulang.
+
 ```
-┌─────────────────┐     git push      ┌──────────────┐     git pull     ┌─────────────┐
-│   Replit        │ ─────────────────► │   GitHub     │ ───────────────► │   cPanel    │
-│  (develop)      │                   │   (repo)     │                  │ (production)│
-│                 │                   │              │                  │             │
-│ 1. Edit kode    │                   │              │                  │             │
-│ 2. Test di      │                   │              │                  │             │
-│    Replit       │                   │              │                  │             │
-│ 3. npm run build│                   │              │                  │             │
-│ 4. git add .    │                   │              │                  │             │
-│ 5. git commit   │                   │              │                  │             │
-│ 6. git push     │ ──────────────►   │              │                  │             │
-└─────────────────┘                   └──────────────┘                  └─────────────┘
-                                                                               │
-                                                          7. git pull origin main
-                                                          8. npm install (jika ada package baru)
-                                                          9. npm run build (Strapi/Next.js)
-                                                         10. Restart app di cPanel panel
+┌─────────────────────┐   git push   ┌──────────────┐   git pull   ┌─────────────┐
+│   Replit             │ ────────────► │   GitHub     │ ────────────► │   cPanel    │
+│  (develop)           │             │   (repo)     │               │ (production)│
+│                       │             │              │               │             │
+│ 1. Edit kode          │             │              │               │             │
+│ 2. Test di Replit     │             │              │               │             │
+│ 3. npm run build:all  │  ← build Strapi + Next.js SEKALIGUS di sini │             │
+│ 4. git add -A         │             │              │               │             │
+│ 5. git commit         │             │              │               │             │
+│ 6. git push           │ ──────────►  │              │               │             │
+└─────────────────────┘             └──────────────┘               └─────────────┘
+                                                                          │
+                                                     7. git pull origin main
+                                                     8. npm install --production
+                                                        (hanya jika package.json berubah)
+                                                     9. Restart app di cPanel panel
+                                                        (TIDAK ADA build di cPanel)
+```
+
+### Perintah di Replit Sebelum Push
+
+```bash
+npm run build:all   # build Strapi (root) + Next.js (frontend) sekaligus
+git add -A
+git commit -m "build: update production build"
+git push origin main
 ```
 
 ### Perintah di cPanel Setiap Update
@@ -815,8 +830,7 @@ git clone https://github.com/<username>/joben-news-frontend.git frontend
 cd ~/backend   # atau path app root Strapi di cPanel
 
 git pull origin main
-npm install    # hanya jika package.json berubah
-NODE_ENV=production npm run build   # hanya untuk Strapi jika ada perubahan schema/admin
+npm install --production    # hanya jika package.json berubah
 
 # Kemudian: cPanel > Setup Node.js App > Restart app (klik tombol Restart)
 # atau via terminal:
@@ -827,8 +841,7 @@ NODE_ENV=production npm run build   # hanya untuk Strapi jika ada perubahan sche
 cd ~/frontend   # atau path app root Next.js di cPanel
 
 git pull origin main
-npm install     # hanya jika package.json berubah
-npm run build   # selalu jalankan next build setelah perubahan kode
+npm install --production    # hanya jika package.json berubah
 
 # Restart app via cPanel panel
 ```
@@ -854,11 +867,12 @@ Pastikan `.gitignore` mencakup:
 .env.local
 .env.production
 
-# Build outputs (di-generate ulang di cPanel)
-.next/
-build/
+# CATATAN: build/ (Strapi admin) & frontend/.next/ SENGAJA TIDAK di-ignore.
+# Build dilakukan di Replit (npm run build:all) lalu di-commit & di-push,
+# supaya cPanel tidak perlu build ulang (hindari limit resource shared hosting).
 dist/
 .strapi/
+.cache/
 
 # Dependencies (di-install ulang via npm install)
 node_modules/

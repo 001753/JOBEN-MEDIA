@@ -1,7 +1,15 @@
 {
-  "/kategori/[slug]/page": "app/kategori/[slug]/page.js",
+  "/api/revalidate/route": "app/api/revalidate/route.js",
+  "/robots.txt/route": "app/robots.txt/route.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/api/search/route": "app/api/search/route.js",
+  "/[slug]/page": "app/[slug]/page.js",
   "/cari/page": "app/cari/page.js",
+  "/tag/page": "app/tag/page.js",
+  "/redaksi/page": "app/redaksi/page.js",
+  "/sitemap.xml/route": "app/sitemap.xml/route.js",
+  "/tag/[slug]/page": "app/tag/[slug]/page.js",
   "/page": "app/page.js",
-  "/artikel/[slug]/page": "app/artikel/[slug]/page.js",
-  "/api/search/route": "app/api/search/route.js"
+  "/kategori/[slug]/page": "app/kategori/[slug]/page.js",
+  "/artikel/[slug]/page": "app/artikel/[slug]/page.js"
 }

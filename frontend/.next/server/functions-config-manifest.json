@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "functions": {
+    "/": {},
+    "/cari": {},
+    "/kategori/[slug]": {},
+    "/[slug]": {},
+    "/sitemap.xml": {},
+    "/_not-found": {},
+    "/tag/[slug]": {},
+    "/artikel/[slug]": {},
+    "/redaksi": {},
+    "/tag": {}
+  }
+}

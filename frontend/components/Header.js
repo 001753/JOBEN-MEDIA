@@ -30,8 +30,16 @@ export default function Header({ categories = [], breakingNews = null }) {
   const [query,       setQuery]       = useState('');
 
   const closeTimer = useRef(null);
-  const pathname   = usePathname();
-  const router     = useRouter();
+  let pathname, router;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- guards against a Next.js edge case where the router context is unavailable during static prerendering of built-in error pages; hooks are still called unconditionally on every render.
+    pathname = usePathname();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    router   = useRouter();
+  } catch {
+    pathname = '/';
+    router   = null;
+  }
 
   useEffect(() => { setMobileOpen(false); setSearchOpen(false); setExpandedCat(null); setActiveMenu(null); }, [pathname]);
 

@@ -134,13 +134,18 @@ NEXT_PUBLIC_SITE_URL=https://news.jobenapp.cloud
 NEXT_PUBLIC_GA_MEASUREMENT_ID=<isi jika sudah ada GA4>
 ```
 
-### e. Install & Build (via Terminal cPanel, tombol "Run NPM Install" atau SSH)
+### e. Install saja di cPanel — BUKAN build (build sudah dilakukan di Replit)
 
-**Strapi:**
+Karena shared hosting Anda punya limit resource, **build TIDAK dijalankan di
+cPanel**. Build (Strapi admin panel & Next.js) dilakukan di Replit, hasilnya
+di-commit & di-push ke GitHub, lalu di cPanel tinggal `git pull` + install
+dependency + restart. Lihat §5 untuk alur lengkapnya.
+
+**Strapi (via Terminal cPanel/SSH, sekali di awal & tiap ada perubahan `package.json`):**
 ```bash
 cd ~/<application-root-strapi>
-npm install --production=false
-NODE_ENV=production npm run build
+git pull origin main
+npm install --production
 ```
 Lalu klik **Restart** di panel Setup Node.js App.
 
@@ -154,10 +159,13 @@ di env var Next.js.
 **Next.js:**
 ```bash
 cd ~/frontend
-npm install
-npm run build
+git pull origin main
+npm install --production
 ```
 Lalu klik **Restart** di panel Setup Node.js App.
+
+> Tidak ada `npm run build` di sini — folder `build/` (Strapi) dan
+> `frontend/.next/` sudah ikut ter-pull dari GitHub karena dibangun di Replit.
 
 ### f. Aktifkan SSL
 1. cPanel → **SSL/TLS Status** atau **AutoSSL**

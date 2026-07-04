@@ -1,0 +1,15 @@
+{
+  "/api/revalidate/route": "/api/revalidate",
+  "/robots.txt/route": "/robots.txt",
+  "/_not-found/page": "/_not-found",
+  "/api/search/route": "/api/search",
+  "/[slug]/page": "/[slug]",
+  "/cari/page": "/cari",
+  "/tag/page": "/tag",
+  "/redaksi/page": "/redaksi",
+  "/sitemap.xml/route": "/sitemap.xml",
+  "/tag/[slug]/page": "/tag/[slug]",
+  "/page": "/",
+  "/kategori/[slug]/page": "/kategori/[slug]",
+  "/artikel/[slug]/page": "/artikel/[slug]"
+}

@@ -1,11 +1,16 @@
 # ── Dependencies ─────────────────────────────────────────────
 node_modules/
 
-# ── Build outputs (di-generate ulang di server) ───────────────
-build/
+# ── Build outputs ──────────────────────────────────────────────
+# CATATAN: build/ (Strapi admin) dan frontend/.next/ SENGAJA TIDAK
+# di-ignore — build dilakukan di Replit, hasil build di-commit &
+# di-push ke GitHub, lalu cPanel tinggal `git pull` + restart TANPA
+# perlu build ulang di cPanel (menghindari limit resource shared hosting).
+# Lihat doc/CPANEL_DEPLOY_CHECKLIST.md §5.
 dist/
 .strapi/
 .cache/
+frontend/.next/cache/
 
 # ── Environment variables — JANGAN commit ke GitHub ───────────
 .env
