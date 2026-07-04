@@ -1,5 +1,7 @@
 {
-  "/page": "app/page.js",
   "/kategori/[slug]/page": "app/kategori/[slug]/page.js",
-  "/artikel/[slug]/page": "app/artikel/[slug]/page.js"
+  "/cari/page": "app/cari/page.js",
+  "/page": "app/page.js",
+  "/artikel/[slug]/page": "app/artikel/[slug]/page.js",
+  "/api/search/route": "app/api/search/route.js"
 }
