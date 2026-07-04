@@ -171,6 +171,44 @@ curl -s https://cms.news.jobenapp.cloud/api > /dev/null
 curl -s https://news.jobenapp.cloud > /dev/null
 ```
 
+### h. Cron Job Backup Database (WAJIB)
+
+Script `scripts/backup-database.js` men-dump database PostgreSQL production
+lalu upload otomatis ke bucket R2 (folder `backups/`), dan menghapus backup
+yang lebih tua dari retensi yang ditentukan.
+
+**Env var tambahan (opsional):**
+```
+BACKUP_RETENTION_DAYS=14
+```
+Jika tidak diisi, default retensi adalah 14 hari.
+
+**Setup cron job** (cPanel → Cron Jobs), jalankan setiap hari jam 3 pagi:
+```
+0 3 * * * cd /home/<cpanel_user>/<application-root-strapi> && /home/<cpanel_user>/nodevenv/<application-root-strapi>/20/bin/node scripts/backup-database.js >> /home/<cpanel_user>/logs/backup-db.log 2>&1
+```
+
+Catatan:
+- Path `nodevenv/.../20/bin/node` adalah lokasi Node.js yang disediakan
+  Passenger untuk app Strapi Anda — lihat di halaman "Setup Node.js App",
+  ada tombol "Enter to the virtual environment" yang menampilkan path persis
+  ini untuk app Anda.
+- `pg_dump` harus tersedia di PATH shared hosting Anda (umumnya sudah ada
+  karena PostgreSQL terinstall di server yang sama).
+- Cek isi `logs/backup-db.log` setelah cron pertama jalan untuk memastikan
+  tidak ada error (mis. kredensial salah, `pg_dump` tidak ditemukan).
+- Backup tersimpan di bucket R2 yang sama dengan media upload, tapi di
+  folder terpisah (`backups/`) — tidak akan bercampur dengan gambar artikel.
+
+**Restore manual jika suatu saat dibutuhkan:**
+```bash
+# Download file .dump dari R2 (via dashboard Cloudflare atau rclone/aws-cli)
+pg_restore --host=<DATABASE_HOST> --port=<DATABASE_PORT> \
+  --username=<DATABASE_USERNAME> --dbname=<DATABASE_NAME> \
+  --clean --if-exists --no-owner --no-privileges \
+  joben-news-db_<timestamp>.dump
+```
+
 ---
 
 ## 4. Verifikasi Setelah Deploy
