@@ -3,3 +3,4 @@
 - [Monorepo port layout](monorepo-ports.md) — Strapi on 3001 (console), Next.js on 5000 (webview); must use --ignore-scripts on npm install in frontend/
 - [Strapi v5 admin roles bootstrap](strapi-admin-roles.md) — use strapi.db.query('admin::role') not strapi.service('admin::role'); roleService.findAll() does not exist in v5
 - [Strapi v5 upload & Next.js quirks](strapi-upload-nextjs-quirks.md) — upload via AWS SDK directly (not strapi upload service); populate[content]=true causes 400; BlocksRenderer needs 'use client'
+- [Dark/light mode CSS architecture](dark-light-mode.md) — CSS custom properties in :root (light) + html.dark override; avoid style jsx in App Router; TechGrid uses plain CSS classes not styled-jsx

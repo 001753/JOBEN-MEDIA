@@ -42,18 +42,14 @@ export default async function HomePage() {
               </ScrollReveal>
 
               {/* Sidebar: Terpopuler */}
-              <ScrollReveal className="lg:col-span-1 flex flex-col gap-0" direction="right" delay={80}>
-                <div className="glass-card p-5 h-full border-glow-anim">
-                  <div className="flex items-center gap-2 mb-3">
-                    {/* glowing bar */}
-                    <div className="w-1 h-5 rounded-full"
-                      style={{ background: 'linear-gradient(180deg,#06b6d4,#c10f0f)', boxShadow: '0 0 10px rgba(6,182,212,0.8)' }} />
-                    <h2 className="text-sm font-black uppercase tracking-wider text-slate-200">
+              <ScrollReveal className="lg:col-span-1 flex flex-col" direction="right" delay={80}>
+                <div className="terpopuler-sidebar p-5 h-full">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="section-accent-bar" />
+                    <h2 className="text-sm font-black uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>
                       Terpopuler
                     </h2>
-                    {/* pulsing dot */}
-                    <span className="ml-auto w-2 h-2 rounded-full"
-                      style={{ background: '#06b6d4', boxShadow: '0 0 8px #06b6d4', animation: 'breaking-pulse 2s ease-in-out infinite' }} />
+                    <span className="ml-auto w-2 h-2 rounded-full live-dot" />
                   </div>
                   <div>
                     {(popularArticles.length > 0 ? popularArticles : secondaryHeroes).map((article, i) => (
@@ -108,32 +104,16 @@ export default async function HomePage() {
         {/* ════════════ Jelajahi Kategori ════════════ */}
         {categories.length > 0 && (
           <ScrollReveal direction="up" delay={0}>
-            <section className="my-10 rounded-2xl p-6 md:p-8 relative overflow-hidden"
-              style={{
-                background: 'rgba(2,8,23,0.7)',
-                backdropFilter: 'blur(16px)',
-                border: '1px solid rgba(56,189,248,0.15)',
-                boxShadow: '0 0 60px rgba(6,182,212,0.06) inset',
-              }}>
-              {/* Corner decorations */}
-              <div className="absolute top-0 left-0 w-24 h-24 pointer-events-none"
-                style={{ background: 'radial-gradient(circle at top left, rgba(6,182,212,0.12) 0%, transparent 70%)' }} />
-              <div className="absolute bottom-0 right-0 w-24 h-24 pointer-events-none"
-                style={{ background: 'radial-gradient(circle at bottom right, rgba(139,92,246,0.1) 0%, transparent 70%)' }} />
-
+            <section className="explore-section my-10 p-6 md:p-8">
               <div className="flex items-center gap-3 mb-5">
-                <div className="w-1 h-6 rounded-full"
-                  style={{ background: 'linear-gradient(180deg,#06b6d4,#7c3aed)', boxShadow: '0 0 12px rgba(6,182,212,0.7)' }} />
-                <h2 className="text-white font-black text-lg uppercase tracking-tight">Jelajahi Kategori</h2>
+                <div className="section-accent-bar" />
+                <h2 className="font-black text-lg uppercase tracking-tight" style={{ color: 'var(--text-primary)' }}>
+                  Jelajahi Kategori
+                </h2>
               </div>
-
               <div className="flex flex-wrap gap-3">
-                {categories.map((cat, i) => (
-                  <Link
-                    key={cat.slug}
-                    href={`/kategori/${cat.slug}`}
-                    className="cat-pill"
-                  >
+                {categories.map((cat) => (
+                  <Link key={cat.slug} href={`/kategori/${cat.slug}`} className="cat-pill">
                     {cat.name}
                   </Link>
                 ))}

@@ -12,9 +12,13 @@ export default function AnimatedBackground() {
 
     let animId;
     let particles = [];
-    const PARTICLE_COUNT = 72;
+    const PARTICLE_COUNT = 65;
     const MAX_DIST = 130;
     const SPEED = 0.28;
+
+    function isDark() {
+      return document.documentElement.classList.contains('dark');
+    }
 
     function resize() {
       canvas.width  = window.innerWidth;
@@ -28,7 +32,7 @@ export default function AnimatedBackground() {
         y:  Math.random() * canvas.height,
         vx: (Math.random() - 0.5) * SPEED,
         vy: (Math.random() - 0.5) * SPEED,
-        r:  Math.random() * 1.8 + 0.5,
+        r:  Math.random() * 1.6 + 0.4,
       };
     }
 
@@ -36,9 +40,13 @@ export default function AnimatedBackground() {
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const dark = isDark();
 
-      /* subtle grid */
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.04)';
+      /* ── grid ── */
+      const gridAlpha = dark ? 0.04 : 0.025;
+      ctx.strokeStyle = dark
+        ? `rgba(56,189,248,${gridAlpha})`
+        : `rgba(100,116,139,${gridAlpha})`;
       ctx.lineWidth = 1;
       const gSize = 64;
       for (let x = 0; x < canvas.width; x += gSize) {
@@ -48,16 +56,18 @@ export default function AnimatedBackground() {
         ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
       }
 
-      /* lines between close particles */
+      /* ── lines ── */
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
           const d  = Math.sqrt(dx * dx + dy * dy);
           if (d < MAX_DIST) {
-            const alpha = (1 - d / MAX_DIST) * 0.35;
-            ctx.strokeStyle = `rgba(56, 189, 248, ${alpha})`;
-            ctx.lineWidth = 0.8;
+            const alpha = (1 - d / MAX_DIST) * (dark ? 0.32 : 0.06);
+            ctx.strokeStyle = dark
+              ? `rgba(56,189,248,${alpha})`
+              : `rgba(100,116,139,${alpha})`;
+            ctx.lineWidth = 0.7;
             ctx.beginPath();
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
@@ -66,11 +76,13 @@ export default function AnimatedBackground() {
         }
       }
 
-      /* dots */
+      /* ── dots ── */
       for (const p of particles) {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(125, 211, 252, 0.7)';
+        ctx.fillStyle = dark
+          ? 'rgba(125,211,252,0.65)'
+          : 'rgba(100,116,139,0.15)';
         ctx.fill();
 
         p.x += p.vx;
@@ -99,7 +111,7 @@ export default function AnimatedBackground() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0"
+      className="fixed inset-0 pointer-events-none z-0 tech-canvas"
       aria-hidden="true"
     />
   );

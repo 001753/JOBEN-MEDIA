@@ -30,8 +30,7 @@ export default function CategorySection({ category, articles }) {
 
         {/* Side list */}
         {rest.length > 0 && (
-          <div className="lg:col-span-2 flex flex-col divide-y"
-            style={{ borderColor: 'rgba(56,189,248,0.1)' }}>
+          <div className="lg:col-span-2 flex flex-col divide-y border-theme">
             {rest.slice(0, 4).map((article) => (
               <div key={article.slug ?? article.id} className="py-3 first:pt-0 last:pb-0">
                 <ArticleCardHorizontal article={article} />
