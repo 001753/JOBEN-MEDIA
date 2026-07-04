@@ -1,4 +1,4 @@
-modules = ["nodejs-18", "web"]
+modules = ["web", "nodejs-20"]
 [agent]
 expertMode = true
 stack = "BEST_EFFORT_FALLBACK"
@@ -21,12 +21,6 @@ R2_ENDPOINT = "https://6ffcdac7c1cf3d08b80450851f6646a3.r2.cloudflarestorage.com
 R2_PUBLIC_URL = "https://pub-eb6a0f12e3b748628e7fb3494cb105a4.r2.dev"
 STRAPI_API_URL = "http://localhost:3001"
 NEXT_PUBLIC_SITE_URL = "https://news.jobenapp.cloud"
-REVALIDATION_SECRET = "d12c8a76dcffeb3f1649fe492cc8b2d6a35ddab8ce5f6a99096da4ce032388f216066ab77598a01292d7ff808cc9c7d9"
-APP_KEYS = "r8Bp67+j2d+ccu3I4rKdeBYPcNIcN9x+nrTnxXACQsw=,/b4H48/PCRJUlsrKow4rClOEV2KSdIXjcQhvI6vULzI=,kLWSSrJkdm99gutKud3tlzIXyG+4GLjXUI/prclyCTM=,B4mkFo6KmcQ2Mq5gA/g3qhRmh63LqEBZJqG95PijTRQ="
-API_TOKEN_SALT = "R5qXaNHhZsTxgvMKsVorVe6H0jaX43ZaBf5ExFDlMx4="
-ADMIN_JWT_SECRET = "46+rUXG+sPd2sA8VxxaoqiuOrCK9BbHVkateFarIHZY="
-JWT_SECRET = "Ll1ZAj8c2qGGGX+t4Zq1vHXkejEo8woi9BEthWQu5lA="
-TRANSFER_TOKEN_SALT = "7byH9Kr+XNteXPDmoViErjp6Y8kRsMPsBK4WsG8Vrs0="
 
 [workflows]
 runButton = "Project"
