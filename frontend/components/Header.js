@@ -30,16 +30,15 @@ function chunkArray(arr, size) {
 export default function Header({ categories = [], breakingNews = null }) {
   const [mobileOpen,  setMobileOpen]  = useState(false);
   const [searchOpen,  setSearchOpen]  = useState(false);
-  const [expandedCat, setExpandedCat] = useState(null); // mobile accordion
-  const [activeMenu,  setActiveMenu]  = useState(null); // desktop mega-menu
+  const [expandedCat, setExpandedCat] = useState(null);
+  const [activeMenu,  setActiveMenu]  = useState(null);
   const [scrolled,    setScrolled]    = useState(false);
   const [query,       setQuery]       = useState('');
 
-  const closeTimer  = useRef(null);
-  const pathname    = usePathname();
-  const router      = useRouter();
+  const closeTimer = useRef(null);
+  const pathname   = usePathname();
+  const router     = useRouter();
 
-  /* tutup semua saat navigasi */
   useEffect(() => {
     setMobileOpen(false);
     setSearchOpen(false);
@@ -47,31 +46,20 @@ export default function Header({ categories = [], breakingNews = null }) {
     setActiveMenu(null);
   }, [pathname]);
 
-  /* shadow on scroll */
   useEffect(() => {
     const fn = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', fn, { passive: true });
     return () => window.removeEventListener('scroll', fn);
   }, []);
 
-  /* lock body scroll saat mobile menu buka */
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
-  const openMenu  = useCallback((slug) => {
-    clearTimeout(closeTimer.current);
-    setActiveMenu(slug);
-  }, []);
-
-  const scheduleClose = useCallback(() => {
-    closeTimer.current = setTimeout(() => setActiveMenu(null), 120);
-  }, []);
-
-  const cancelClose = useCallback(() => {
-    clearTimeout(closeTimer.current);
-  }, []);
+  const openMenu      = useCallback((slug) => { clearTimeout(closeTimer.current); setActiveMenu(slug); }, []);
+  const scheduleClose = useCallback(() => { closeTimer.current = setTimeout(() => setActiveMenu(null), 120); }, []);
+  const cancelClose   = useCallback(() => { clearTimeout(closeTimer.current); }, []);
 
   function handleSearch(e) {
     e.preventDefault();
@@ -82,126 +70,123 @@ export default function Header({ categories = [], breakingNews = null }) {
     setQuery('');
   }
 
-  const isActive = (href) =>
-    pathname === href || pathname.startsWith(href + '/');
+  const isActive = (href) => pathname === href || pathname.startsWith(href + '/');
+
+  /* ── Glassmorphism header bg ── */
+  const headerBg = scrolled
+    ? 'bg-[rgba(2,8,23,0.92)] backdrop-blur-xl border-b border-[rgba(56,189,248,0.12)] shadow-[0_4px_32px_rgba(0,0,0,0.5)]'
+    : 'bg-[rgba(2,8,23,0.75)] backdrop-blur-md border-b border-[rgba(56,189,248,0.08)]';
 
   return (
     <>
-      {/* ════════════════════════════════════════════════════════════════════
-          DESKTOP OVERLAY: klik di luar tutup menu
-      ════════════════════════════════════════════════════════════════════ */}
+      {/* Desktop overlay — klik di luar tutup menu */}
       {activeMenu && (
-        <div
-          className="fixed inset-0 z-40"
-          onClick={() => setActiveMenu(null)}
-        />
+        <div className="fixed inset-0 z-40" onClick={() => setActiveMenu(null)} />
       )}
 
-      <header className={`sticky top-0 z-50 transition-shadow duration-300 ${scrolled ? 'shadow-lg' : ''}`}>
+      <header className={`sticky top-0 z-50 transition-all duration-300 ${headerBg}`}>
 
-        {/* ══ Brand bar hitam ══════════════════════════════════════════════ */}
-        <div className="bg-[#0a0a0a] text-white">
-          <div className="max-w-[1400px] mx-auto px-4 lg:px-8 flex items-center justify-between h-[46px]">
+        {/* ══ Brand bar ══════════════════════════════════════════════════════ */}
+        <div className="max-w-[1400px] mx-auto px-4 lg:px-8 flex items-center justify-between h-[46px]">
 
-            {/* Logo */}
-            <Link href="/" className="flex items-center gap-2 group shrink-0">
-              <span className="bg-red-600 text-white font-black text-xl px-3 py-0.5 rounded-sm tracking-tight leading-none group-hover:bg-red-700 transition-colors duration-200 select-none">
-                JOBEN
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2 group shrink-0">
+            <span className="bg-red-600 text-white font-black text-xl px-3 py-0.5 rounded-sm tracking-tight leading-none
+              group-hover:bg-red-700 transition-colors duration-200 select-none"
+              style={{ boxShadow: '0 0 12px rgba(220,38,38,0.4)' }}>
+              JOBEN
+            </span>
+            <span className="news-shimmer font-bold text-sm tracking-[0.2em] uppercase hidden sm:inline">
+              NEWS
+            </span>
+          </Link>
+
+          {/* Breaking news badge */}
+          {breakingNews && (
+            <Link
+              href={`/artikel/${breakingNews.slug}`}
+              className="breaking-badge hidden sm:flex items-center gap-2 ml-4 max-w-xs lg:max-w-sm xl:max-w-md group"
+              title={breakingNews.title}
+            >
+              <span className="shrink-0 flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-sm"
+                style={{ boxShadow: '0 0 8px rgba(220,38,38,0.5)' }}>
+                <span className="breaking-dot text-white">
+                  <span className="breaking-dot-inner" />
+                </span>
+                Breaking
               </span>
-              <span className="news-shimmer font-bold text-sm tracking-[0.2em] uppercase hidden sm:inline">
-                NEWS
+              <span className="text-slate-400 text-xs font-medium truncate group-hover:text-white transition-colors duration-200">
+                {breakingNews.title}
               </span>
             </Link>
+          )}
 
-            {/* Breaking news badge — muncul jika ada artikel breaking */}
-            {breakingNews && (
-              <Link
-                href={`/artikel/${breakingNews.slug}`}
-                className="breaking-badge hidden sm:flex items-center gap-2 ml-4 max-w-xs lg:max-w-sm xl:max-w-md group"
-                title={breakingNews.title}
-              >
-                <span className="shrink-0 flex items-center gap-1.5 bg-red-600 text-white text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-sm">
-                  <span className="breaking-dot text-white">
-                    <span className="breaking-dot-inner" />
-                  </span>
-                  Breaking
-                </span>
-                <span className="text-gray-300 text-xs font-medium truncate group-hover:text-white transition-colors duration-200">
-                  {breakingNews.title}
-                </span>
-              </Link>
-            )}
+          {/* Kanan: tanggal + search + theme */}
+          <div className="flex items-center gap-4 ml-auto">
+            <span className="hidden lg:block text-xs text-slate-500 tabular-nums" suppressHydrationWarning>
+              {new Intl.DateTimeFormat('id-ID', {
+                weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+                timeZone: 'Asia/Jakarta',
+              }).format(new Date())}
+            </span>
 
-            {/* Kanan: tanggal + search desktop */}
-            <div className="flex items-center gap-4 ml-auto">
-              <span className="hidden lg:block text-xs text-gray-400 tabular-nums" suppressHydrationWarning>
-                {new Intl.DateTimeFormat('id-ID', {
-                  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
-                  timeZone: 'Asia/Jakarta',
-                }).format(new Date())}
-              </span>
+            <button
+              onClick={() => setSearchOpen(true)}
+              className="flex items-center gap-1.5 text-slate-400 hover:text-cyan-400 transition-colors duration-200 text-xs group"
+              aria-label="Cari berita"
+            >
+              <svg className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span className="hidden lg:inline">Cari</span>
+            </button>
 
-              {/* Tombol Cari — membuka SearchOverlay */}
-              <button
-                onClick={() => setSearchOpen(true)}
-                className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors duration-200 text-xs group"
-                aria-label="Cari berita"
-              >
-                <svg className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <span className="hidden lg:inline">Cari</span>
-              </button>
+            <ThemeToggle />
 
-              {/* Toggle dark/light mode */}
-              <ThemeToggle />
-
-              {/* Hamburger mobile */}
-              <button
-                onClick={() => setMobileOpen(!mobileOpen)}
-                className="md:hidden p-1 text-gray-300 hover:text-white transition-colors duration-200"
-                aria-label="Menu"
-              >
-                {mobileOpen
-                  ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  : <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                    </svg>
-                }
-              </button>
-            </div>
+            {/* Hamburger mobile */}
+            <button
+              onClick={() => setMobileOpen(!mobileOpen)}
+              className="md:hidden p-1 text-slate-400 hover:text-cyan-400 transition-colors duration-200"
+              aria-label="Menu"
+            >
+              {mobileOpen
+                ? <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                : <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+              }
+            </button>
           </div>
         </div>
 
-        {/* ══ Nav bar putih — DESKTOP ONLY ════════════════════════════════ */}
-        <div className="hidden md:block bg-white border-b border-gray-200">
+        {/* ══ Nav bar — DESKTOP ONLY ══════════════════════════════════════════ */}
+        <div className="hidden md:block border-t"
+          style={{ borderColor: 'rgba(56,189,248,0.08)', background: 'rgba(2,8,23,0.6)' }}>
           <div className="max-w-[1400px] mx-auto px-4 lg:px-8">
             <nav className="flex items-stretch h-10" aria-label="Navigasi utama">
 
               {/* Beranda */}
               <Link
                 href="/"
-                className={`nav-item-link flex items-center px-3 text-[11px] font-bold uppercase tracking-wide border-b-2 whitespace-nowrap ${
+                className={`nav-item-link flex items-center px-3 text-[11px] font-bold uppercase tracking-wide border-b-2 whitespace-nowrap transition-all duration-200 ${
                   pathname === '/'
-                    ? 'border-red-600 text-red-600'
-                    : 'border-transparent text-gray-600 hover:text-red-600 hover:border-red-400'
+                    ? 'border-red-500 text-red-400'
+                    : 'border-transparent text-slate-400 hover:text-cyan-400 hover:border-cyan-500'
                 }`}
               >
                 Beranda
               </Link>
 
-              {/* Divider */}
-              <div className="w-px bg-gray-100 my-2 mx-0.5" />
+              <div className="w-px my-2 mx-0.5" style={{ background: 'rgba(56,189,248,0.12)' }} />
 
               {categories.map((cat, idx) => {
                 const hasChildren = (cat.children?.length ?? 0) > 0;
                 const active      = isActive(`/kategori/${cat.slug}`);
                 const menuOpen    = activeMenu === cat.slug;
                 const cols        = hasChildren ? chunkArray(cat.children, 5) : [];
-                /* item di 3 terakhir → dropdown right-align agar tidak keluar layar */
                 const alignRight  = idx >= categories.length - 3;
 
                 return (
@@ -211,21 +196,20 @@ export default function Header({ categories = [], breakingNews = null }) {
                     onMouseEnter={() => hasChildren ? openMenu(cat.slug) : setActiveMenu(null)}
                     onMouseLeave={scheduleClose}
                   >
-                    {/* Nav item */}
                     <Link
                       href={`/kategori/${cat.slug}`}
-                      className={`nav-item-link flex items-center gap-1 px-3 text-[11px] font-bold uppercase tracking-wide border-b-2 whitespace-nowrap ${
+                      className={`nav-item-link flex items-center gap-1 px-3 text-[11px] font-bold uppercase tracking-wide border-b-2 whitespace-nowrap transition-all duration-200 ${
                         active
-                          ? 'border-red-600 text-red-600'
+                          ? 'border-red-500 text-red-400'
                           : menuOpen
-                          ? 'border-red-400 text-red-600'
-                          : 'border-transparent text-gray-600 hover:text-red-600 hover:border-red-400'
+                          ? 'border-cyan-500 text-cyan-400'
+                          : 'border-transparent text-slate-400 hover:text-cyan-400 hover:border-cyan-500'
                       }`}
                     >
                       {navLabel(cat)}
                       {hasChildren && (
                         <svg
-                          className={`w-2.5 h-2.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${menuOpen ? 'rotate-180' : ''}`}
+                          className={`w-2.5 h-2.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${menuOpen ? 'rotate-180 text-cyan-400' : ''}`}
                           fill="none" stroke="currentColor" viewBox="0 0 24 24"
                         >
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
@@ -233,46 +217,58 @@ export default function Header({ categories = [], breakingNews = null }) {
                       )}
                     </Link>
 
-                    {/* ── Mega-menu / dropdown ──────────────────────────────── */}
+                    {/* ── Mega-menu dropdown ──────────────────────────────── */}
                     {hasChildren && menuOpen && (
                       <div
                         key={`menu-${cat.slug}`}
-                        className={`nav-dropdown-enter absolute top-full z-50 bg-white border border-gray-200 shadow-2xl rounded-b-xl overflow-hidden ${
+                        className={`nav-dropdown-enter absolute top-full z-50 rounded-b-xl overflow-hidden ${
                           alignRight ? 'right-0' : 'left-0'
                         }`}
-                        style={{ minWidth: cols.length > 1 ? `${cols.length * 180}px` : '200px' }}
+                        style={{
+                          minWidth: cols.length > 1 ? `${cols.length * 185}px` : '210px',
+                          background: 'rgba(2,8,23,0.95)',
+                          backdropFilter: 'blur(20px)',
+                          border: '1px solid rgba(56,189,248,0.2)',
+                          boxShadow: '0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(56,189,248,0.05)',
+                        }}
                         onMouseEnter={cancelClose}
                         onMouseLeave={scheduleClose}
                       >
-                        {/* Header merah */}
-                        <div className="bg-red-600 px-4 py-2 flex items-center justify-between">
-                          <span className="text-white font-black text-[10px] uppercase tracking-widest">
+                        {/* Header cyan */}
+                        <div className="px-4 py-2 flex items-center justify-between"
+                          style={{ background: 'rgba(6,182,212,0.12)', borderBottom: '1px solid rgba(56,189,248,0.2)' }}>
+                          <span className="text-cyan-300 font-black text-[10px] uppercase tracking-widest">
                             {cat.name}
                           </span>
                           <Link
                             href={`/kategori/${cat.slug}`}
-                            className="text-red-100 hover:text-white text-[10px] font-semibold transition-colors duration-150"
+                            className="text-slate-400 hover:text-cyan-400 text-[10px] font-semibold transition-colors duration-150"
                           >
                             Lihat semua →
                           </Link>
                         </div>
 
                         {/* Grid subkategori */}
-                        <div className="flex gap-0 divide-x divide-gray-100">
+                        <div className="flex gap-0 divide-x" style={{ borderColor: 'rgba(56,189,248,0.08)' }}>
                           {cols.map((col, ci) => (
                             <div key={ci} className="flex flex-col py-2 min-w-[175px]">
                               {col.map((sub, si) => (
                                 <Link
                                   key={sub.slug}
                                   href={`/kategori/${sub.slug}`}
-                                  className={`nav-sub-item px-4 py-2 text-[12px] flex items-center gap-2 group ${
+                                  className={`nav-sub-item px-4 py-2 text-[12px] flex items-center gap-2 group transition-all duration-150 ${
                                     isActive(`/kategori/${sub.slug}`)
-                                      ? 'text-red-600 font-bold bg-red-50'
-                                      : 'text-gray-700 hover:text-red-600 hover:bg-gray-50'
+                                      ? 'text-cyan-400 font-bold'
+                                      : 'text-slate-400 hover:text-cyan-300'
                                   }`}
-                                  style={{ animationDelay: `${(ci * col.length + si) * 28}ms` }}
+                                  style={{
+                                    animationDelay: `${(ci * col.length + si) * 28}ms`,
+                                    background: isActive(`/kategori/${sub.slug}`) ? 'rgba(6,182,212,0.1)' : undefined,
+                                  }}
                                 >
-                                  <span className="w-1 h-1 rounded-full bg-gray-300 group-hover:bg-red-500 transition-colors duration-200 shrink-0" />
+                                  <span className={`w-1 h-1 rounded-full shrink-0 transition-colors duration-200 ${
+                                    isActive(`/kategori/${sub.slug}`) ? 'bg-cyan-400' : 'bg-slate-600 group-hover:bg-cyan-500'
+                                  }`} />
                                   <span className="transition-transform duration-150 group-hover:translate-x-0.5">
                                     {sub.name}
                                   </span>
@@ -293,31 +289,37 @@ export default function Header({ categories = [], breakingNews = null }) {
       </header>
 
       {/* ════════════════════════════════════════════════════════════════════
-          MOBILE DRAWER — slide in dari kiri
+          MOBILE DRAWER
       ════════════════════════════════════════════════════════════════════ */}
-
-      {/* Overlay */}
       <div
-        className={`fixed inset-0 z-[60] bg-black/60 md:hidden transition-opacity duration-300 ${
+        className={`fixed inset-0 z-[60] md:hidden transition-opacity duration-300 ${
           mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
+        style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
         onClick={() => setMobileOpen(false)}
       />
 
-      {/* Drawer panel */}
       <div
-        className={`fixed top-0 left-0 z-[70] h-full w-[320px] max-w-[85vw] bg-white shadow-2xl flex flex-col md:hidden
+        className={`fixed top-0 left-0 z-[70] h-full w-[320px] max-w-[85vw] flex flex-col md:hidden
           transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{
+          background: 'rgba(2,8,23,0.97)',
+          backdropFilter: 'blur(20px)',
+          borderRight: '1px solid rgba(56,189,248,0.15)',
+          boxShadow: '8px 0 32px rgba(0,0,0,0.6)',
+        }}
       >
         {/* Drawer header */}
-        <div className="bg-[#0a0a0a] flex items-center justify-between px-4 h-[46px] shrink-0">
+        <div className="flex items-center justify-between px-4 h-[46px] shrink-0"
+          style={{ borderBottom: '1px solid rgba(56,189,248,0.1)', background: 'rgba(2,8,23,0.8)' }}>
           <Link href="/" onClick={() => setMobileOpen(false)} className="flex items-center gap-2">
-            <span className="bg-red-600 text-white font-black text-lg px-2.5 py-0.5 rounded-sm">JOBEN</span>
+            <span className="bg-red-600 text-white font-black text-lg px-2.5 py-0.5 rounded-sm"
+              style={{ boxShadow: '0 0 10px rgba(220,38,38,0.4)' }}>JOBEN</span>
             <span className="news-shimmer font-bold text-xs tracking-widest">NEWS</span>
           </Link>
           <button
             onClick={() => setMobileOpen(false)}
-            className="p-1 text-gray-300 hover:text-white transition-colors duration-200"
+            className="p-1 text-slate-400 hover:text-cyan-400 transition-colors duration-200"
             aria-label="Tutup menu"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -327,15 +329,20 @@ export default function Header({ categories = [], breakingNews = null }) {
         </div>
 
         {/* Search mobile */}
-        <div className="px-4 py-3 border-b border-gray-100">
+        <div className="px-4 py-3" style={{ borderBottom: '1px solid rgba(56,189,248,0.08)' }}>
           <form onSubmit={handleSearch} className="flex gap-2">
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Cari berita…"
-              className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-200"
+              className="flex-1 rounded-full px-4 py-2 text-sm focus:outline-none transition-all duration-200 text-slate-200 placeholder-slate-500"
+              style={{
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(56,189,248,0.2)',
+              }}
             />
-            <button type="submit" className="bg-red-600 hover:bg-red-700 text-white rounded-full w-9 h-9 flex items-center justify-center shrink-0 transition-colors duration-200">
+            <button type="submit"
+              className="bg-red-600 hover:bg-red-700 text-white rounded-full w-9 h-9 flex items-center justify-center shrink-0 transition-colors duration-200">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -351,8 +358,8 @@ export default function Header({ categories = [], breakingNews = null }) {
             onClick={() => setMobileOpen(false)}
             className={`flex items-center px-5 py-3 text-sm font-semibold border-l-4 transition-all duration-200 ${
               pathname === '/'
-                ? 'border-red-600 text-red-600 bg-red-50'
-                : 'border-transparent text-gray-800 hover:text-red-600 hover:bg-gray-50 hover:border-red-200 hover:pl-6'
+                ? 'border-red-500 text-red-400'
+                : 'border-transparent text-slate-400 hover:text-cyan-400 hover:border-cyan-500 hover:pl-6'
             }`}
           >
             Beranda
@@ -364,26 +371,24 @@ export default function Header({ categories = [], breakingNews = null }) {
             const active      = isActive(`/kategori/${cat.slug}`);
 
             return (
-              <div key={cat.slug} className="border-t border-gray-50">
+              <div key={cat.slug} className="border-t" style={{ borderColor: 'rgba(56,189,248,0.06)' }}>
                 <div className="flex items-stretch">
-                  {/* Link nama kategori */}
                   <Link
                     href={`/kategori/${cat.slug}`}
                     onClick={() => setMobileOpen(false)}
                     className={`flex-1 flex items-center px-5 py-3 text-sm font-semibold border-l-4 transition-all duration-200 ${
                       active
-                        ? 'border-red-600 text-red-600 bg-red-50'
-                        : 'border-transparent text-gray-800 hover:text-red-600 hover:bg-gray-50 hover:border-red-200 hover:pl-6'
+                        ? 'border-red-500 text-red-400'
+                        : 'border-transparent text-slate-400 hover:text-cyan-400 hover:border-cyan-500 hover:pl-6'
                     }`}
                   >
                     {cat.name}
                   </Link>
-                  {/* Tombol expand */}
                   {hasChildren && (
                     <button
                       onClick={() => setExpandedCat(open ? null : cat.slug)}
                       className={`px-4 flex items-center transition-colors duration-200 ${
-                        open ? 'text-red-600' : 'text-gray-400 hover:text-red-600'
+                        open ? 'text-cyan-400' : 'text-slate-500 hover:text-cyan-400'
                       }`}
                       aria-label={open ? 'Tutup' : 'Buka subkategori'}
                     >
@@ -397,9 +402,11 @@ export default function Header({ categories = [], breakingNews = null }) {
                   )}
                 </div>
 
-                {/* Sub-kategori list — smooth height transition */}
                 {hasChildren && (
-                  <div className={`mobile-sub-wrapper bg-gray-50 border-l-4 border-red-200 ml-5 ${open ? 'open' : 'closed'}`}>
+                  <div
+                    className={`mobile-sub-wrapper border-l-4 border-cyan-900 ml-5 ${open ? 'open' : 'closed'}`}
+                    style={{ background: 'rgba(6,182,212,0.04)' }}
+                  >
                     {cat.children.map((sub, si) => (
                       <Link
                         key={sub.slug}
@@ -407,12 +414,14 @@ export default function Header({ categories = [], breakingNews = null }) {
                         onClick={() => setMobileOpen(false)}
                         className={`flex items-center gap-2 px-5 py-2.5 text-sm transition-all duration-150 ${
                           isActive(`/kategori/${sub.slug}`)
-                            ? 'text-red-600 font-semibold bg-red-50'
-                            : 'text-gray-600 hover:text-red-600 hover:bg-white hover:pl-6'
+                            ? 'text-cyan-400 font-semibold'
+                            : 'text-slate-500 hover:text-cyan-300 hover:pl-6'
                         }`}
                         style={open ? { transitionDelay: `${si * 20}ms` } : {}}
                       >
-                        <span className="w-1 h-1 rounded-full bg-gray-400 shrink-0" />
+                        <span className={`w-1 h-1 rounded-full shrink-0 ${
+                          isActive(`/kategori/${sub.slug}`) ? 'bg-cyan-400' : 'bg-slate-600'
+                        }`} />
                         {sub.name}
                       </Link>
                     ))}
@@ -424,14 +433,13 @@ export default function Header({ categories = [], breakingNews = null }) {
         </nav>
 
         {/* Footer drawer */}
-        <div className="px-5 py-4 border-t border-gray-100 text-xs text-gray-400">
+        <div className="px-5 py-4 text-xs text-slate-600"
+          style={{ borderTop: '1px solid rgba(56,189,248,0.08)' }}>
           © {new Date().getFullYear()} JOBEN NEWS
         </div>
       </div>
 
-      {/* ════════════════════════════════════════════════════════════════════
-          SEARCH OVERLAY — fullscreen, real-time results
-      ════════════════════════════════════════════════════════════════════ */}
+      {/* Search Overlay */}
       <SearchOverlay
         open={searchOpen}
         onClose={() => setSearchOpen(false)}
