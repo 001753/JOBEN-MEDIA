@@ -8,6 +8,29 @@ Setiap `git push` ke branch `main` akan otomatis:
 
 ---
 
+## Struktur Deployment di cPanel
+
+Seluruh monorepo di-clone **satu kali** ke folder yang sama:
+
+```
+~/public_html/news/          ← git clone di sini
+├── server.js                ← startup Strapi  (cms.jobenapp.cloud)
+├── app.js                   ← startup Next.js (news.jobenapp.cloud)  ← BARU
+├── frontend/                ← kode Next.js
+└── ...
+```
+
+Di cPanel → **Setup Node.js App**, ada dua app yang menunjuk ke direktori yang sama:
+
+| App | Application root | Startup file | URL |
+|---|---|---|---|
+| Strapi CMS | `public_html/news` | `server.js` | `cms.jobenapp.cloud` |
+| Next.js Frontend | `public_html/news` | `app.js` | `news.jobenapp.cloud` |
+
+`touch tmp/restart.txt` di root repo akan me-restart **kedua** app sekaligus via Passenger.
+
+---
+
 ## Secrets yang Wajib Dikonfigurasi di GitHub
 
 Buka: **GitHub repo → Settings → Secrets and variables → Actions → New repository secret**
@@ -36,11 +59,11 @@ Buka: **GitHub repo → Settings → Secrets and variables → Actions → New r
 
 | Secret Name | Nilai |
 |---|---|
-| `CPANEL_SSH_HOST` | Hostname SSH server (misal: `server123.jobenapp.cloud` atau IP) |
+| `CPANEL_SSH_HOST` | Hostname SSH server (misal: `biritonirmolo.idweb.host` atau IP) |
 | `CPANEL_SSH_USER` | Username cPanel Anda |
 | `CPANEL_SSH_PRIVATE_KEY` | Isi private key SSH (lihat §Cara Buat SSH Key di bawah) |
 | `CPANEL_SSH_PORT` | Port SSH (biasanya `22`, beberapa host pakai `21098`) |
-| `CPANEL_APP_PATH` | Path absolut ke repo di server, misal `/home/namauser/joben-media` |
+| `CPANEL_APP_PATH` | Path **absolut** ke repo di server: `/home/<namauser>/public_html/news` |
 
 ---
 
