@@ -1,0 +1,154 @@
+name: 🚀 Build & Deploy ke cPanel
+
+# Trigger: setiap push ke branch main
+# Tidak trigger jika hanya file doc/markdown/config yang berubah
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'doc/**'
+      - '*.md'
+      - '.replit'
+      - 'replit.nix'
+      - 'attached_assets/**'
+
+# Izinkan GITHUB_TOKEN untuk commit & push build artifacts
+# (push via GITHUB_TOKEN tidak men-trigger workflow lagi — aman dari infinite loop)
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    name: Build → Commit artifacts → Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      # ──────────────────────────────────────────────────────
+      # 1. Checkout
+      # ──────────────────────────────────────────────────────
+      - name: 📥 Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # Butuh history penuh untuk git push artifacts
+
+      # ──────────────────────────────────────────────────────
+      # 2. Setup Node.js 20
+      # ──────────────────────────────────────────────────────
+      - name: ⚙️ Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            package-lock.json
+            frontend/package-lock.json
+
+      # ──────────────────────────────────────────────────────
+      # 3. Build Strapi admin panel
+      # ──────────────────────────────────────────────────────
+      - name: 📦 Install Strapi dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: 🏗️ Build Strapi admin panel
+        run: npm run build
+        env:
+          NODE_ENV: production
+          HOST: 0.0.0.0
+          PORT: 1337
+          # Strapi security keys — simpan di GitHub repo Secrets
+          APP_KEYS: ${{ secrets.APP_KEYS }}
+          API_TOKEN_SALT: ${{ secrets.API_TOKEN_SALT }}
+          ADMIN_JWT_SECRET: ${{ secrets.ADMIN_JWT_SECRET }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          TRANSFER_TOKEN_SALT: ${{ secrets.TRANSFER_TOKEN_SALT }}
+          # Database sementara untuk proses build (tidak dipakai di runtime)
+          DATABASE_CLIENT: sqlite
+          DATABASE_FILENAME: /tmp/strapi-ci-build.db
+
+      # ──────────────────────────────────────────────────────
+      # 4. Build Next.js (production)
+      # Next.js mengambil data dari Strapi production saat build
+      # (ISR akan refresh konten setiap 60 detik setelah deploy)
+      # ──────────────────────────────────────────────────────
+      - name: 📦 Install Next.js dependencies
+        run: npm install --ignore-scripts
+        working-directory: frontend
+
+      - name: 🏗️ Build Next.js
+        run: npm run build
+        working-directory: frontend
+        env:
+          NODE_ENV: production
+          STRAPI_API_URL: ${{ secrets.STRAPI_API_URL }}
+          STRAPI_API_TOKEN: ${{ secrets.STRAPI_API_TOKEN }}
+          REVALIDATION_SECRET: ${{ secrets.REVALIDATION_SECRET }}
+          NEXT_PUBLIC_SITE_URL: ${{ secrets.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_GA_MEASUREMENT_ID }}
+
+      # ──────────────────────────────────────────────────────
+      # 5. Commit & push build artifacts ke GitHub
+      # Push via GITHUB_TOKEN tidak men-trigger ulang workflow
+      # ──────────────────────────────────────────────────────
+      - name: 💾 Commit build artifacts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Stage hasil build dari kedua app
+          git add build/ frontend/.next/
+          
+          if git diff --cached --quiet; then
+            echo "ℹ️  Tidak ada perubahan build — skip commit."
+          else
+            COMMIT_SHA="${{ github.sha }}"
+            git commit -m "chore: production build untuk ${COMMIT_SHA:0:7}"
+            git push origin main
+            echo "✅ Build artifacts berhasil di-commit & di-push."
+          fi
+
+      # ──────────────────────────────────────────────────────
+      # 6. Deploy ke cPanel via SSH
+      # Urutan: pull → install Strapi → restart Strapi →
+      #         install Next.js → restart Next.js
+      # ──────────────────────────────────────────────────────
+      - name: 🚀 Deploy ke cPanel
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.CPANEL_SSH_HOST }}
+          username: ${{ secrets.CPANEL_SSH_USER }}
+          key: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.CPANEL_SSH_PORT }}
+          timeout: 120s
+          command_timeout: 10m
+          script: |
+            set -e
+            
+            echo "📂 Masuk ke direktori app..."
+            cd "${{ secrets.CPANEL_APP_PATH }}"
+            
+            echo "📥 Pull kode terbaru dari GitHub..."
+            git pull origin main
+            
+            echo "📦 Install Strapi dependencies (production)..."
+            npm install --production --legacy-peer-deps
+            
+            echo "🔄 Restart Strapi (Passenger)..."
+            mkdir -p tmp
+            touch tmp/restart.txt
+            echo "✅ Strapi akan restart dalam beberapa detik..."
+            
+            echo "📦 Install Next.js dependencies (production)..."
+            cd frontend
+            npm install --production --ignore-scripts
+            cd ..
+            
+            echo "🔄 Restart Next.js (Passenger)..."
+            mkdir -p frontend/tmp
+            touch frontend/tmp/restart.txt
+            echo "✅ Next.js akan restart dalam beberapa detik..."
+            
+            echo ""
+            echo "🎉 Deploy selesai: $(date '+%Y-%m-%d %H:%M:%S %Z')"
+            echo "   Strapi  → https://cms.news.jobenapp.cloud/admin"
+            echo "   Frontend → https://news.jobenapp.cloud"
