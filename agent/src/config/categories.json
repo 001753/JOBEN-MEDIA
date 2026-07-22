@@ -1,0 +1,169 @@
+{
+  "categories": [
+    {
+      "name": "Berita",
+      "slug": "berita",
+      "description": "Berita teknologi terkini dari Indonesia dan dunia",
+      "authorId": "A01",
+      "strapiId": null,
+      "strapiDocId": null,
+      "subcategories": [
+        { "name": "Industri", "slug": "industri", "strapiId": null },
+        { "name": "Perusahaan", "slug": "perusahaan", "strapiId": null },
+        { "name": "Regulasi", "slug": "regulasi", "strapiId": null },
+        { "name": "Produk Baru", "slug": "produk-baru", "strapiId": null }
+      ]
+    },
+    {
+      "name": "Artificial Intelligence",
+      "slug": "artificial-intelligence",
+      "description": "Kecerdasan buatan, machine learning, dan model AI terbaru",
+      "authorId": "A02",
+      "strapiId": null,
+      "strapiDocId": null,
+      "subcategories": [
+        { "name": "Model & Riset", "slug": "model-dan-riset", "strapiId": null },
+        { "name": "Produk AI", "slug": "produk-ai", "strapiId": null },
+        { "name": "AI di Indonesia", "slug": "ai-di-indonesia", "strapiId": null },
+        { "name": "Etika AI", "slug": "etika-ai", "strapiId": null },
+        { "name": "Generative AI", "slug": "generative-ai", "strapiId": null }
+      ]
+    },
+    {
+      "name": "Startup",
+      "slug": "startup",
+      "description": "Ekosistem startup Indonesia dan Asia Tenggara",
+      "authorId": "A03",
+      "strapiId": null,
+      "strapiDocId": null,
+      "subcategories": [
+        { "name": "Pendanaan", "slug": "pendanaan", "strapiId": null },
+        { "name": "Startup Lokal", "slug": "startup-lokal", "strapiId": null },
+        { "name": "Startup Global", "slug": "startup-global", "strapiId": null },
+        { "name": "Fintech", "slug": "fintech", "strapiId": null },
+        { "name": "E-commerce", "slug": "e-commerce", "strapiId": null },
+        { "name": "Healthtech", "slug": "healthtech", "strapiId": null },
+        { "name": "Edtech", "slug": "edtech", "strapiId": null }
+      ]
+    },
+    {
+      "name": "Software Development",
+      "slug": "software-development",
+      "description": "Pemrograman, framework, open source, dan tools developer",
+      "authorId": "A04",
+      "strapiId": null,
+      "strapiDocId": null,
+      "subcategories": [
+        { "name": "Web Development", "slug": "web-development", "strapiId": null },
+        { "name": "Mobile Development", "slug": "mobile-development", "strapiId": null },
+        { "name": "Open Source", "slug": "open-source", "strapiId": null },
+        { "name": "Framework & Tools", "slug": "framework-dan-tools", "strapiId": null },
+        { "name": "DevOps & Cloud", "slug": "devops-dan-cloud", "strapiId": null },
+        { "name": "Programming Language", "slug": "programming-language", "strapiId": null }
+      ]
+    },
+    {
+      "name": "Cyber Security",
+      "slug": "cyber-security",
+      "description": "Keamanan siber, ancaman digital, privasi, dan perlindungan data",
+      "authorId": "A05",
+      "strapiId": null,
+      "strapiDocId": null,
+      "subcategories": [
+        { "name": "Data Breach", "slug": "data-breach", "strapiId": null },
+        { "name": "Malware & Ransomware", "slug": "malware-dan-ransomware", "strapiId": null },
+        { "name": "Privasi & Data", "slug": "privasi-dan-data", "strapiId": null },
+        { "name": "Keamanan Mobile", "slug": "keamanan-mobile", "strapiId": null },
+        { "name": "Hacking & Vulnerability", "slug": "hacking-dan-vulnerability", "strapiId": null }
+      ]
+    },
+    {
+      "name": "Gadget",
+      "slug": "gadget",
+      "description": "Ulasan smartphone, laptop, wearable, dan perangkat elektronik terbaru",
+      "authorId": "A06",
+      "strapiId": null,
+      "strapiDocId": null,
+      "subcategories": [
+        { "name": "Smartphone", "slug": "smartphone", "strapiId": null },
+        { "name": "Laptop", "slug": "laptop", "strapiId": null },
+        { "name": "Wearable", "slug": "wearable", "strapiId": null },
+        { "name": "Tablet", "slug": "tablet", "strapiId": null },
+        { "name": "Gaming", "slug": "gaming", "strapiId": null },
+        { "name": "Audio", "slug": "audio", "strapiId": null },
+        { "name": "Aksesoris", "slug": "aksesoris", "strapiId": null }
+      ]
+    },
+    {
+      "name": "Kripto & Blockchain",
+      "slug": "kripto-dan-blockchain",
+      "description": "Aset kripto, blockchain, DeFi, NFT, dan Web3",
+      "authorId": "A07",
+      "strapiId": null,
+      "strapiDocId": null,
+      "subcategories": [
+        { "name": "Bitcoin", "slug": "bitcoin", "strapiId": null },
+        { "name": "Altcoin", "slug": "altcoin", "strapiId": null },
+        { "name": "DeFi", "slug": "defi", "strapiId": null },
+        { "name": "NFT", "slug": "nft", "strapiId": null },
+        { "name": "Regulasi Kripto", "slug": "regulasi-kripto", "strapiId": null },
+        { "name": "Kripto Indonesia", "slug": "kripto-indonesia", "strapiId": null }
+      ]
+    },
+    {
+      "name": "Teknologi Masa Depan",
+      "slug": "teknologi-masa-depan",
+      "description": "IoT, quantum computing, AR/VR, space tech, dan inovasi masa depan",
+      "authorId": "A08",
+      "strapiId": null,
+      "strapiDocId": null,
+      "subcategories": [
+        { "name": "IoT & Smart Home", "slug": "iot-dan-smart-home", "strapiId": null },
+        { "name": "AR & VR", "slug": "ar-dan-vr", "strapiId": null },
+        { "name": "Quantum Computing", "slug": "quantum-computing", "strapiId": null },
+        { "name": "Space Tech", "slug": "space-tech", "strapiId": null },
+        { "name": "Robotika", "slug": "robotika", "strapiId": null },
+        { "name": "Bioteknologi", "slug": "bioteknologi", "strapiId": null }
+      ]
+    },
+    {
+      "name": "Tutorial",
+      "slug": "tutorial",
+      "description": "Panduan langkah demi langkah menggunakan teknologi",
+      "authorId": "A09",
+      "strapiId": null,
+      "strapiDocId": null,
+      "subcategories": [
+        { "name": "Panduan Pemula", "slug": "panduan-pemula", "strapiId": null },
+        { "name": "Tips & Trik", "slug": "tips-dan-trik", "strapiId": null },
+        { "name": "Review Aplikasi", "slug": "review-aplikasi", "strapiId": null },
+        { "name": "How-to", "slug": "how-to", "strapiId": null }
+      ]
+    },
+    {
+      "name": "Opini",
+      "slug": "opini",
+      "description": "Analisis mendalam dan opini pakar tentang industri teknologi",
+      "authorId": "A10",
+      "strapiId": null,
+      "strapiDocId": null,
+      "subcategories": [
+        { "name": "Analisis Industri", "slug": "analisis-industri", "strapiId": null },
+        { "name": "Kolom Pakar", "slug": "kolom-pakar", "strapiId": null },
+        { "name": "Prediksi & Tren", "slug": "prediksi-dan-tren", "strapiId": null }
+      ]
+    }
+  ],
+  "dailyDistribution": {
+    "Berita": 5,
+    "Artificial Intelligence": 4,
+    "Startup": 3,
+    "Software Development": 3,
+    "Cyber Security": 3,
+    "Gadget": 4,
+    "Kripto & Blockchain": 3,
+    "Teknologi Masa Depan": 2,
+    "Tutorial": 2,
+    "Opini": 1
+  }
+}

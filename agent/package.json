@@ -1,0 +1,50 @@
+{
+  "name": "joben-agent",
+  "version": "1.0.0",
+  "description": "JOBEN NEWS AI Agent System — Mesin Produksi Artikel Otonom",
+  "private": true,
+  "main": "src/scheduler/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/scheduler/index.js",
+    "start:pm2": "pm2 start ecosystem.config.js",
+    "stop:pm2": "pm2 stop all",
+    "dashboard": "node src/dashboard/server.js",
+    "setup": "node scripts/setup.js",
+    "seed:authors": "node scripts/seedAuthors.js",
+    "test:writer": "node scripts/testWriter.js",
+    "test:publish": "node scripts/testPublish.js",
+    "test:rss": "node -e \"require('./src/services/rssReader').fetchAll().then(r=>console.log(r.length,'items')).catch(console.error)\"",
+    "test:gemini": "node -e \"const p=require('./src/services/geminiPool');const pool=new p();pool.healthCheck().then(r=>console.log(JSON.stringify(r,null,2)))\"",
+    "test:telegram": "node -e \"const t=require('./src/services/telegramNotifier');t.sendInfo('Test notifikasi dari JOBEN Agent ✅').then(()=>console.log('OK'))\"",
+    "reset:daily": "node scripts/resetDaily.js",
+    "export:state": "node scripts/exportState.js",
+    "lint": "node --check src/**/*.js 2>&1 || true"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "aws4": "^1.13.0",
+    "axios": "^1.7.2",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^9.4.3",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "express-rate-limit": "^7.3.1",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^2.7.0",
+    "rss-parser": "^3.13.0",
+    "sharp": "^0.33.4",
+    "winston": "^3.13.0",
+    "winston-daily-rotate-file": "^5.0.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

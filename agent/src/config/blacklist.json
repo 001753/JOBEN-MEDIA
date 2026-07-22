@@ -1,0 +1,42 @@
+{
+  "_comment": "Kata/frasa/domain yang diblacklist. Artikel yang mengandung ini akan ditolak Quality Gate.",
+  "words": [
+    "judi", "togel", "slot online", "bandar", "taruhan",
+    "pornografi", "porno", "xxx", "bugil", "telanjang",
+    "narkoba", "sabu", "ganja", "ekstasi", "obat terlarang",
+    "radikalisme", "teroris", "jihad kekerasan", "bom bunuh diri",
+    "rasisme", "diskriminasi ras", "pribumi vs pendatang",
+    "hoaks", "berita bohong palsu tanpa sumber",
+    "penipuan", "scam investasi abal"
+  ],
+  "patterns": [
+    "\\bjudi\\s+online\\b",
+    "\\bslot\\s+gacor\\b",
+    "\\bnon-muslim\\b",
+    "\\bkafir\\b",
+    "\\bcina\\b",
+    "\\bpiggy\\b",
+    "\\b(beli|jual)\\s+(followers|like|subscribe)\\b",
+    "\\bget\\s+rich\\s+quick\\b",
+    "\\bquick\\s+money\\b",
+    "\\b(free|gratis)\\s+(?:fire|diamond|coin|robux)\\s+hack\\b"
+  ],
+  "sensitiveTopics": [
+    "SARA",
+    "Pilpres/Pemilu partisan",
+    "Gosip selebriti",
+    "Konten seksual"
+  ],
+  "aiPatterns": [
+    "sebagai kesimpulan",
+    "secara keseluruhan",
+    "sangat menarik",
+    "patut dicatat bahwa",
+    "dalam era modern ini",
+    "tidak dapat dipungkiri",
+    "hal ini menunjukkan bahwa",
+    "penting untuk dicatat",
+    "perlu diperhatikan bahwa",
+    "berdasarkan hal tersebut"
+  ]
+}

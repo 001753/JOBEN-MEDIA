@@ -1,0 +1,220 @@
+{
+  "sources": [
+    {
+      "id": "techcrunch",
+      "name": "TechCrunch",
+      "url": "https://techcrunch.com/feed/",
+      "category": "Tech General",
+      "language": "en",
+      "weight": 10,
+      "maxAgeHours": 48,
+      "breakingCandidate": true,
+      "active": true
+    },
+    {
+      "id": "theverge",
+      "name": "The Verge",
+      "url": "https://www.theverge.com/rss/index.xml",
+      "category": "Tech General",
+      "language": "en",
+      "weight": 9,
+      "maxAgeHours": 48,
+      "breakingCandidate": true,
+      "active": true
+    },
+    {
+      "id": "wired",
+      "name": "Wired",
+      "url": "https://www.wired.com/feed/rss",
+      "category": "Tech General",
+      "language": "en",
+      "weight": 8,
+      "maxAgeHours": 48,
+      "breakingCandidate": false,
+      "active": true
+    },
+    {
+      "id": "arstechnica",
+      "name": "Ars Technica",
+      "url": "https://feeds.arstechnica.com/arstechnica/technology-lab",
+      "category": "Tech General",
+      "language": "en",
+      "weight": 8,
+      "maxAgeHours": 48,
+      "breakingCandidate": false,
+      "active": true
+    },
+    {
+      "id": "reuters-tech",
+      "name": "Reuters Technology",
+      "url": "https://feeds.reuters.com/reuters/technologyNews",
+      "category": "Business Tech",
+      "language": "en",
+      "weight": 10,
+      "maxAgeHours": 24,
+      "breakingCandidate": true,
+      "active": true
+    },
+    {
+      "id": "mit-tech-review",
+      "name": "MIT Technology Review",
+      "url": "https://www.technologyreview.com/feed/",
+      "category": "AI Spesifik",
+      "language": "en",
+      "weight": 9,
+      "maxAgeHours": 72,
+      "breakingCandidate": false,
+      "active": true
+    },
+    {
+      "id": "techcrunch-startups",
+      "name": "TechCrunch Startups",
+      "url": "https://techcrunch.com/category/startups/feed/",
+      "category": "Startup",
+      "language": "en",
+      "weight": 8,
+      "maxAgeHours": 48,
+      "breakingCandidate": false,
+      "active": true
+    },
+    {
+      "id": "krebs-security",
+      "name": "Krebs on Security",
+      "url": "https://krebsonsecurity.com/feed/",
+      "category": "Security",
+      "language": "en",
+      "weight": 9,
+      "maxAgeHours": 72,
+      "breakingCandidate": true,
+      "active": true
+    },
+    {
+      "id": "thehackernews",
+      "name": "The Hacker News",
+      "url": "https://feeds.feedburner.com/TheHackersNews",
+      "category": "Security",
+      "language": "en",
+      "weight": 8,
+      "maxAgeHours": 48,
+      "breakingCandidate": true,
+      "active": true
+    },
+    {
+      "id": "coindesk",
+      "name": "CoinDesk",
+      "url": "https://www.coindesk.com/arc/outboundfeeds/rss/",
+      "category": "Crypto",
+      "language": "en",
+      "weight": 7,
+      "maxAgeHours": 24,
+      "breakingCandidate": true,
+      "active": true
+    },
+    {
+      "id": "gsmarena",
+      "name": "GSMArena",
+      "url": "https://www.gsmarena.com/rss-news-reviews.php3",
+      "category": "Gadget",
+      "language": "en",
+      "weight": 8,
+      "maxAgeHours": 72,
+      "breakingCandidate": false,
+      "active": true
+    },
+    {
+      "id": "hackernews",
+      "name": "Hacker News",
+      "url": "https://hnrss.org/frontpage",
+      "category": "Dev",
+      "language": "en",
+      "weight": 7,
+      "maxAgeHours": 24,
+      "breakingCandidate": false,
+      "active": true
+    },
+    {
+      "id": "bbc-tech",
+      "name": "BBC Technology",
+      "url": "http://feeds.bbci.co.uk/news/technology/rss.xml",
+      "category": "Breaking",
+      "language": "en",
+      "weight": 9,
+      "maxAgeHours": 12,
+      "breakingCandidate": true,
+      "active": true
+    },
+    {
+      "id": "kompas-tekno",
+      "name": "Kompas Tekno",
+      "url": "https://tekno.kompas.com/rss/tag/all.xml",
+      "category": "Indonesia",
+      "language": "id",
+      "weight": 9,
+      "maxAgeHours": 48,
+      "breakingCandidate": false,
+      "active": true
+    },
+    {
+      "id": "detikinet",
+      "name": "DetikInet",
+      "url": "https://rss.detik.com/index.php/detikinet",
+      "category": "Indonesia",
+      "language": "id",
+      "weight": 8,
+      "maxAgeHours": 48,
+      "breakingCandidate": false,
+      "active": true
+    },
+    {
+      "id": "techinasia",
+      "name": "Tech in Asia",
+      "url": "https://www.techinasia.com/feed",
+      "category": "Startup Asia",
+      "language": "en",
+      "weight": 8,
+      "maxAgeHours": 48,
+      "breakingCandidate": false,
+      "active": true
+    },
+    {
+      "id": "venturebeat",
+      "name": "VentureBeat",
+      "url": "https://venturebeat.com/feed/",
+      "category": "AI & Startup",
+      "language": "en",
+      "weight": 7,
+      "maxAgeHours": 48,
+      "breakingCandidate": false,
+      "active": true
+    },
+    {
+      "id": "zdnet",
+      "name": "ZDNet",
+      "url": "https://www.zdnet.com/news/rss.xml",
+      "category": "Tech General",
+      "language": "en",
+      "weight": 7,
+      "maxAgeHours": 48,
+      "breakingCandidate": false,
+      "active": true
+    }
+  ],
+  "breakingKeywords": {
+    "tier1": [
+      "breaking", "just in", "urgent", "emergency", "alert",
+      "crash", "hack", "breach", "outage", "down",
+      "breaking news", "developing story", "exclusive"
+    ],
+    "tier2": [
+      "google", "apple", "microsoft", "meta", "amazon", "nvidia",
+      "openai", "anthropic", "tesla", "samsung", "qualcomm",
+      "tiktok", "twitter", "x.com", "gojek", "tokopedia",
+      "acquisition", "acquired", "merger", "ipo", "layoffs",
+      "fired", "ceo", "resign", "lawsuit", "ban", "regulation"
+    ]
+  },
+  "blacklistDomains": [
+    "example-spam-site.com",
+    "clickbait-farm.net"
+  ]
+}

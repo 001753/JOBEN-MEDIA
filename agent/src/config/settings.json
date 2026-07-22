@@ -1,0 +1,105 @@
+{
+  "_comment": "Runtime config — dapat diedit via dashboard tanpa restart agent",
+  "_lastModified": "2026-07-22T00:00:00+07:00",
+  "_version": "1.0",
+
+  "agent": {
+    "enabled": true,
+    "status": "idle",
+    "dailyTarget": 30,
+    "breakingTarget": 2,
+    "activeHours": {
+      "start": 6,
+      "end": 23
+    },
+    "weekdayTarget": 30,
+    "weekendTarget": 20
+  },
+
+  "scheduler": {
+    "intervalMinBase": 24,
+    "intervalMinJitter": 10,
+    "maxQueueSize": 20,
+    "mainTickCron": "*/1 * * * *",
+    "breakingTickCron": "*/5 * * * *",
+    "dailyResetCron": "0 0 * * *",
+    "keyHealthCheckCron": "0 */1 * * *",
+    "cleanupCron": "0 4 * * *",
+    "calendarGenerateCron": "0 23 * * 0"
+  },
+
+  "quality": {
+    "minWordCount": 450,
+    "targetWordCount": 550,
+    "minFactCount": 2,
+    "maxKeywordDensityPercent": 3.0,
+    "minTitleLength": 40,
+    "maxTitleLength": 70,
+    "minMetaLength": 120,
+    "maxMetaLength": 155,
+    "minQualityScore": 65,
+    "maxRetries": 3,
+    "duplicateThresholdPercent": 25,
+    "duplicateWindowHours": 72
+  },
+
+  "gemini": {
+    "model": "gemini-2.5-flash",
+    "imageModel": "imagen-3.0-generate-002",
+    "temperature": 0.7,
+    "maxOutputTokens": 8192,
+    "topP": 0.9,
+    "topK": 40,
+    "dailyLimitPerKey": 1500,
+    "cooldownOnRateLimitSeconds": 60,
+    "errorStreakThreshold": 5,
+    "disableOnErrorStreakMinutes": 30,
+    "useSearchGrounding": true
+  },
+
+  "content": {
+    "breakingNewsMaxAge": 2,
+    "regularNewsMaxAge": 48,
+    "minSnippetLength": 100,
+    "maxSourcesPerAnalysis": 50,
+    "maxInternalLinks": 3,
+    "imageWidth": 1280,
+    "imageHeight": 720,
+    "imageFormat": "webp",
+    "imageQuality": 85,
+    "imageMaxSizeKB": 500
+  },
+
+  "diversity": {
+    "maxArticlesPerSubcategoryPerDay": 3,
+    "maxSimilarTopicHours": 72,
+    "minCategoriesPerDay": 8,
+    "breakingNewsExempt": true
+  },
+
+  "telegram": {
+    "enabled": true,
+    "notifyOnPublish": true,
+    "notifyOnBreaking": true,
+    "notifyOnError": true,
+    "notifyOnKeyExhausted": true,
+    "notifyOnAgentDown": true,
+    "agentDownThresholdMinutes": 120,
+    "watchdogCheckMinutes": 30
+  },
+
+  "dashboard": {
+    "port": 4000,
+    "maxLoginAttempts": 5,
+    "lockoutMinutes": 15,
+    "accessTokenExpiry": "2h",
+    "refreshTokenExpiry": "30d"
+  },
+
+  "backup": {
+    "enabled": true,
+    "backupToR2": true,
+    "backupCron": "0 3 * * *",
+    "retentionDays": 30
+  }
+}
