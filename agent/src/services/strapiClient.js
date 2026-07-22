@@ -474,6 +474,60 @@ class StrapiClient {
   }
 
   /**
+   * Register URL R2 ke Strapi media library (alias untuk publisher)
+   * @param {Object} params - { url, name, alternativeText, caption }
+   * @returns {Promise<Object>} Media entry dengan field id
+   */
+  async uploadMediaFromUrl({ url, name, alternativeText, caption }) {
+    try {
+      // Strapi v5: buat media entry dengan URL eksternal via upload endpoint
+      const fetchModule = require('node-fetch');
+      const FormData = require('form-data');
+
+      // Fetch image dari URL
+      const imgResp = await fetchModule(url, { signal: AbortSignal.timeout(20000) });
+      if (!imgResp.ok) throw new Error(`Gagal fetch image dari R2: ${imgResp.status}`);
+
+      const imgBuffer = Buffer.from(await imgResp.arrayBuffer());
+      const contentType = imgResp.headers.get('content-type') || 'image/webp';
+      const filename = name.endsWith('.webp') ? name : `${name}.webp`;
+
+      const formData = new FormData();
+      formData.append('files', imgBuffer, { filename, contentType });
+      formData.append('fileInfo', JSON.stringify({
+        name,
+        alternativeText: alternativeText || name,
+        caption: caption || '',
+      }));
+
+      const strapiUrl = `${STRAPI_URL}/api/upload`;
+      const response = await fetchModule(strapiUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${STRAPI_TOKEN}`,
+          ...formData.getHeaders(),
+        },
+        body: formData,
+        signal: AbortSignal.timeout(30000),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(`Upload gagal: ${response.status} — ${errText.substring(0, 200)}`);
+      }
+
+      const data = await response.json();
+      const media = Array.isArray(data) ? data[0] : data;
+      logger.strapi(`Media uploaded ke Strapi: id=${media.id}, url=${url}`);
+      return media;
+
+    } catch (err) {
+      logger.warn('[strapi] Gagal upload media dari URL (lanjut tanpa cover)', { error: err.message });
+      return null;
+    }
+  }
+
+  /**
    * Upload file ke Strapi media library langsung
    * @param {Buffer} fileBuffer
    * @param {string} filename
