@@ -1494,6 +1494,521 @@ Author:      [Auto sesuai kategori ▼]
 
 ---
 
+## 10.10 IMPLEMENTASI DASHBOARD — FASE 1: RENCANA PRESISI
+
+> **Tujuan dokumen ini:** Menjadi kontrak implementasi tunggal yang mengatur struktur file,
+> kontrak API (method · path · body · response), konvensi error, dan format data.
+> Semua kode backend WAJIB mengikuti spesifikasi ini.
+
+---
+
+### 10.10.1 Struktur File Final
+
+```
+agent/src/dashboard/
+├── server.js                     ← Express app + mount semua route
+├── middleware/
+│   ├── auth.js                   ← JWT verify (Bearer header atau cookie)
+│   └── rateLimit.js              ← express-rate-limit: login & API limiter
+└── routes/
+│   ├── auth.js                   ← POST /login  POST /logout  POST /refresh  GET /me
+│   ├── overview.js               ← GET /        POST /kill-switch  GET /recent-activity
+│   ├── articles.js               ← GET /        GET /:id
+│   ├── queue.js                  ← GET /  POST /  DELETE /:id  PUT /reorder  POST /:id/trigger
+│   ├── schedule.js               ← GET /  PUT /
+│   ├── authors.js                ← GET /
+│   ├── keys.js                   ← GET /  POST /add  DELETE /:id  POST /reset-daily  POST /test
+│   ├── prompts.js                ← GET /  PUT /  GET /versions  POST /rollback
+│   ├── logs.js                   ← GET /stream (SSE)  GET /dates  GET /download/:date
+│   ├── manual.js                 ← POST /generate
+│   └── settings.js               ← GET /  PUT /
+└── public/                       ← [Sub-bagian 2 — Frontend] HTML + CSS + JS
+    ├── index.html                ← Login page
+    ├── dashboard.html            ← Overview
+    ├── articles.html
+    ├── queue.html
+    ├── schedule.html
+    ├── keys.html
+    ├── prompts.html
+    ├── logs.html
+    ├── settings.html
+    ├── css/
+    │   └── dashboard.css
+    └── js/
+        ├── api.js
+        ├── auth.js
+        └── components.js
+```
+
+---
+
+### 10.10.2 Konvensi Global Backend
+
+#### Envelope Response
+
+```js
+// Sukses
+{ "ok": true, "data": <payload> }
+
+// Sukses + paginasi
+{ "ok": true, "data": [...], "meta": { "total": 245, "page": 1, "limit": 20, "pages": 13 } }
+
+// Error
+{ "ok": false, "error": "KODE_ERROR", "message": "Pesan yang bisa dibaca manusia" }
+```
+
+#### Kode Error Standar
+
+| Kode | HTTP | Keterangan |
+|---|---|---|
+| `UNAUTHORIZED` | 401 | Token tidak ada atau expired |
+| `FORBIDDEN` | 403 | Token valid tapi akses ditolak |
+| `NOT_FOUND` | 404 | Resource tidak ditemukan |
+| `VALIDATION_ERROR` | 400 | Body request tidak valid |
+| `RATE_LIMITED` | 429 | Terlalu banyak request |
+| `INTERNAL_ERROR` | 500 | Error server tak terduga |
+
+#### Autentikasi
+
+- Semua route `/api/*` kecuali `/api/auth/*` wajib melewati middleware `requireAuth`
+- Token dikirim via `Authorization: Bearer <accessToken>` **atau** cookie `access_token`
+- Expired accessToken → client kirim `POST /api/auth/refresh` dengan refreshToken
+- Middleware menempel `req.user = { username, iat, exp }` ke setiap request
+
+---
+
+### 10.10.3 Kontrak API Lengkap
+
+#### `POST /api/auth/login`
+```
+Auth  : Tidak diperlukan
+Body  : { "username": string, "password": string, "rememberMe": boolean }
+200   : { "ok": true, "data": { "accessToken": string, "refreshToken": string,
+          "expiresIn": 7200 } }
+401   : { "ok": false, "error": "INVALID_CREDENTIALS" }
+429   : { "ok": false, "error": "RATE_LIMITED", "retryAfter": 900 }
+```
+- Password diverifikasi dengan `bcryptjs.compare()` vs `DASHBOARD_ADMIN_PASSWORD_HASH`
+- Gagal login: increment counter per-IP di memory
+- 5 gagal berturut-turut dalam 15 menit → lockout, header `Retry-After` dikirim
+
+#### `POST /api/auth/logout`
+```
+Auth  : Diperlukan
+Body  : {}
+200   : { "ok": true }
+```
+- Simpan token ke in-memory blacklist (valid sampai exp-nya habis)
+
+#### `POST /api/auth/refresh`
+```
+Auth  : Tidak diperlukan
+Body  : { "refreshToken": string }
+200   : { "ok": true, "data": { "accessToken": string, "expiresIn": 7200 } }
+401   : { "ok": false, "error": "INVALID_REFRESH_TOKEN" }
+```
+
+#### `GET /api/auth/me`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": { "username": string, "loginAt": ISO8601 } }
+```
+
+---
+
+#### `GET /api/overview`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": {
+    "state": <isi state.json>,
+    "uptime": { "processMs": number, "startedAt": ISO8601 },
+    "recentActivity": [ ...20 artikel terbaru dari SQLite ]
+  }}
+```
+- `state.json` dibaca fresh dari disk setiap request (agent bisa update kapan saja)
+- `recentActivity`: query `SELECT * FROM articles ORDER BY created_at DESC LIMIT 20`
+
+#### `POST /api/overview/kill-switch`
+```
+Auth  : Diperlukan
+Body  : { "action": "kill" | "activate" }
+200   : { "ok": true, "data": { "agentStatus": string } }
+```
+- Update field `agentStatus` di `state.json`:
+  - `"kill"` → set `agentStatus: "killed"`
+  - `"activate"` → set `agentStatus: "idle"`
+
+---
+
+#### `GET /api/articles`
+```
+Auth   : Diperlukan
+Query  : page=1  limit=20  status=published|failed|rejected|all
+         category=string  date=YYYY-MM-DD  q=string
+200    : { "ok": true, "data": [...], "meta": { total, page, limit, pages } }
+```
+- Query ke `published.db` tabel `articles`
+- `q` → `WHERE title LIKE '%q%'`
+- `date` → `WHERE DATE(published_at) = date`
+- Selalu ORDER BY `created_at DESC`
+- Mask field `gemini_key_used` sebelum return (privasi key)
+
+#### `GET /api/articles/:id`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": <row artikel lengkap> }
+404   : { "ok": false, "error": "NOT_FOUND" }
+```
+
+---
+
+#### `GET /api/queue`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": { "items": [...], "total": number } }
+```
+- Baca `data/queue.json`, return field: id, priority, topicData, source,
+  contentType, forcedCategory, addedAt, status
+
+#### `POST /api/queue`
+```
+Auth  : Diperlukan
+Body  : { "topic": string, "category": string, "subcategory": string?,
+          "priority": 0|1|2, "contentType": "reguler"|"breaking" }
+201   : { "ok": true, "data": { "id": string } }
+400   : { "ok": false, "error": "VALIDATION_ERROR", "message": string }
+```
+- Validasi: `topic` wajib, `category` wajib, `priority` default 0
+
+#### `DELETE /api/queue/:id`
+```
+Auth  : Diperlukan
+200   : { "ok": true }
+404   : { "ok": false, "error": "NOT_FOUND" }
+```
+
+#### `PUT /api/queue/reorder`
+```
+Auth  : Diperlukan
+Body  : { "orderedIds": [string, ...] }
+200   : { "ok": true, "data": { "items": [...] } }
+```
+- Rewrite urutan items di queue.json sesuai orderedIds
+
+#### `POST /api/queue/:id/trigger`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "message": "Item dipindahkan ke priority tertinggi" }
+404   : { "ok": false, "error": "NOT_FOUND" }
+```
+- Set priority item ke 2 (breaking priority) agar diproses scheduler tick berikutnya
+
+---
+
+#### `GET /api/schedule`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": { "agent": {...}, "scheduler": {...} } }
+```
+- Return gabungan section `agent` + `scheduler` dari `settings.json`
+
+#### `PUT /api/schedule`
+```
+Auth  : Diperlukan
+Body  : { "agent"?: {...partial}, "scheduler"?: {...partial} }
+200   : { "ok": true, "data": { "agent": {...}, "scheduler": {...} } }
+400   : VALIDATION_ERROR jika nilai tidak valid (misal activeHours.start < 0)
+```
+- Deep merge body ke settings.json, lalu tulis ulang file
+- Validasi: `dailyTarget` 1–100, `activeHours.start` 0–23 < `end`,
+  `intervalMinBase` ≥ 5
+
+---
+
+#### `GET /api/authors`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": [ { id, name, title, specialization,
+          categoryMapping } ] }
+```
+- Baca `src/config/authors.json`, tambah field `categoryMapping` dari
+  section `categoryMap` di file yang sama
+
+---
+
+#### `GET /api/keys`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": { "keys": [ {id, status, dailyUsed, dailyLimit,
+          errorStreak, lastUsed, lastError, disabledUntil,
+          "key": "AIza...****" ← masked} ],
+          "lastRotationIndex": number, "summary": {active, cooldown,
+          exhausted, disabled, total} } }
+```
+- `key` di-mask: tampilkan 8 karakter pertama + `****`
+
+#### `POST /api/keys/add`
+```
+Auth  : Diperlukan
+Body  : { "key": string }
+201   : { "ok": true, "data": { "id": string } }
+400   : VALIDATION_ERROR jika key tidak dimulai "AIza" atau sudah ada
+```
+
+#### `DELETE /api/keys/:keyId`
+```
+Auth  : Diperlukan
+200   : { "ok": true }
+404   : NOT_FOUND
+```
+
+#### `POST /api/keys/reset-daily`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": { "resetCount": number } }
+```
+- Set `dailyUsed: 0`, `errorStreak: 0`, status `exhausted` → `active`
+- Tulis ke `data/keys.json`
+
+#### `POST /api/keys/test`
+```
+Auth  : Diperlukan
+Body  : { "keyId": string }
+200   : { "ok": true, "data": { "keyId": string, "latencyMs": number,
+          "model": string } }
+400   : { "ok": false, "error": string, "data": { "keyId": string } }
+```
+- Kirim prompt singkat ke Gemini dengan key tersebut, ukur latency
+
+---
+
+#### `GET /api/prompts`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": { "current": { writerSystem, writerUser,
+          trendScout, breakingWriter, imagePrompt },
+          "version": number, "updatedAt": ISO8601 } }
+```
+- Baca `src/config/prompts.js` via `require()` (invalidate require cache dulu)
+
+#### `PUT /api/prompts`
+```
+Auth  : Diperlukan
+Body  : { "prompts": { writerSystem?, writerUser?, trendScout?,
+          breakingWriter?, imagePrompt? } }
+200   : { "ok": true, "data": { "version": number, "savedAt": ISO8601 } }
+400   : VALIDATION_ERROR jika prompt kosong atau > 50.000 karakter
+```
+- Simpan versi lama ke `data/prompt-versions/v{N}.json` (max 10 versi)
+- Tulis `src/config/prompts.js` baru dengan module.exports = {...}
+- Invalidate require cache untuk prompts.js
+
+#### `GET /api/prompts/versions`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": [ { version, savedAt, sizeBytes } ] }
+```
+
+#### `POST /api/prompts/rollback`
+```
+Auth  : Diperlukan
+Body  : { "version": number }
+200   : { "ok": true, "data": { "restoredVersion": number } }
+404   : NOT_FOUND jika versi tidak ada
+```
+
+---
+
+#### `GET /api/logs/stream`
+```
+Auth  : Diperlukan (token via query param ?token=... karena SSE tidak bisa set header)
+Headers Response: Content-Type: text/event-stream
+                  Cache-Control: no-cache
+                  Connection: keep-alive
+Query  : level=debug|info|warn|error (default: info)
+Stream : event: log
+         data: { "ts": ISO8601, "level": string, "message": string }
+```
+- Tail file log hari ini menggunakan `fs.watch` + `readline`
+- Kirim `event: connected\ndata: {...}\n\n` saat client konek
+- Kirim heartbeat `event: ping\ndata: {}\n\n` setiap 30 detik
+- Filter berdasarkan level: debug=semua, info=info+warn+error, dst
+
+#### `GET /api/logs/dates`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": [ "2026-07-22", "2026-07-21", ... ] }
+```
+- List file di folder `logs/` yang match pola `agent-YYYY-MM-DD.log`
+
+#### `GET /api/logs/download/:date`
+```
+Auth  : Diperlukan (token via query ?token=...)
+Param : date = YYYY-MM-DD
+200   : File download (Content-Disposition: attachment; filename="agent-DATE.log")
+404   : NOT_FOUND jika file tidak ada
+```
+
+---
+
+#### `POST /api/manual/generate`
+```
+Auth  : Diperlukan
+Body  : {
+  "category"   : string,          // wajib
+  "subcategory": string?,         // opsional
+  "topic"      : string?,         // opsional — kosong = auto dari trendScout
+  "mode"       : "reguler"|"breaking",  // default: "reguler"
+  "authorId"   : string?,         // opsional — default: auto dari kategori
+  "publishMode": "publish"|"draft"      // default: "publish"
+}
+202   : { "ok": true, "data": { "jobId": string,
+          "message": "Generate artikel dimulai di background" } }
+400   : VALIDATION_ERROR
+503   : { "ok": false, "error": "AGENT_BUSY",
+          "message": "Agent sedang memproses artikel lain" }
+```
+- Tidak blocking — trigger via event emitter ke scheduler, return jobId
+- Status job bisa dipantau via `GET /api/manual/job/:jobId`
+
+#### `GET /api/manual/job/:jobId`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": { "jobId", "status": "pending"|"running"|
+          "done"|"failed", "result"?: {...}, "error"?: string } }
+404   : NOT_FOUND
+```
+
+---
+
+#### `GET /api/settings`
+```
+Auth  : Diperlukan
+200   : { "ok": true, "data": <full settings.json> }
+```
+
+#### `PUT /api/settings`
+```
+Auth  : Diperlukan
+Body  : <partial settings — deep merge>
+200   : { "ok": true, "data": <settings.json setelah update> }
+400   : VALIDATION_ERROR
+```
+- Validasi: tidak boleh hapus key wajib (agent, scheduler, quality, gemini)
+- Tulis ulang settings.json setelah merge
+- Log perubahan ke Winston dengan diff before/after
+
+---
+
+### 10.10.4 Middleware Spec
+
+#### `middleware/auth.js`
+
+```
+requireAuth(req, res, next):
+  1. Cek header Authorization: Bearer <token>
+     Jika tidak ada → cek cookie "access_token"
+     Jika tidak ada → 401 UNAUTHORIZED
+  2. jwt.verify(token, JWT_SECRET)
+     Jika expired → 401 UNAUTHORIZED, body: { expiredAt }
+     Jika invalid  → 401 UNAUTHORIZED
+  3. Cek token tidak ada di blacklist in-memory
+     Jika ada       → 401 UNAUTHORIZED
+  4. req.user = decoded payload
+  5. next()
+
+tokenBlacklist:
+  - Map<token, expMs>
+  - Cleanup expired entries setiap 10 menit via setInterval
+```
+
+#### `middleware/rateLimit.js`
+
+```
+loginLimiter:
+  windowMs : 15 * 60 * 1000   (15 menit)
+  max      : 5
+  keyBy    : IP
+  message  : { ok: false, error: "RATE_LIMITED", retryAfter: 900 }
+  skipSuccessfulRequests: false
+
+apiLimiter:
+  windowMs : 60 * 1000         (1 menit)
+  max      : 120
+  keyBy    : IP
+  message  : { ok: false, error: "RATE_LIMITED" }
+  skip     : req untuk SSE (/api/logs/stream)
+```
+
+---
+
+### 10.10.5 Format File Data
+
+#### `data/state.json`
+```json
+{
+  "date"              : "YYYY-MM-DD",
+  "articlesPublished" : 0,
+  "articlesTarget"    : 30,
+  "breakingPublished" : 0,
+  "breakingTarget"    : 2,
+  "lastPublishedAt"   : null,
+  "nextScheduledAt"   : null,
+  "agentStatus"       : "idle",
+  "queueLength"       : 0,
+  "errors24h"         : 0,
+  "apiKeyActive"      : 0,
+  "apiKeyTotal"       : 0,
+  "startedAt"         : "ISO8601",
+  "generationStats"   : {
+    "totalAttempts"   : 0,
+    "totalSuccess"    : 0,
+    "avgGenerationMs" : 0
+  }
+}
+```
+
+#### `data/queue.json`
+```json
+{
+  "items"      : [],
+  "lastUpdated": "ISO8601"
+}
+```
+
+#### `data/keys.json`
+```json
+{
+  "keys"               : [],
+  "lastRotationIndex"  : 0,
+  "lastResetDate"      : "YYYY-MM-DD",
+  "lastUpdated"        : "ISO8601"
+}
+```
+
+#### `data/editorial-calendar.json`
+```json
+{
+  "week"       : "",
+  "generatedAt": null,
+  "status"     : "empty",
+  "plan"       : []
+}
+```
+
+---
+
+### 10.10.6 Sub-Bagian Build
+
+| Sub | Scope | File | Status |
+|---|---|---|---|
+| **1A — Backend** | Express + middleware + semua route API | 14 file | 🔲 In Progress |
+| **1B — Frontend** | Semua HTML + CSS + JS vanilla | 13 file | 🔲 Belum dimulai |
+
+**Dependencies:** 1B bergantung pada 1A (route path harus match). Build 1A tuntas dulu.
+
+---
+
 ## 11. SISTEM AUTHOR & PERSONA
 
 ### 11.1 Daftar Author
