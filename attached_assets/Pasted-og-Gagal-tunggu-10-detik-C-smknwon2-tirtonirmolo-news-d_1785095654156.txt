@@ -1,0 +1,64 @@
+og
+  ⚠️  Gagal — tunggu 10 detik ...
+^C
+[smknwon2@tirtonirmolo news]$ df -h ~/
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       1.0T  733G  292G  72% /home/smknwon2
+[smknwon2@tirtonirmolo news]$ rm -rf ~/.npm/
+[smknwon2@tirtonirmolo news]$ rm -rf /tmp/npm-cache-joben
+[smknwon2@tirtonirmolo news]$ df -h ~/
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       1.0T  732G  293G  72% /home/smknwon2
+[smknwon2@tirtonirmolo news]$ git fetch origin
+remote: Enumerating objects: 9, done.
+remote: Counting objects: 100% (9/9), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 6 (delta 4), reused 6 (delta 4), pack-reused 0 (from 0)
+Unpacking objects: 100% (6/6), 1.35 KiB | 12.00 KiB/s, done.
+From https://github.com/001753/JOBEN-MEDIA
+   de5a39f..ce1825b  main       -> origin/main
+[smknwon2@tirtonirmolo news]$ git reset --hard origin/main
+HEAD is now at ce1825b fix: blokir nodevenv npmrc agar npm install ke project dir, bukan nodevenv
+[smknwon2@tirtonirmolo news]$ git fetch origin
+remote: Enumerating objects: 7, done.
+remote: Counting objects: 100% (7/7), done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 5 (delta 2), reused 5 (delta 2), pack-reused 0 (from 0)
+Unpacking objects: 100% (5/5), 4.99 KiB | 1022.00 KiB/s, done.
+From https://github.com/001753/JOBEN-MEDIA
+   ce1825b..be32284  main       -> origin/main
+[smknwon2@tirtonirmolo news]$ git reset --hard origin/main
+HEAD is now at be32284 Add logs and notes for imported project setup and npm errors
+[smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Mon Jul 27 02:53:23 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at be32284 Add logs and notes for imported project setup and npm errors
+  ✓ Kode diperbarui — HEAD: be3228496c5a
+
+  ⚠️  .build_commit belum ada — jalankan npm run build:all di Replit
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Strapi (root): node_modules belum ada — install diperlukan
+  → Strapi (root) install (percobaan 1/3) ...
+Exit prior to config file resolving
+cause
+double-loading config "/dev/null" as "global", previously loaded as "user"
+  ⚠️  Gagal — tunggu 10 detik ...
+  → Strapi (root) install (percobaan 2/3) ...
+Exit prior to config file resolving
+cause
+double-loading config "/dev/null" as "global", previously loaded as "user"
+  ⚠️  Gagal — tunggu 10 detik ...
+  → Strapi (root) install (percobaan 3/3) ...
+Exit prior to config file resolving
+cause
+double-loading config "/dev/null" as "global", previously loaded as "user"
+  ⚠️  Gagal — tunggu 10 detik ...
+^C
+[smknwon2@tirtonirmolo news]$
