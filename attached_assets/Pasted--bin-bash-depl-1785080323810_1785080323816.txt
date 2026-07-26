@@ -1,0 +1,334 @@
+#!/bin/bash
+# ─────────────────────────────────────────────────────────────────────────────
+# deploy.sh — Update aplikasi dari GitHub dan restart di cPanel
+#
+# Jalankan dari SSH cPanel di folder aplikasi:
+#   cd ~/public_html/misipintar/misipintar-1.0
+#   bash deploy.sh
+#
+# Yang dilakukan script ini:
+#   1. Ambil perubahan terbaru dari GitHub (force reset)
+#   2. Install dependencies (SKIP jika package.json tidak berubah)
+#   3. Generate Prisma client (binary engine)
+#   4. Jalankan migrasi database terbaru
+#   5. Seed Plans & AppConfig (SKIP otomatis kalau sudah ada)
+#   6. Seed akun admin pertama (SKIP otomatis kalau sudah ada)
+#   7. Restart aplikasi via Phusion Passenger
+# ─────────────────────────────────────────────────────────────────────────────
+
+set -e
+
+APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$APP_DIR"
+
+echo ""
+echo "════════════════════════════════════════════════════════"
+echo "  MisiPintar — Deploy Script"
+echo "  Dir : $APP_DIR"
+echo "  Date: $(date)"
+echo "════════════════════════════════════════════════════════"
+echo ""
+
+# ── 1. Git: reset & pull ──────────────────────────────────────────────────────
+echo "▶ [1/5] Git pull origin main ..."
+
+git fetch origin
+git reset --hard origin/main
+
+echo "  ✓ Kode berhasil diperbarui"
+echo ""
+
+# ── 1b. Symlink standalone/node_modules → root node_modules ──────────────────
+# .next/standalone/node_modules/ tidak di-commit ke git (terlalu besar ~140MB).
+# Next.js standalone server.js butuh node_modules di sampingnya — symlink cukup.
+if [ -d "$APP_DIR/.next/standalone" ]; then
+  ln -sfn "$APP_DIR/node_modules" "$APP_DIR/.next/standalone/node_modules"
+  echo "  ✓ Symlink standalone/node_modules → root node_modules"
+fi
+echo ""
+
+# ── 1c. Verifikasi sinkronisasi build vs commit ───────────────────────────────
+# Mendeteksi kalau ada commit baru yang belum di-build di Replit.
+# File .build_commit ditulis oleh scripts/prepare-standalone.sh saat build selesai.
+BUILD_COMMIT_FILE="$APP_DIR/.next/standalone/.build_commit"
+CURRENT_HEAD=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+
+if [ -f "$BUILD_COMMIT_FILE" ]; then
+  BUILT_AT=$(cat "$BUILD_COMMIT_FILE" 2>/dev/null | tr -d '[:space:]')
+  if [ "$CURRENT_HEAD" = "$BUILT_AT" ]; then
+    echo "  ✓ Standalone sinkron dengan commit HEAD (${CURRENT_HEAD:0:12})"
+  else
+    # Cek apakah perbedaan antara BUILT_AT dan HEAD hanya file .next/
+    # Replit kadang auto-commit hasil build → HEAD 1 commit lebih baru, tapi kode sama
+    # Hanya hitung perubahan di file kode sumber (src/, prisma/, scripts/, package.json, dll)
+    # Abaikan: .next/ (build output), public/ (generated assets: sitemap, manifest)
+    #
+    # PENTING: gunakan `wc -l` bukan `grep -c .`
+    # `grep -c` keluar dengan exit code 1 saat count=0, lalu `|| echo "0"` ikut jalan
+    # → variabel jadi "0\n0" dan perbandingan `[ ... = "0" ]` gagal (false positive).
+    NON_NEXT_CHANGES=$(git diff --name-only "$BUILT_AT" "$CURRENT_HEAD" 2>/dev/null \
+      | grep -v '^\.next/' \
+      | grep -v '^public/' \
+      | grep -v '^\.' \
+      | grep -v '^package-lock\.json$' \
+      | grep -v '^yarn\.lock$' \
+      | grep -v '^deploy\.sh$' \
+      | grep -v '^replit\.md$' \
+      | grep -v '^README\.md$' \
+      | grep -v '^attached_assets/' \
+      | grep -v '^scripts/' \
+      | grep -v '^prisma/migrations/' \
+      | grep -v '^\.agents/' \
+      | grep -v '^\.gitignore$' \
+      | wc -l | tr -d ' ')
+
+    if [ "$NON_NEXT_CHANGES" = "0" ]; then
+      echo "  ✓ Standalone sinkron — commit HEAD hanya berisi perubahan build artifacts"
+      echo "    (built: ${BUILT_AT:0:12} → HEAD: ${CURRENT_HEAD:0:12})"
+    else
+      echo ""
+      echo "  ⚠️  ══════════════════════════════════════════════════════════"
+      echo "  ⚠️  PERINGATAN: Standalone TIDAK sinkron dengan commit terbaru!"
+      echo "  ⚠️  HEAD saat ini : ${CURRENT_HEAD:0:12}"
+      echo "  ⚠️  Dibangun dari : ${BUILT_AT:0:12}"
+      echo "  ⚠️  File kode yang belum di-build: $NON_NEXT_CHANGES file"
+      echo "  ⚠️"
+      echo "  ⚠️  Artinya: ada perubahan kode yang belum di-build."
+      echo "  ⚠️  Halaman produksi akan menampilkan versi LAMA."
+      echo "  ⚠️"
+      echo "  ⚠️  Solusi — jalankan di Replit:"
+      echo "  ⚠️    npm run build   (atau 2 step manual jika timeout)"
+      echo "  ⚠️    → commit & push ke GitHub"
+      echo "  ⚠️    → bash deploy.sh"
+      echo "  ⚠️  ══════════════════════════════════════════════════════════"
+      echo ""
+    fi
+  fi
+else
+  echo "  ⚠️  .build_commit belum ada — pengecekan sinkronisasi tidak aktif"
+  echo "      (jalankan npm run build di Replit untuk mengaktifkan fitur ini)"
+fi
+echo ""
+
+# ── 2. Install dependencies ───────────────────────────────────────────────────
+echo "▶ [2/5] Install Node.js dependencies ..."
+
+# ── Setup PATH: tambahkan lokasi ea-nodejs cPanel ─────────────────────────
+for _NDIR in \
+  "/opt/cpanel/ea-nodejs22/root/usr/bin" \
+  "/opt/cpanel/ea-nodejs20/root/usr/bin" \
+  "/opt/cpanel/ea-nodejs18/root/usr/bin" \
+  "/opt/cpanel/ea-nodejs22/bin" \
+  "/opt/cpanel/ea-nodejs20/bin" \
+  "$HOME/.nvm/versions/node/$(ls $HOME/.nvm/versions/node/ 2>/dev/null | sort -V | tail -1)/bin" \
+  "$HOME/nodevenv/public_html/misipintar/misipintar-1.0/22/bin" \
+  "$HOME/nodevenv/public_html/misipintar/misipintar-1.0/20/bin"; do
+  if [ -d "$_NDIR" ] && [[ ":$PATH:" != *":$_NDIR:"* ]]; then
+    export PATH="$_NDIR:$PATH"
+  fi
+done
+
+# Batasi semua sumber thread — harus di-export sebelum node/npm apapun dijalankan
+export UV_THREADPOOL_SIZE=1
+export RAYON_NUM_THREADS=1
+export TOKIO_WORKER_THREADS=1
+export npm_config_maxsockets=1
+export NODE_OPTIONS="--max-old-space-size=256"
+
+# ── Deteksi perubahan package.json ──────────────────────────────────────────
+# Root penyebab crash: node sendiri gagal buat thread saat server sedang penuh proses.
+# Solusi utama: SKIP npm install sepenuhnya jika package.json tidak berubah.
+# (99% deploy hanya ubah kode, bukan dependency — install tidak perlu diulang.)
+PKG_HASH_FILE="$APP_DIR/.pkg_hash"
+PKG_HASH=$(md5sum "$APP_DIR/package.json" | awk '{print $1}')
+MODULES_OK=0
+
+if [ -d "$APP_DIR/node_modules" ] && [ -f "$PKG_HASH_FILE" ]; then
+  SAVED_HASH=$(cat "$PKG_HASH_FILE" 2>/dev/null || echo "")
+  if [ "$PKG_HASH" = "$SAVED_HASH" ]; then
+    echo "  → package.json tidak berubah — skip install (node_modules sudah up-to-date)"
+    MODULES_OK=1
+  else
+    echo "  → package.json berubah — install diperlukan"
+  fi
+else
+  echo "  → node_modules belum ada atau hash hilang — install diperlukan"
+fi
+
+if [ "$MODULES_OK" -eq 0 ]; then
+  # Cari npm-cli.js langsung, hindari wrapper cPanel yang bisa crash lebih awal
+  find_npm_cli() {
+    # Cari di path ea-nodejs khas cPanel
+    local ver
+    ver=$(node --version 2>/dev/null | tr -d 'v' | cut -d. -f1)
+    for v in "$ver" 22 20 18; do
+      for base in \
+        "/opt/cpanel/ea-nodejs${v}/root/usr/lib/node_modules/npm/bin" \
+        "/opt/cpanel/ea-nodejs${v}/lib/node_modules/npm/bin" \
+        "/opt/cpanel/ea-nodejs${v}/bin"; do
+        if [ -f "$base/npm-cli.js" ]; then echo "$base/npm-cli.js"; return; fi
+      done
+    done
+    echo ""
+  }
+
+  NPM_CLI=$(find_npm_cli)
+  INSTALL_FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit"
+  MAX_TRIES=3
+  SUCCESS=0
+
+  for try in $(seq 1 $MAX_TRIES); do
+    echo "  → Install percobaan $try/$MAX_TRIES ..."
+    if [ -n "$NPM_CLI" ]; then
+      # Jalankan npm-cli.js langsung via node — bypass wrapper cPanel
+      node "$NPM_CLI" install $INSTALL_FLAGS && SUCCESS=1 && break
+    else
+      npm install $INSTALL_FLAGS && SUCCESS=1 && break
+    fi
+    echo "  ⚠️  Gagal — tunggu 15 detik agar server lowongkan proses ..."
+    sleep 15
+  done
+
+  if [ "$SUCCESS" -eq 0 ]; then
+    echo ""
+    echo "  ✗ npm install gagal setelah $MAX_TRIES percobaan."
+    echo "    Kemungkinan server sedang penuh proses (RLIMIT_NPROC)."
+    echo "    Coba lagi beberapa menit kemudian, atau install manual:"
+    echo "    UV_THREADPOOL_SIZE=1 npm install --omit=dev --ignore-scripts"
+    exit 1
+  fi
+
+  # Simpan hash agar deploy berikutnya bisa skip install
+  echo "$PKG_HASH" > "$PKG_HASH_FILE"
+fi
+
+echo "  ✓ Dependencies siap"
+echo ""
+
+# ── 3. Prisma generate ────────────────────────────────────────────────────────
+echo "▶ [3/5] Prisma generate ..."
+
+if [ -f "./node_modules/.bin/prisma" ]; then
+  ./node_modules/.bin/prisma generate 2>/dev/null
+  echo "  ✓ Prisma client siap"
+else
+  echo "  ⚠️  prisma tidak ditemukan di node_modules — skip"
+fi
+echo ""
+
+# ── 4. Prisma migrate deploy ──────────────────────────────────────────────────
+echo "▶ [4/5] Prisma migrate deploy ..."
+
+if [ -f "./node_modules/.bin/prisma" ]; then
+
+  # ── 4a. Tangani ALTER TYPE di luar transaction ────────────────────────────
+  # PostgreSQL melarang ALTER TYPE ... ADD VALUE di dalam transaction block
+  # (error code 25001). Prisma membungkus migration dalam BEGIN/COMMIT, sehingga
+  # migration 20260723000000_add_doku_payment_provider SELALU gagal.
+  #
+  # Solusi: scripts/fix-doku-migration.js menjalankan ALTER TYPE via pg client
+  # langsung (tanpa transaction), menambahkan kolom Invoice, dan menandai
+  # migration sebagai applied di _prisma_migrations.
+  # Script menggunakan IF NOT EXISTS di semua statement → aman dijalankan ulang.
+
+  if node scripts/fix-doku-migration.js; then
+    echo "  ✓ Fix migrasi DOKU selesai"
+  else
+    echo "  ⚠️  fix-doku-migration.js gagal — coba lanjutkan migrate tetap"
+  fi
+
+  # ── 4b. Jalankan sisa migration secara normal ─────────────────────────────
+  ./node_modules/.bin/prisma migrate deploy && echo "  ✓ Migrasi database selesai" || {
+    echo "  ⚠️  Migrasi gagal — cek output di atas"
+  }
+else
+  echo "  ⚠️  Skip (prisma tidak ada)"
+fi
+echo ""
+
+# ── 5. Seed Plans + AppConfig (skip kalau sudah ada) ──────────────────────────
+echo "▶ [5/7] Seed plans & AppConfig ..."
+
+if [ -f "./scripts/seed-plans.js" ]; then
+  node scripts/seed-plans.js || echo "  ⚠️  seed-plans gagal — lanjut"
+else
+  echo "  ⚠️  scripts/seed-plans.js tidak ditemukan — skip"
+fi
+echo ""
+
+# ── 6. Seed admin pertama (skip kalau sudah ada) ──────────────────────────────
+echo "▶ [6/7] Seed admin ..."
+
+if [ -f "./scripts/seed-admin.js" ]; then
+  node scripts/seed-admin.js || echo "  ⚠️  seed-admin gagal — lanjut"
+else
+  echo "  ⚠️  scripts/seed-admin.js tidak ditemukan — skip"
+fi
+echo ""
+
+# ── 7a. Verifikasi NODE_ENV dan cek resource sebelum restart ─────────────────
+echo "▶ [7/7] Pre-restart check & restart aplikasi ..."
+
+# Pastikan NODE_ENV production tersetting di .env (peringatan dini)
+if [ -f "$APP_DIR/.env" ]; then
+  if ! grep -q "^NODE_ENV=production" "$APP_DIR/.env" 2>/dev/null; then
+    echo "  ⚠️  PERINGATAN: NODE_ENV=production tidak ditemukan di .env!"
+    echo "      Aplikasi akan berjalan dalam mode development → RAM 2-3x lebih besar."
+    echo "      Tambahkan: echo 'NODE_ENV=production' >> .env"
+  else
+    echo "  ✓ NODE_ENV=production terverifikasi di .env"
+  fi
+fi
+
+# Info proses Node.js aktif saat ini (bantu deteksi ghost process)
+NODE_PROCS=$(pgrep -c node 2>/dev/null || echo "0")
+echo "  ℹ️  Proses Node.js aktif sebelum restart: ${NODE_PROCS}"
+echo ""
+
+# ── 7. Restart app (Phusion Passenger) ───────────────────────────────────────
+
+RESTARTED=0
+
+# Cara 1: passenger-config restart-app (tersedia jika Passenger di PATH cPanel)
+# Ini cara paling andal — langsung kill proses lama dan spawn proses baru.
+# Mencegah "proses hantu" (ghost process) dari BullMQ workers versi lama.
+if command -v passenger-config &>/dev/null; then
+  echo "  → Mencoba passenger-config restart-app ..."
+  passenger-config restart-app "$APP_DIR" 2>/dev/null && RESTARTED=1 && \
+    echo "  ✓ Restart via passenger-config (proses lama diterminasi)" || \
+    echo "  ⚠️  passenger-config gagal — mencoba cara lain ..."
+fi
+
+# Cara 2: Cari passenger-config di path standar cPanel (jika tidak ada di PATH)
+if [ "$RESTARTED" -eq 0 ]; then
+  for PC in \
+    "/usr/local/bin/passenger-config" \
+    "/opt/cpanel/ea-ruby*/root/usr/bin/passenger-config" \
+    "/usr/local/lib/ruby/gems/*/gems/passenger-*/bin/passenger-config"; do
+    # shellcheck disable=SC2086
+    PC_FOUND=$(ls $PC 2>/dev/null | head -1)
+    if [ -n "$PC_FOUND" ] && [ -x "$PC_FOUND" ]; then
+      "$PC_FOUND" restart-app "$APP_DIR" 2>/dev/null && RESTARTED=1 && \
+        echo "  ✓ Restart via $PC_FOUND" && break
+    fi
+  done
+fi
+
+# Cara 3: touch tmp/restart.txt — Passenger reload otomatis pada request berikutnya.
+# CATATAN: proses lama masih hidup sampai request pertama masuk setelah ini.
+# Jika perlu immediate restart, lakukan via cPanel UI → Node.js Selector → Restart.
+if [ "$RESTARTED" -eq 0 ]; then
+  mkdir -p "$APP_DIR/tmp"
+  touch "$APP_DIR/tmp/restart.txt"
+  RESTARTED=1
+  echo "  ✓ Restart via tmp/restart.txt (Passenger reload pada request berikutnya)"
+  echo "  ℹ️  Untuk immediate restart: cPanel → Node.js Selector → Restart App"
+fi
+
+echo ""
+
+# ── Selesai ───────────────────────────────────────────────────────────────────
+echo "════════════════════════════════════════════════════════"
+echo "  ✅ Deploy selesai! Aplikasi sudah di-restart otomatis."
+echo "════════════════════════════════════════════════════════"
+echo ""
