@@ -1,229 +1,236 @@
 # Checklist Deploy ke cPanel — JOBEN NEWS
 
 Domain: `news.jobenapp.cloud` (Next.js) + `cms.news.jobenapp.cloud` (Strapi)
-
-Status kesiapan kode: **SIAP PRODUKSI** ✅ — `server.js` (Passenger entrypoint),
-konfigurasi `config/*.js` berbasis env var, CORS & CSP sudah memuat domain
-production, dan `.gitignore` sudah mengecualikan file `.env`.
+cPanel user: `smknwon2` | Server: `tirtonirmolo.idweb.host`
+GitHub repo: `https://github.com/001753/JOBEN-MEDIA` (public)
 
 ---
 
-## 0. Catatan Keamanan — WAJIB DIBACA
-
-Anda sempat menempelkan kredensial asli (password database, APP_KEYS, JWT
-secret, R2 keys, Strapi API token) langsung di chat. Kredensial itu **tidak**
-saya tulis ke file apa pun di repo (repo ini akan di-push ke GitHub — kalau
-ditulis di sana, kredensial akan bocor ke publik/kolaborator).
-
-Yang perlu Anda lakukan:
-- Simpan semua value tersebut di **password manager**, bukan di file teks biasa.
-- Isi langsung ke kolom Environment Variables di cPanel (lihat §3.d) — JANGAN
-  taruh di file `.env` yang ikut ter-commit.
-- Karena value sempat tertulis di riwayat chat ini, sebaiknya setelah deploy
-  pertama berhasil, generate ulang (rotate) `REVALIDATION_SECRET` dan
-  `STRAPI_API_TOKEN` dari Strapi Admin panel — keduanya gratis untuk diganti
-  kapan saja tanpa downtime data.
-
----
-
-## 1. Parsing DATABASE_URL Anda
-
-Connection string yang Anda berikan formatnya:
-```
-postgresql://<username>:<password>@<host>:<port>/<database>?sslmode=disable
-```
-
-`config/database.js` di project ini **tidak membaca DATABASE_URL** — dia
-membaca variabel terpisah. Jadi pecah connection string Anda menjadi:
-
-| Env Var | Nilai (dari contoh Anda) |
-|---|---|
-| `DATABASE_CLIENT` | `postgres` |
-| `DATABASE_HOST` | `127.0.0.1` |
-| `DATABASE_PORT` | `5432` |
-| `DATABASE_NAME` | bagian setelah `/` sebelum `?` |
-| `DATABASE_USERNAME` | bagian sebelum `:` di kredensial |
-| `DATABASE_PASSWORD` | bagian setelah `:` di kredensial |
-| `DATABASE_SSL` | `false` (karena `sslmode=disable`) |
-
-Isi ke cPanel sebagai variabel terpisah ini, bukan sebagai satu `DATABASE_URL`.
-
----
-
-## 2. Checklist Kesiapan Kode (sudah dicek)
-
-- [x] `server.js` (root) & `frontend/server.js` — entrypoint Passenger, baca `PORT` dari env
-- [x] `config/database.js` — mendukung `postgres` via env var (bukan hardcode)
-- [x] `config/plugins.js` — upload provider R2 sudah env-driven
-- [x] `config/middlewares.js` — CORS origin sudah termasuk `news.jobenapp.cloud` & `cms.news.jobenapp.cloud`
-- [x] `config/middlewares.js` — CSP `img-src`/`media-src` sudah whitelist endpoint R2 Anda
-- [x] `.gitignore` — `.env`, `.tmp/`, `build/`, `node_modules/` sudah dikecualikan
-- [x] `frontend/.env.example` — dibuat (sebelumnya belum ada)
-- [x] `package.json` — script `build` & `start` sudah benar di kedua project
-
-Tidak ada perubahan kode yang diperlukan untuk go-live. Sisanya murni langkah
-konfigurasi di cPanel.
-
----
-
-## 3. Langkah-Langkah di cPanel
-
-### a. Buat Subdomain
-1. cPanel → **Domains** (atau **Subdomains** di cPanel versi lama)
-2. Tambahkan `cms` sebagai subdomain dari `news.jobenapp.cloud` →
-   menghasilkan `cms.news.jobenapp.cloud`
-3. Document root bisa diarahkan ke folder kosong sementara (akan dioverride oleh Node.js App)
-
-### b. Buat Database PostgreSQL
-1. cPanel → **PostgreSQL Databases**
-2. Buat database baru (nama sesuai `DATABASE_NAME` Anda)
-3. Buat user baru (sesuai `DATABASE_USERNAME`), set password
-4. Di bagian "Add User to Database", assign user tsb dengan privilege **ALL**
-
-### c. Buat 2 Node.js App (Setup Node.js App)
-
-**App 1 — Strapi (backend):**
-- Application root: folder tempat kode backend (`backend` atau nama repo Anda)
-- Application URL: `cms.news.jobenapp.cloud`
-- Application startup file: `server.js`
-- Node.js version: **20.x** (wajib — Strapi 5 butuh Node ≥18, project ini dites di Node 20)
-
-**App 2 — Next.js (frontend):**
-- Application root: folder `frontend`
-- Application URL: `news.jobenapp.cloud`
-- Application startup file: `server.js`
-- Node.js version: 20.x
-
-### d. Isi Environment Variables
-
-**App Strapi** — di layar "Setup Node.js App" masing-masing app, ada bagian
-Environment Variables. Isi (value dari kredensial yang sudah Anda siapkan,
-paste langsung di sini, bukan di file):
+## Arsitektur di cPanel
 
 ```
+/home/smknwon2/public_html/
+├── news/                   ← Repo utama (git clone)
+│   ├── app.js              → Startup Next.js (news.jobenapp.cloud)
+│   ├── server.js           → Startup Strapi (cms.news.jobenapp.cloud)
+│   ├── frontend/           → Next.js App Router
+│   │   ├── server.js       → Custom Next.js server untuk Passenger
+│   │   ├── .next/          → Build artifact (di-commit ke git)
+│   │   └── .env.local      → Env vars Next.js (dibuat manual, TIDAK di git)
+│   ├── build/              → Strapi admin build (di-commit ke git)
+│   ├── .env                → Env vars Strapi (dibuat manual, TIDAK di git)
+│   └── deploy.sh           → Script deploy (jalankan via SSH)
+└── news-cms/               ← Symlink ke news/ (untuk Passenger Strapi)
+    (semua file sama dengan news/)
+```
+
+**Dua Node.js app di cPanel Node.js Selector:**
+| App | Application root | Startup file | URL |
+|---|---|---|---|
+| Frontend | `public_html/news` | `app.js` | `news.jobenapp.cloud` |
+| Strapi CMS | `public_html/news-cms` | `server.js` | `cms.news.jobenapp.cloud` |
+
+**Alur deploy (setelah setup awal):**
+```
+Replit → npm run build:all → git commit → git push → SSH cPanel → bash deploy.sh
+```
+
+---
+
+## SETUP AWAL (Hanya sekali)
+
+### A. Clone repo di cPanel
+
+Via cPanel SSH Terminal:
+```bash
+cd ~/public_html
+git clone https://github.com/001753/JOBEN-MEDIA news
+cd news
+```
+
+### B. Buat symlink untuk app Strapi
+
+```bash
+ln -s /home/smknwon2/public_html/news /home/smknwon2/public_html/news-cms
+# Verifikasi:
+ls -la /home/smknwon2/public_html/news-cms/server.js
+```
+
+### C. Buat `.env` Strapi
+
+Buat file `/home/smknwon2/public_html/news/.env` dengan isi:
+
+```env
+# ── Runtime ─────────────────────────────────────────────────
 NODE_ENV=production
+HOST=0.0.0.0
+PORT=1337
+PUBLIC_URL=https://cms.news.jobenapp.cloud
+
+# ── Database (PostgreSQL) ────────────────────────────────────
 DATABASE_CLIENT=postgres
 DATABASE_HOST=127.0.0.1
 DATABASE_PORT=5432
-DATABASE_NAME=<nama db Anda>
-DATABASE_USERNAME=<username db Anda>
-DATABASE_PASSWORD=<password db Anda>
+DATABASE_NAME=smknwon2_jobennews_db
+DATABASE_USERNAME=smknwon2_jobennews_user
+DATABASE_PASSWORD=<password_database>
 DATABASE_SSL=false
-PUBLIC_URL=https://cms.news.jobenapp.cloud
-APP_KEYS=<4 value APP_KEYS Anda, dipisah koma>
-API_TOKEN_SALT=<value Anda>
-ADMIN_JWT_SECRET=<value Anda>
-JWT_SECRET=<value Anda>
-TRANSFER_TOKEN_SALT=<value Anda>
-R2_ACCESS_KEY_ID=<value Anda>
-R2_SECRET_ACCESS_KEY=<value Anda>
-R2_ENDPOINT=<value Anda>
-R2_BUCKET_NAME=<value Anda>
-R2_PUBLIC_URL=<value Anda>
+DATABASE_CONNECTION_TIMEOUT=60000
+
+# ── Strapi Security Keys ─────────────────────────────────────
+APP_KEYS=<key1>,<key2>,<key3>,<key4>
+API_TOKEN_SALT=<nilai>
+ADMIN_JWT_SECRET=<nilai>
+JWT_SECRET=<nilai>
+TRANSFER_TOKEN_SALT=<nilai>
+
+# ── Cloudflare R2 Storage ────────────────────────────────────
+R2_ACCESS_KEY_ID=<nilai>
+R2_SECRET_ACCESS_KEY=<nilai>
+R2_ENDPOINT=https://6ffcdac7c1cf3d08b80450851f6646a3.r2.cloudflarestorage.com
+R2_BUCKET_NAME=joben-news
+R2_PUBLIC_URL=https://pub-eb6a0f12e3b748628e7fb3494cb105a4.r2.dev
+
+# ── Revalidasi Next.js ───────────────────────────────────────
 NEXTJS_REVALIDATION_URL=https://news.jobenapp.cloud/api/revalidate
-REVALIDATION_SECRET=<value Anda>
+REVALIDATION_SECRET=<nilai>
+
+# ── SMTP (email notifikasi) ──────────────────────────────────
+SMTP_HOST=mail.jobenapp.cloud
+SMTP_PORT=465
+SMTP_USER=admin@jobenapp.cloud
+SMTP_PASS=<password_smtp>
+
+# ── Admin pertama (hanya untuk bootstrap, hapus setelah login pertama) ──
+STRAPI_ADMIN_EMAIL=admin@jobenapp.cloud
+STRAPI_ADMIN_PASSWORD=<password_admin>
 ```
 
-**App Next.js:**
-```
-NODE_ENV=production
+> ⚠️ JANGAN commit file `.env` ke GitHub. File ini ada di `.gitignore`.
+
+### D. Buat `frontend/.env.local`
+
+Buat file `/home/smknwon2/public_html/news/frontend/.env.local`:
+
+```env
+# URL Strapi CMS (server-side fetch dari Next.js)
 STRAPI_API_URL=https://cms.news.jobenapp.cloud
-STRAPI_API_TOKEN=<value Anda — buat dari Strapi Admin > Settings > API Tokens setelah Strapi live>
-REVALIDATION_SECRET=<HARUS SAMA dengan yang di Strapi>
+
+# API Token dari Strapi Admin > Settings > API Tokens
+STRAPI_API_TOKEN=<strapi_api_token>
+
+# Harus sama persis dengan REVALIDATION_SECRET di .env Strapi
+REVALIDATION_SECRET=<nilai>
+
+# URL publik frontend
 NEXT_PUBLIC_SITE_URL=https://news.jobenapp.cloud
-NEXT_PUBLIC_GA_MEASUREMENT_ID=<isi jika sudah ada GA4>
+
+# Google Analytics (opsional)
+NEXT_PUBLIC_GA_MEASUREMENT_ID=
+
+NODE_ENV=production
 ```
 
-### e. Install saja di cPanel — BUKAN build (build sudah dilakukan di Replit)
+### E. Install dependencies
 
-Karena shared hosting Anda punya limit resource, **build TIDAK dijalankan di
-cPanel**. Build (Strapi admin panel & Next.js) dilakukan di Replit, hasilnya
-di-commit & di-push ke GitHub, lalu di cPanel tinggal `git pull` + install
-dependency + restart. Lihat §5 untuk alur lengkapnya.
-
-**Strapi (via Terminal cPanel/SSH, sekali di awal & tiap ada perubahan `package.json`):**
 ```bash
-cd ~/<application-root-strapi>
-git pull origin main
-npm install --production
+# Aktifkan Node.js environment
+source /home/smknwon2/nodevenv/public_html/news/22/bin/activate
+cd /home/smknwon2/public_html/news
+
+# Install root (Strapi)
+npm install --omit=dev --ignore-scripts
+
+# Install frontend (Next.js)
+cd frontend && npm install --omit=dev --ignore-scripts && cd ..
 ```
-Lalu klik **Restart** di panel Setup Node.js App.
 
-Buka `https://cms.news.jobenapp.cloud/admin` → buat akun admin pertama Anda
-(form setup akan muncul otomatis di kunjungan pertama).
+### F. Daftarkan dua Node.js App di cPanel
 
-Setelah admin dibuat, buka **Settings → API Tokens → Create new API Token**,
-pilih tipe **Read-only**, salin tokennya — itu yang jadi `STRAPI_API_TOKEN`
-di env var Next.js.
+**App 1 — Frontend (mungkin sudah ada):**
+- Node.js version: `22.23.0`
+- Application mode: `Production`
+- Application root: `public_html/news`
+- Application URL: `news.jobenapp.cloud`
+- Application startup file: `app.js`
 
-**Next.js:**
+**App 2 — Strapi CMS:**
+- Node.js version: `22.23.0`
+- Application mode: `Production`
+- Application root: `public_html/news-cms`
+- Application URL: `cms.news.jobenapp.cloud`
+- Application startup file: `server.js`
+
+### G. Jalankan migrasi database Strapi (sekali)
+
 ```bash
-cd ~/frontend
-git pull origin main
-npm install --production
-```
-Lalu klik **Restart** di panel Setup Node.js App.
-
-> Tidak ada `npm run build` di sini — folder `build/` (Strapi) dan
-> `frontend/.next/` sudah ikut ter-pull dari GitHub karena dibangun di Replit.
-
-### f. Aktifkan SSL
-1. cPanel → **SSL/TLS Status** atau **AutoSSL**
-2. Centang kedua domain (`news.jobenapp.cloud` dan `cms.news.jobenapp.cloud`)
-3. Klik **Run AutoSSL** — tunggu beberapa menit sampai sertifikat aktif
-
-### g. Cron Job Anti-Idle (opsional, untuk shared hosting yang suka mem-suspend proses idle)
-cPanel → **Cron Jobs** → tambahkan, interval setiap 10 menit:
-```
-curl -s https://cms.news.jobenapp.cloud/api > /dev/null
-curl -s https://news.jobenapp.cloud > /dev/null
+source /home/smknwon2/nodevenv/public_html/news/22/bin/activate
+cd /home/smknwon2/public_html/news
+NODE_ENV=production node_modules/.bin/strapi db:migrate
 ```
 
-### h. Cron Job Backup Database (WAJIB)
+> Jika error permission atau table sudah ada — aman diabaikan.
 
-Script `scripts/backup-database.js` men-dump database PostgreSQL production
-lalu upload otomatis ke bucket R2 (folder `backups/`), dan menghapus backup
-yang lebih tua dari retensi yang ditentukan.
+### H. Restart kedua app
 
-**Env var tambahan (opsional):**
-```
-BACKUP_RETENTION_DAYS=14
-```
-Jika tidak diisi, default retensi adalah 14 hari.
+Di cPanel Node.js Selector → klik **Restart** untuk:
+1. `news.jobenapp.cloud`
+2. `cms.news.jobenapp.cloud`
 
-**Setup cron job** (cPanel → Cron Jobs), jalankan setiap hari jam 3 pagi:
-```
-0 3 * * * cd /home/<cpanel_user>/<application-root-strapi> && /home/<cpanel_user>/nodevenv/<application-root-strapi>/20/bin/node scripts/backup-database.js >> /home/<cpanel_user>/logs/backup-db.log 2>&1
-```
-
-Catatan:
-- Path `nodevenv/.../20/bin/node` adalah lokasi Node.js yang disediakan
-  Passenger untuk app Strapi Anda — lihat di halaman "Setup Node.js App",
-  ada tombol "Enter to the virtual environment" yang menampilkan path persis
-  ini untuk app Anda.
-- `pg_dump` harus tersedia di PATH shared hosting Anda (umumnya sudah ada
-  karena PostgreSQL terinstall di server yang sama).
-- Cek isi `logs/backup-db.log` setelah cron pertama jalan untuk memastikan
-  tidak ada error (mis. kredensial salah, `pg_dump` tidak ditemukan).
-- Backup tersimpan di bucket R2 yang sama dengan media upload, tapi di
-  folder terpisah (`backups/`) — tidak akan bercampur dengan gambar artikel.
-
-**Restore manual jika suatu saat dibutuhkan:**
+Atau via SSH:
 ```bash
-# Download file .dump dari R2 (via dashboard Cloudflare atau rclone/aws-cli)
-pg_restore --host=<DATABASE_HOST> --port=<DATABASE_PORT> \
-  --username=<DATABASE_USERNAME> --dbname=<DATABASE_NAME> \
-  --clean --if-exists --no-owner --no-privileges \
-  joben-news-db_<timestamp>.dump
+bash /home/smknwon2/public_html/news/deploy.sh
 ```
+
+### I. Verifikasi
+
+- `https://cms.news.jobenapp.cloud/admin` → halaman login Strapi ✅
+- `https://news.jobenapp.cloud` → halaman beranda JOBEN NEWS ✅
 
 ---
 
-## 4. Verifikasi Setelah Deploy
+## DEPLOY SELANJUTNYA (Rutin)
 
-- [ ] `https://cms.news.jobenapp.cloud/admin` bisa dibuka & login berhasil
-- [ ] `https://news.jobenapp.cloud` menampilkan homepage dengan artikel
-- [ ] Upload gambar baru di Strapi → cek muncul di R2 & tampil di frontend
-- [ ] Publish artikel baru → cek homepage frontend ter-update tanpa perlu rebuild manual (test fitur revalidation)
-- [ ] Kedua domain sudah HTTPS (gembok hijau, tanpa warning)
-- [ ] Rotate `REVALIDATION_SECRET` & `STRAPI_API_TOKEN` (lihat §0) setelah semua di atas lolos
+Setiap kali ada perubahan kode:
+
+**Di Replit:**
+```bash
+npm run build:all          # Build Strapi admin + Next.js + tulis .build_commit
+git add -A
+git commit -m "build: update production build YYYY-MM-DD"
+git push origin main
+```
+
+**Di cPanel SSH:**
+```bash
+cd ~/public_html/news
+bash deploy.sh
+```
+
+Script `deploy.sh` otomatis:
+- Git pull
+- Verifikasi build sinkron
+- Skip install jika deps tidak berubah
+- Restart kedua app
+
+---
+
+## Troubleshooting
+
+| Gejala | Kemungkinan Penyebab | Solusi |
+|---|---|---|
+| `/admin` error 404 | `build/` tidak ada | `npm run build:all` di Replit → commit → push |
+| Frontend kosong/error | `.next/` tidak ada | Sama seperti atas |
+| Strapi tidak konek DB | Format env DB salah | Pastikan `DATABASE_CLIENT=postgres` + individual vars |
+| Image tidak muncul | R2 env salah | Cek R2_ENDPOINT, R2_ACCESS_KEY_ID di `.env` |
+| CORS error di browser | Origin belum didaftarkan | Cek `config/middlewares.js` — origin array |
+| 502 Bad Gateway | App tidak jalan | cPanel → Node.js Selector → lihat error log |
+| npm install gagal | RLIMIT_NPROC (server penuh) | Tunggu 5-10 menit → coba lagi |
+
+---
+
+## Catatan Keamanan
+
+- File `.env` dan `frontend/.env.local` ada di `.gitignore` — tidak pernah ter-commit.
+- Rotate `REVALIDATION_SECRET` dan `STRAPI_API_TOKEN` secara berkala via Strapi Admin.
+- Jangan simpan password di file selain `.env` yang ada di server cPanel.

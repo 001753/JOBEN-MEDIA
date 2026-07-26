@@ -1,15 +1,1 @@
-{
-  "version": 1,
-  "functions": {
-    "/": {},
-    "/cari": {},
-    "/kategori/[slug]": {},
-    "/[slug]": {},
-    "/sitemap.xml": {},
-    "/_not-found": {},
-    "/tag/[slug]": {},
-    "/artikel/[slug]": {},
-    "/redaksi": {},
-    "/tag": {}
-  }
-}
+{"version":1,"functions":{"/_not-found":{},"/sitemap.xml":{},"/cari":{},"/":{},"/redaksi":{},"/kategori/[slug]":{},"/tag/[slug]":{},"/artikel/[slug]":{},"/[slug]":{},"/tag":{}}}

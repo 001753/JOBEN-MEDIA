@@ -11,15 +11,24 @@
 
 set -e
 
-echo "[build-all] Build Strapi (backend)..."
+echo "[build-all] Build Strapi admin panel..."
 NODE_ENV=production npm run build
 
-echo "[build-all] Build Next.js (frontend)..."
+echo "[build-all] Build Next.js frontend..."
 cd frontend
-npm run build
+NODE_ENV=production npm run build
 cd ..
 
-echo "[build-all] Selesai. Sekarang commit & push hasil build:"
+# ── Tulis commit hash ke .build_commit ────────────────────────────────────────
+# deploy.sh di cPanel membaca file ini untuk verifikasi sinkronisasi build.
+COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+
+echo "$COMMIT" > frontend/.next/.build_commit
+echo "[build-all] Build commit: ${COMMIT:0:12} → frontend/.next/.build_commit"
+
+echo ""
+echo "[build-all] ✅ Selesai! Sekarang commit & push hasil build:"
 echo "  git add -A"
-echo "  git commit -m \"build: update production build\""
+echo "  git commit -m \"build: update production build $(date +%Y-%m-%d)\""
 echo "  git push origin main"
+echo "  → lalu di cPanel SSH: bash deploy.sh"
