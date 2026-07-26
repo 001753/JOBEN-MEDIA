@@ -1,1 +1,1 @@
-{"version":1,"functions":{"/_not-found":{},"/sitemap.xml":{},"/cari":{},"/":{},"/redaksi":{},"/kategori/[slug]":{},"/tag/[slug]":{},"/artikel/[slug]":{},"/[slug]":{},"/tag":{}}}
+{"version":1,"functions":{"/sitemap.xml":{},"/_not-found":{},"/[slug]":{},"/kategori/[slug]":{},"/artikel/[slug]":{},"/redaksi":{},"/tag":{},"/":{},"/tag/[slug]":{},"/cari":{}}}
