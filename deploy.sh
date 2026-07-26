@@ -55,7 +55,8 @@ export UV_THREADPOOL_SIZE=1
 export RAYON_NUM_THREADS=1
 export TOKIO_WORKER_THREADS=1
 export npm_config_maxsockets=1
-export NODE_OPTIONS="--max-old-space-size=256"
+# JANGAN set NODE_OPTIONS di sini — npm butuh heap penuh untuk install Strapi
+# NODE_OPTIONS akan di-unset sementara saat install dan dikembalikan setelahnya
 
 # ── 1. Git: fetch & reset ─────────────────────────────────────────────────────
 echo "▶ [1/4] Git pull origin main ..."
@@ -168,21 +169,30 @@ install_deps() {
   local NPM_CLI; NPM_CLI=$(find_npm_cli)
   local SUCCESS=0
 
-  # Gunakan /tmp sebagai cache — KRITIS: hindari mengisi home quota
-  # Gunakan --prefix untuk force install ke project dir, bukan nodevenv global
+  # Cache ke /tmp — hindari home quota
   local NPM_CACHE="/tmp/npm-cache-joben"
-  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit --cache $NPM_CACHE --prefer-offline"
 
-  # Bersihkan cache korup jika ada
-  if [ -d "$NPM_CACHE" ] && ! mkdir -p "$NPM_CACHE/test-$$" 2>/dev/null; then
-    echo "  → Cache /tmp korup — hapus dan buat ulang"
-    rm -rf "$NPM_CACHE"
-  fi
-  rm -rf "$NPM_CACHE/test-$$" 2>/dev/null
-  mkdir -p "$NPM_CACHE"
+  # FIX 1: Unset NPM_CONFIG_PREFIX yang di-set oleh nodevenv activate
+  # Tanpa ini, npm ignore --prefix dan tetap install ke nodevenv global
+  local _SAVED_PREFIX="${NPM_CONFIG_PREFIX:-}"
+  unset NPM_CONFIG_PREFIX
+  unset npm_config_prefix
+
+  # FIX 2: Unset NODE_OPTIONS selama install
+  # --max-old-space-size=256 membunuh npm saat resolve Strapi deps (butuh >256MB)
+  local _SAVED_NODE_OPTIONS="${NODE_OPTIONS:-}"
+  unset NODE_OPTIONS
+
+  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit --cache $NPM_CACHE"
 
   for try in 1 2 3; do
     echo "  → $LABEL install (percobaan $try/3) ..."
+
+    # FIX 3: Wipe cache sepenuhnya sebelum tiap percobaan
+    # Cache korup (file di tempat direktori) menyebabkan EEXIST fatal
+    rm -rf "$NPM_CACHE"
+    mkdir -p "$NPM_CACHE"
+
     if [ -n "$NPM_CLI" ]; then
       node "$NPM_CLI" install --prefix "$DIR" $FLAGS && SUCCESS=1 && break
     else
@@ -192,11 +202,17 @@ install_deps() {
     sleep 10
   done
 
+  # Kembalikan env vars
+  [ -n "$_SAVED_PREFIX" ]        && export NPM_CONFIG_PREFIX="$_SAVED_PREFIX"
+  [ -n "$_SAVED_NODE_OPTIONS" ]  && export NODE_OPTIONS="$_SAVED_NODE_OPTIONS"
+
   if [ "$SUCCESS" -eq 0 ]; then
     echo ""
     echo "  ✗ npm install gagal di $DIR setelah 3 percobaan."
-    echo "  Jalankan manual di SSH:"
-    echo "    rm -rf ~/.npm/ && npm install --prefix $DIR --omit=dev --ignore-scripts --cache /tmp/npm-cache"
+    echo "  Coba manual di SSH:"
+    echo "    unset NPM_CONFIG_PREFIX NODE_OPTIONS"
+    echo "    rm -rf /tmp/npm-cache-joben"
+    echo "    npm install --prefix $DIR --omit=dev --ignore-scripts --no-fund --no-audit --cache /tmp/npm-cache-joben"
     exit 1
   fi
 
