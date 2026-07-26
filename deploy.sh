@@ -185,10 +185,14 @@ install_deps() {
   # Blokir SEMUA mekanisme nodevenv yang override install location:
   #   1. Unset environment variables
   unset NPM_CONFIG_PREFIX npm_config_prefix
-  #   2. Override globalconfig & userconfig ke /dev/null agar npmrc nodevenv
-  #      (yang set prefix ke ~/nodevenv/...) tidak terbaca
-  export npm_config_globalconfig=/dev/null
-  export npm_config_userconfig=/dev/null
+  #   2. Override globalconfig & userconfig ke file kosong terpisah agar npmrc
+  #      nodevenv (yang set prefix ke ~/nodevenv/...) tidak terbaca.
+  #      CATATAN: tidak bisa keduanya /dev/null — npm v10+ tolak double-loading
+  #      dari path yang sama; pakai mktemp (dua file berbeda).
+  local _EMPTY_GCFG; _EMPTY_GCFG=$(mktemp)
+  local _EMPTY_UCFG; _EMPTY_UCFG=$(mktemp)
+  export npm_config_globalconfig="$_EMPTY_GCFG"
+  export npm_config_userconfig="$_EMPTY_UCFG"
   #   3. Set prefix eksplisit ke project dir
   export npm_config_prefix="$DIR"
   #   4. Set cache ke /tmp via env (lebih kuat dari --cache flag)
@@ -212,6 +216,9 @@ install_deps() {
     echo "  ⚠️  Gagal — tunggu 10 detik ..."
     sleep 10
   done
+
+  # Hapus temp config files
+  rm -f "$_EMPTY_GCFG" "$_EMPTY_UCFG"
 
   # Kembalikan env vars
   [ -n "$_SAVED_PREFIX" ]       && export NPM_CONFIG_PREFIX="$_SAVED_PREFIX"   || unset NPM_CONFIG_PREFIX
