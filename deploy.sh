@@ -158,33 +158,45 @@ install_deps() {
       return
     else
       echo "  → $LABEL: package.json berubah — install diperlukan"
+      # Bersihkan node_modules lama agar tidak ada konflik
+      rm -rf "$DIR/node_modules"
     fi
   else
     echo "  → $LABEL: node_modules belum ada — install diperlukan"
   fi
 
   local NPM_CLI; NPM_CLI=$(find_npm_cli)
-  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit"
   local SUCCESS=0
 
-  pushd "$DIR" > /dev/null
+  # Gunakan /tmp sebagai cache — KRITIS: hindari mengisi home quota
+  # Gunakan --prefix untuk force install ke project dir, bukan nodevenv global
+  local NPM_CACHE="/tmp/npm-cache-joben"
+  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit --cache $NPM_CACHE --prefer-offline"
+
+  # Bersihkan cache korup jika ada
+  if [ -d "$NPM_CACHE" ] && ! mkdir -p "$NPM_CACHE/test-$$" 2>/dev/null; then
+    echo "  → Cache /tmp korup — hapus dan buat ulang"
+    rm -rf "$NPM_CACHE"
+  fi
+  rm -rf "$NPM_CACHE/test-$$" 2>/dev/null
+  mkdir -p "$NPM_CACHE"
+
   for try in 1 2 3; do
     echo "  → $LABEL install (percobaan $try/3) ..."
     if [ -n "$NPM_CLI" ]; then
-      node "$NPM_CLI" install $FLAGS && SUCCESS=1 && break
+      node "$NPM_CLI" install --prefix "$DIR" $FLAGS && SUCCESS=1 && break
     else
-      npm install $FLAGS && SUCCESS=1 && break
+      npm install --prefix "$DIR" $FLAGS && SUCCESS=1 && break
     fi
-    echo "  ⚠️  Gagal — tunggu 15 detik agar server lowongkan proses ..."
-    sleep 15
+    echo "  ⚠️  Gagal — tunggu 10 detik ..."
+    sleep 10
   done
-  popd > /dev/null
 
   if [ "$SUCCESS" -eq 0 ]; then
     echo ""
     echo "  ✗ npm install gagal di $DIR setelah 3 percobaan."
-    echo "    Kemungkinan server penuh proses (RLIMIT_NPROC)."
-    echo "    Coba lagi beberapa menit kemudian."
+    echo "  Jalankan manual di SSH:"
+    echo "    rm -rf ~/.npm/ && npm install --prefix $DIR --omit=dev --ignore-scripts --cache /tmp/npm-cache"
     exit 1
   fi
 
