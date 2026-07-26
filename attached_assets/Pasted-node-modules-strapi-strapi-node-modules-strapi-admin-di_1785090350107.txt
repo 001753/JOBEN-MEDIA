@@ -1,0 +1,98 @@
+node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/hooks'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/hooks'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/hooks'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/pages'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/shared'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/types'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/hooks'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/tests'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/services'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/ee'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/ee'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/utils'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/shared'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/hooks'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/pages'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/hooks'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/pages'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/hooks'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/services'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/pages'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/types'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/shared'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/tests'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/ee'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/ee'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/components/WidgetHelpers.d.ts'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/utils'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/components/WidgetRoot.d.ts'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src/services'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/components/Widgets.d.ts'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/pages'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/core'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/pages'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/features'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/services'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/ee'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src/controllers'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/core/node_modules/@strapi/admin/dist/admin/src/utils'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/server/src/routes'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/shared'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/components/WidgetHelpers.d.ts'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/utils'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/components/WidgetRoot.d.ts'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/components/Widgets.d.ts'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/core/apis'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/features'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/ee'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/strapi/node_modules/@strapi/admin/dist/admin/src/utils/widgetVisibility.d.ts'
+npm error code EEXIST
+npm error syscall mkdir
+npm error path /tmp/npm-cache-joben/_cacache/content-v2/sha512/7e/75
+npm error errno -2
+npm error ENOENT: no such file or directory, mkdir '/tmp/npm-cache-joben/_cacache/content-v2/sha512/7e/75'
+npm error File exists: /tmp/npm-cache-joben/_cacache/content-v2/sha512/7e/75
+npm error Remove the existing file and try again, or run npm
+npm error with --force to overwrite files recklessly.
+npm error A complete log of this run can be found in: /tmp/npm-cache-joben/_logs/2026-07-26T18_19_37_235Z-debug-0.log
+  ⚠️  Gagal — tunggu 10 detik ...
+  → Strapi (root) install (percobaan 3/3) ...
+⠇
+<--- Last few GCs --->
+
+[2464119:0x4ce000]    49976 ms: Mark-Compact (reduce) 254.6 (263.5) -> 253.1 (261.0) MB, pooled: 0 MB, 165.00 / 0.00 ms  (+ 0.3 ms in 0 steps since start of marking, biggest step 0.0 ms, walltime since start of marking 206 ms) (average mu = 0.189, current[2464119:0x4ce000]    50230 ms: Mark-Compact 254.2 (261.0) -> 252.6 (264.3) MB, pooled: 0MB, 236.04 / 0.00 ms  (average mu = 0.136, current mu = 0.067) allocation failure; scavenge might not succeed
+
+
+<--- JS stacktrace --->
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0x7f81926d8741  [/opt/alt/alt-nodejs22/root/usr/bin/../lib/libnode.so.127]
+ 2: 0x7f819364dbd4 v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [/opt/alt/alt-nodejs22/root/usr/bin/../lib/libnode.so.127]
+ 3: 0x7f819364dfb1 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [/opt/alt/alt-nodejs22/root/usr/bin/../lib/libnode.so.127]
+ 4: 0x7f819385756b  [/opt/alt/alt-nodejs22/root/usr/bin/../lib/libnode.so.127]
+ 5: 0x7f81938575a6 v8::internal::Heap::ReportIneffectiveMarkCompactIfNeeded() [/opt/alt/alt-nodejs22/root/usr/bin/../lib/libnode.so.127]
+ 6: 0x7f819387153d  [/opt/alt/alt-nodejs22/root/usr/bin/../lib/libnode.so.127]
+ 7: 0x7f819387402c  [/opt/alt/alt-nodejs22/root/usr/bin/../lib/libnode.so.127]
+ 8: 0x7f8194072627  [/opt/alt/alt-nodejs22/root/usr/bin/../lib/libnode.so.127]
+deploy.sh: line 184: 2464119 Aborted                 (core dumped) npm install --prefix "$DIR" $FLAGS
+  ⚠️  Gagal — tunggu 10 detik ...
+
+  ✗ npm install gagal di /home/smknwon2/public_html/news setelah 3 percobaan.
+  Jalankan manual di SSH:
+    rm -rf ~/.npm/ && npm install --prefix /home/smknwon2/public_html/news --omit=dev --ignore-scripts --cache /tmp/npm-cache
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
