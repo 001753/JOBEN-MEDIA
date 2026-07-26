@@ -1,0 +1,46 @@
+bash: /etc/motd.sh: No such file or directory
+[smknwon2@tirtonirmolo ~]$ # 1. Clone repo
+[smknwon2@tirtonirmolo ~]$ cd ~/public_html
+[smknwon2@tirtonirmolo public_html]$ git clone https://github.com/001753/JOBEN-MEDIA news
+fatal: destination path 'news' already exists and is not an empty directory.
+[smknwon2@tirtonirmolo public_html]$ cd news
+[smknwon2@tirtonirmolo news]$
+[smknwon2@tirtonirmolo news]$ # 2. Buat symlink Strapi
+[smknwon2@tirtonirmolo news]$ ln -s /home/smknwon2/public_html/news /home/smknwon2/public_html/news-cms
+[smknwon2@tirtonirmolo news]$ # 3. Update repo ke commit terbaru (yang ada build/ dan deploy.sh)
+[smknwon2@tirtonirmolo news]$ cd /home/smknwon2/public_html/news
+[smknwon2@tirtonirmolo news]$ git fetch origin
+remote: Enumerating objects: 769, done.
+remote: Counting objects: 100% (769/769), done.
+remote: Compressing objects: 100% (578/578), done.
+remote: Total 719 (delta 148), reused 689 (delta 118), pack-reused 0 (from 0)
+Receiving objects: 100% (719/719), 5.90 MiB | 2.25 MiB/s, done.
+Resolving deltas: 100% (148/148), completed with 16 local objects.
+From https://github.com/001753/JOBEN-MEDIA
+   e3f25ed..9ad6670  main       -> origin/main
+[smknwon2@tirtonirmolo news]$ git reset --hard origin/main
+HEAD is now at 9ad6670 build: first production build + deploy.sh untuk cPanel
+[smknwon2@tirtonirmolo news]$
+[smknwon2@tirtonirmolo news]$ # Verifikasi build artifacts sudah ada:
+[smknwon2@tirtonirmolo news]$ ls build/ | head -3
+AdminSeatInfo-pObH3E_X.js
+AIUsage-By4Dz-Qi.js
+apiTokens-DCpA_O5t.js
+[smknwon2@tirtonirmolo news]$ ls frontend/.next/BUILD_ID
+frontend/.next/BUILD_ID
+[smknwon2@tirtonirmolo news]$ ls deploy.sh
+deploy.sh
+[smknwon2@tirtonirmolo news]$ # 3. Update repo ke commit terbaru (yang ada build/ dan deploy.sh)
+[smknwon2@tirtonirmolo news]$ cd /home/smknwon2/public_html/news
+[smknwon2@tirtonirmolo news]$ git fetch origin
+[smknwon2@tirtonirmolo news]$ git reset --hard origin/main
+HEAD is now at 9ad6670 build: first production build + deploy.sh untuk cPanel
+[smknwon2@tirtonirmolo news]$
+[smknwon2@tirtonirmolo news]$ # Verifikasi build artifacts sudah ada:
+[smknwon2@tirtonirmolo news]$ ls build/ | head -3
+AdminSeatInfo-pObH3E_X.js
+AIUsage-By4Dz-Qi.js
+apiTokens-DCpA_O5t.js
+[smknwon2@tirtonirmolo news]$ ls frontend/.next/BUILD_ID
+frontend/.next/BUILD_ID
+[smknwon2@tirtonirmolo news]$ ls deploy.sh
