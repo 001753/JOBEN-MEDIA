@@ -3,25 +3,25 @@
 /**
  * Custom server untuk deployment di cPanel via Passenger.
  *
+ * Menggunakan Next.js standalone output — tidak perlu npm install
+ * di cPanel. Semua deps sudah di-bundle ke .next/standalone/
+ *
  * Passenger mengeset variabel PORT secara otomatis.
- * Jalankan: node server.js
  */
 
-const { createServer } = require('http');
-const { parse }        = require('url');
-const next             = require('next');
+const path = require('path');
+const fs   = require('fs');
 
-const dev  = process.env.NODE_ENV !== 'production';
-const port = parseInt(process.env.PORT, 10) || 3000;
-const app  = next({ dev });
-const handle = app.getRequestHandler();
+const standaloneServer = path.join(__dirname, '.next', 'standalone', 'server.js');
 
-app.prepare().then(() => {
-  createServer((req, res) => {
-    const parsedUrl = parse(req.url, true);
-    handle(req, res, parsedUrl);
-  }).listen(port, (err) => {
-    if (err) throw err;
-    console.log(`> JOBEN NEWS Frontend siap di http://localhost:${port}`);
-  });
-});
+if (!fs.existsSync(standaloneServer)) {
+  console.error('[frontend] ERROR: .next/standalone/server.js tidak ditemukan.');
+  console.error('[frontend] Jalankan: npm run build:all di Replit → commit → push → deploy lagi');
+  process.exit(1);
+}
+
+// Standalone server membaca PORT dari env — Passenger set otomatis
+process.env.PORT = process.env.PORT || 3000;
+process.env.HOSTNAME = '0.0.0.0';
+
+require(standaloneServer);

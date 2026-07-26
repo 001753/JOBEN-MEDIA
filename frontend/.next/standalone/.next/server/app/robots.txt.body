@@ -1,0 +1,7 @@
+User-Agent: *
+Allow: /
+Disallow: /api/
+Disallow: /cari
+
+Host: https://news.jobenapp.cloud
+Sitemap: https://news.jobenapp.cloud/sitemap.xml

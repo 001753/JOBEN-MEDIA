@@ -2,6 +2,9 @@
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Standalone output: bundle semua deps ke .next/standalone/
+  // sehingga cPanel tidak perlu npm install untuk frontend
+  output: 'standalone',
   images: {
     remotePatterns: [
       {

@@ -192,9 +192,32 @@ install_deps() {
   echo "  ✓ $LABEL: dependencies diperbarui"
 }
 
-# Install root (Strapi) dan frontend (Next.js)
+# Install root (Strapi) saja — frontend pakai Next.js standalone output
+# (tidak butuh npm install; .next/standalone/ sudah bundle semua deps)
 install_deps "Strapi (root)" "$APP_DIR" "$APP_DIR/.pkg_hash"
-install_deps "Next.js (frontend)" "$FRONTEND_DIR" "$FRONTEND_DIR/.pkg_hash"
+
+# Pastikan static files Next.js tersedia di dalam standalone dir
+# (Next.js standalone butuh .next/static & public/ dicopy/symlink ke sana)
+if [ -d "$FRONTEND_DIR/.next/standalone" ]; then
+  STANDALONE_DIR="$FRONTEND_DIR/.next/standalone"
+
+  # .next/static → .next/standalone/.next/static
+  if [ ! -e "$STANDALONE_DIR/.next/static" ]; then
+    ln -sfn "$FRONTEND_DIR/.next/static" "$STANDALONE_DIR/.next/static"
+    echo "  ✓ Symlink .next/static → standalone/.next/static dibuat"
+  fi
+
+  # public/ → .next/standalone/public
+  if [ -d "$FRONTEND_DIR/public" ] && [ ! -e "$STANDALONE_DIR/public" ]; then
+    ln -sfn "$FRONTEND_DIR/public" "$STANDALONE_DIR/public"
+    echo "  ✓ Symlink public/ → standalone/public dibuat"
+  fi
+
+  echo "  ✓ Next.js standalone: skip npm install (deps sudah di-bundle)"
+else
+  echo "  ⚠️  .next/standalone belum ada — pakai install biasa sebagai fallback"
+  install_deps "Next.js (frontend)" "$FRONTEND_DIR" "$FRONTEND_DIR/.pkg_hash"
+fi
 
 echo "  ✓ Semua dependencies siap"
 echo ""
