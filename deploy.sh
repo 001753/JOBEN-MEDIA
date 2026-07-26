@@ -172,39 +172,53 @@ install_deps() {
   # Cache ke /tmp — hindari home quota
   local NPM_CACHE="/tmp/npm-cache-joben"
 
-  # FIX 1: Unset NPM_CONFIG_PREFIX yang di-set oleh nodevenv activate
-  # Tanpa ini, npm ignore --prefix dan tetap install ke nodevenv global
+  # Simpan env lama agar bisa dikembalikan
   local _SAVED_PREFIX="${NPM_CONFIG_PREFIX:-}"
-  unset NPM_CONFIG_PREFIX
-  unset npm_config_prefix
-
-  # FIX 2: Unset NODE_OPTIONS selama install
-  # --max-old-space-size=256 membunuh npm saat resolve Strapi deps (butuh >256MB)
   local _SAVED_NODE_OPTIONS="${NODE_OPTIONS:-}"
+  local _SAVED_GCFG="${npm_config_globalconfig:-}"
+  local _SAVED_UCFG="${npm_config_userconfig:-}"
+
+  # Unset NODE_OPTIONS — --max-old-space-size=256 dari nodevenv membunuh npm
+  # saat resolve Strapi deps (butuh >256MB heap)
   unset NODE_OPTIONS
 
-  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit --cache $NPM_CACHE"
+  # Blokir SEMUA mekanisme nodevenv yang override install location:
+  #   1. Unset environment variables
+  unset NPM_CONFIG_PREFIX npm_config_prefix
+  #   2. Override globalconfig & userconfig ke /dev/null agar npmrc nodevenv
+  #      (yang set prefix ke ~/nodevenv/...) tidak terbaca
+  export npm_config_globalconfig=/dev/null
+  export npm_config_userconfig=/dev/null
+  #   3. Set prefix eksplisit ke project dir
+  export npm_config_prefix="$DIR"
+  #   4. Set cache ke /tmp via env (lebih kuat dari --cache flag)
+  export npm_config_cache="$NPM_CACHE"
+
+  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit"
 
   for try in 1 2 3; do
     echo "  → $LABEL install (percobaan $try/3) ..."
 
-    # FIX 3: Wipe cache sepenuhnya sebelum tiap percobaan
+    # Wipe cache sepenuhnya sebelum tiap percobaan
     # Cache korup (file di tempat direktori) menyebabkan EEXIST fatal
     rm -rf "$NPM_CACHE"
     mkdir -p "$NPM_CACHE"
 
     if [ -n "$NPM_CLI" ]; then
-      node "$NPM_CLI" install --prefix "$DIR" $FLAGS && SUCCESS=1 && break
+      node "$NPM_CLI" install $FLAGS && SUCCESS=1 && break
     else
-      npm install --prefix "$DIR" $FLAGS && SUCCESS=1 && break
+      npm install $FLAGS && SUCCESS=1 && break
     fi
     echo "  ⚠️  Gagal — tunggu 10 detik ..."
     sleep 10
   done
 
   # Kembalikan env vars
-  [ -n "$_SAVED_PREFIX" ]        && export NPM_CONFIG_PREFIX="$_SAVED_PREFIX"
-  [ -n "$_SAVED_NODE_OPTIONS" ]  && export NODE_OPTIONS="$_SAVED_NODE_OPTIONS"
+  [ -n "$_SAVED_PREFIX" ]       && export NPM_CONFIG_PREFIX="$_SAVED_PREFIX"   || unset NPM_CONFIG_PREFIX
+  [ -n "$_SAVED_NODE_OPTIONS" ] && export NODE_OPTIONS="$_SAVED_NODE_OPTIONS"  || unset NODE_OPTIONS
+  [ -n "$_SAVED_GCFG" ]         && export npm_config_globalconfig="$_SAVED_GCFG" || unset npm_config_globalconfig
+  [ -n "$_SAVED_UCFG" ]         && export npm_config_userconfig="$_SAVED_UCFG"   || unset npm_config_userconfig
+  unset npm_config_prefix npm_config_cache
 
   if [ "$SUCCESS" -eq 0 ]; then
     echo ""
