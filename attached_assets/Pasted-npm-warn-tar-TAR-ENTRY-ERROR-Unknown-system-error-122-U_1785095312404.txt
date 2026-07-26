@@ -1,0 +1,56 @@
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/server/src/routes/serve-admin-panel.d.ts'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin/tests'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/shared/utils'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/server/src/content-types/session.d.ts'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/shared/contracts/sessions.d.ts'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin/src/pages'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/server/src/config/settings.d.ts'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin/src/pages'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin/tests'
+npm warn tar TAR_ENTRY_ERROR Unknown system error -122: Unknown system error -122, open '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/shared/contracts/shared.d.ts'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin/src/utils'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/ee/admin'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/ee/server/src/utils'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/ee/server/src/routes'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/ee/server/src/services/passport'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/ee/admin'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin/src/components/GuidedTour'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin/tests'
+npm warn tar TAR_ENTRY_ERROR ENOENT: no such file or directory, lstat '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin/src'
+npm warn cleanup Failed to remove some directories [
+npm warn cleanup   [
+npm warn cleanup     '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin',
+npm warn cleanup     [Error: ENOTEMPTY: directory not empty, rmdir '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin'] {
+npm warn cleanup       errno: -39,
+npm warn cleanup       code: 'ENOTEMPTY',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin'
+npm warn cleanup     }
+npm warn cleanup   ],
+npm warn cleanup   [
+npm warn cleanup     '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi',
+npm warn cleanup     [Error: ENOTEMPTY: directory not empty, rmdir '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin'] {
+npm warn cleanup       errno: -39,
+npm warn cleanup       code: 'ENOTEMPTY',
+npm warn cleanup       syscall: 'rmdir',
+npm warn cleanup       path: '/home/smknwon2/nodevenv/public_html/news/22/lib/node_modules/@strapi/admin/dist/admin'
+npm warn cleanup     }
+npm warn cleanup   ]
+npm warn cleanup ]
+npm error code EEXIST
+npm error syscall mkdir
+npm error path /tmp/npm-cache-joben/_cacache/content-v2/sha512/3d/10
+npm error errno -2
+npm error ENOENT: no such file or directory, mkdir '/tmp/npm-cache-joben/_cacache/content-v2/sha512/3d/10'
+npm error File exists: /tmp/npm-cache-joben/_cacache/content-v2/sha512/3d/10
+npm error Remove the existing file and try again, or run npm
+npm error with --force to overwrite files recklessly.
+npm notice
+npm notice New major version of npm available! 10.9.8 -> 12.0.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.1
+npm notice To update run: npm install -g npm@12.0.1
+npm notice
+npm error A complete log of this run can be found in: /tmp/npm-cache-joben/_logs/2026-07-26T19_37_32_017Z-debug-0.log
+  ⚠️  Gagal — tunggu 10 detik ...
+^C
+[smknwon2@tirtonirmolo news]$
