@@ -56,24 +56,36 @@ echo ""
 echo "▶ [2/4] Prune devDependencies & optionalDependencies ..."
 echo "  (Membuat salinan sementara untuk di-prune tanpa merusak dev setup)"
 
-# Kita buat temp dir dan install langsung ke sana dengan --omit flags
+# Buat temp dir, salin manifest ke sana, lalu install dari dalam temp dir
+# (npm install tanpa --prefix jauh lebih reliable — --prefix bisa di-override
+# oleh nodevenv wrapper dan npm mencari package.json di CWD, bukan di prefix)
 TEMP_NM=$(mktemp -d /tmp/nm-pack-XXXXXX)
-echo "  → Install prod-only ke $TEMP_NM ..."
+echo "  → Salin package.json + package-lock.json ke $TEMP_NM ..."
+cp "$APP_DIR/package.json" "$TEMP_NM/package.json"
+[ -f "$APP_DIR/package-lock.json" ] && cp "$APP_DIR/package-lock.json" "$TEMP_NM/package-lock.json"
 
-npm install \
-  --prefix "$TEMP_NM" \
+echo "  → Install prod-only dari $TEMP_NM ..."
+# Jalankan npm install tanpa pipe agar exit code terdeteksi dengan benar
+# (pipe ke grep/head menyembunyikan error dan mencegah pembuatan node_modules)
+NPM_INSTALL_LOG=$(mktemp /tmp/npm-install-XXXXXX.log)
+(cd "$TEMP_NM" && npm install \
   --omit=dev \
   --omit=optional \
   --ignore-scripts \
   --no-fund \
   --no-audit \
-  --prefer-dedupe \
-  2>&1 | grep -E "^(added|npm warn EBADENGINE)" | head -5 || true
+  --prefer-dedupe) >"$NPM_INSTALL_LOG" 2>&1
+NPM_EXIT=$?
+
+# Tampilkan ringkasan
+grep -E "^(added|removed|changed)" "$NPM_INSTALL_LOG" | head -3 || true
+grep "^npm error" "$NPM_INSTALL_LOG" | head -5 || true
+rm -f "$NPM_INSTALL_LOG"
 
 PROD_NM="$TEMP_NM/node_modules"
 
-if [ ! -d "$PROD_NM" ]; then
-  echo "  ✗ Gagal membuat prod node_modules di $TEMP_NM"
+if [ $NPM_EXIT -ne 0 ] || [ ! -d "$PROD_NM" ] || [ -z "$(ls -A "$PROD_NM" 2>/dev/null)" ]; then
+  echo "  ✗ npm install gagal (exit $NPM_EXIT) di $TEMP_NM"
   rm -rf "$TEMP_NM"
   exit 1
 fi
