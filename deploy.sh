@@ -405,13 +405,54 @@ else
   exit 1
 fi
 
-# Symlink news-cms
-if [ -L "$HOME/public_html/news-cms" ]; then
-  echo "  ✓ Symlink ~/public_html/news-cms ada"
-else
-  echo "  ⚠️  Symlink news-cms belum ada — Strapi app mungkin tidak bisa restart"
-  echo "      Buat: ln -s $APP_DIR $HOME/public_html/news-cms"
+# news-cms — harus direktori NYATA (bukan symlink) agar bisa didaftarkan
+# sebagai app terpisah di cPanel Node.js Selector.
+# cPanel menolak app kedua di path yang sama (atau symlink ke path yang sama).
+# Solusi: news-cms = direktori real dengan server.js wrapper yang load Strapi
+# dari ../news menggunakan absolute require path — tanpa npm install.
+CMS_DIR="$HOME/public_html/news-cms"
+
+# Hapus symlink lama jika masih ada
+if [ -L "$CMS_DIR" ]; then
+  echo "  → Hapus symlink news-cms lama (ganti dengan direktori nyata) ..."
+  rm "$CMS_DIR"
 fi
+
+# Buat direktori dan server.js wrapper
+mkdir -p "$CMS_DIR"
+
+cat > "$CMS_DIR/server.js" << 'EOJS'
+'use strict';
+/**
+ * server.js — Strapi CMS startup untuk cPanel Node.js Selector (Passenger)
+ *
+ * Ini adalah wrapper minimal. Semua kode Strapi ada di ../news.
+ * Tidak perlu npm install di direktori ini — node_modules di-require
+ * dengan path absolut dari ../news/node_modules.
+ *
+ * Application root  : ~/public_html/news-cms   (direktori ini)
+ * Application URL   : cms.news.jobenapp.cloud
+ * Startup file      : server.js
+ * Node.js version   : 20 (sama dengan news/)
+ */
+const path = require('path');
+
+// Direktori instalasi Strapi sesungguhnya
+const NEWS_DIR = path.resolve(__dirname, '../news');
+
+// Pindah CWD ke NEWS_DIR agar path relatif di dalam Strapi resolve dengan benar
+process.chdir(NEWS_DIR);
+
+// PORT di-inject Passenger; fallback ke 1337
+process.env.PORT = process.env.PORT || '1337';
+
+// Load Strapi dari absolute path — tidak bergantung pada node_modules di sini
+require(path.join(NEWS_DIR, 'node_modules', '@strapi', 'strapi'))
+  .createStrapi({ appDir: NEWS_DIR })
+  .start();
+EOJS
+
+echo "  ✓ news-cms/ direktori nyata + server.js wrapper dibuat"
 
 # frontend/.env.local
 if [ -f "$FRONTEND_DIR/.env.local" ]; then
@@ -480,13 +521,12 @@ restart_passenger() {
 # Frontend — app root: ~/public_html/news
 restart_passenger "Frontend (news.jobenapp.cloud)" "$APP_DIR"
 
-# Strapi CMS — app root: ~/public_html/news-cms (symlink → news)
-# passenger-config membedakan berdasarkan registered path (bukan physical path)
+# Strapi CMS — app root: ~/public_html/news-cms (direktori nyata, bukan symlink)
 CMS_DIR="$HOME/public_html/news-cms"
-if [ -L "$CMS_DIR" ]; then
+if [ -d "$CMS_DIR" ] && [ -f "$CMS_DIR/server.js" ]; then
   restart_passenger "Strapi CMS (cms.news.jobenapp.cloud)" "$CMS_DIR"
 else
-  echo "  ⚠️  Strapi CMS: symlink $CMS_DIR belum ada — restart manual di cPanel"
+  echo "  ⚠️  Strapi CMS: $CMS_DIR belum ada — jalankan deploy.sh sekali lagi"
 fi
 
 echo ""
