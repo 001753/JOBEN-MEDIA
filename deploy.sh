@@ -38,12 +38,18 @@ echo "════════════════════════�
 echo ""
 
 # ── Setup PATH: nodevenv cPanel (aktifkan Node.js yang benar) ─────────────────
+# PENTING: Node 20 diutamakan — tarball node_modules & native modules
+# (better-sqlite3, sharp, dst) dibangun di Replit dengan Node 20.
+# Node 22 hanya sebagai fallback jika Node 20 tidak tersedia di cPanel.
 for _NDIR in \
+  "$HOME/nodevenv/public_html/news/20/bin" \
+  "$HOME/nodevenv/public_html/news-cms/20/bin" \
+  "/opt/cpanel/ea-nodejs20/root/usr/bin" \
+  "/opt/cpanel/ea-nodejs20/bin" \
   "$HOME/nodevenv/public_html/news/22/bin" \
   "$HOME/nodevenv/public_html/news-cms/22/bin" \
   "/opt/cpanel/ea-nodejs22/root/usr/bin" \
   "/opt/cpanel/ea-nodejs22/bin" \
-  "/opt/cpanel/ea-nodejs20/root/usr/bin" \
   "$HOME/.nvm/versions/node/$(ls "$HOME/.nvm/versions/node/" 2>/dev/null | sort -V | tail -1)/bin"; do
   if [ -d "$_NDIR" ] && [[ ":$PATH:" != *":$_NDIR:"* ]]; then
     export PATH="$_NDIR:$PATH"
@@ -129,7 +135,8 @@ echo "▶ [2/4] Cek & install Node.js dependencies ..."
 # nodevenv wrapper set NPM_CONFIG_PREFIX ke ~/nodevenv/... sehingga npm
 # selalu install ke sana. Raw system node tidak punya behavior itu.
 find_system_node() {
-  for v in 22 20 18; do
+  # Node 20 diutamakan — native modules (better-sqlite3, sharp) dibangun Node 20
+  for v in 20 22 18; do
     local n="/opt/cpanel/ea-nodejs${v}/root/usr/bin/node"
     [ -x "$n" ] && echo "$n" && return
   done
@@ -217,8 +224,8 @@ install_deps() {
     echo ""
     echo "  ✗ npm install gagal di $DIR setelah 3 percobaan."
     echo "  Debug: jalankan manual di SSH (TANPA source activate):"
-    echo "    SYSTEM_NODE=/opt/cpanel/ea-nodejs22/root/usr/bin/node"
-    echo "    NPM_CLI=/opt/cpanel/ea-nodejs22/root/usr/lib/node_modules/npm/bin/npm-cli.js"
+    echo "    SYSTEM_NODE=/opt/cpanel/ea-nodejs20/root/usr/bin/node"
+    echo "    NPM_CLI=/opt/cpanel/ea-nodejs20/root/usr/lib/node_modules/npm/bin/npm-cli.js"
     echo "    cd $DIR && \"\$SYSTEM_NODE\" \"\$NPM_CLI\" install --omit=dev --ignore-scripts"
     exit 1
   fi
