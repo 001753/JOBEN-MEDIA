@@ -1,71 +1,46 @@
-# JOBEN NEWS — Monorepo (Strapi CMS + Next.js Frontend)
+# JOBEN NEWS
 
-Portal berita online dengan headless CMS. Strapi v5 sebagai backend, Next.js App Router sebagai frontend.
+A monorepo news portal consisting of a **Strapi v5 CMS** backend and a **Next.js 15** frontend.
 
 ## Stack
-- **CMS**: Strapi v5.50.0 — berjalan di port 3001
-- **Frontend**: Next.js 14 App Router — berjalan di port 5000
-- **Database dev**: SQLite (Replit) | **Database prod**: PostgreSQL (cPanel)
-- **Media storage**: Cloudflare R2 (via @strapi/provider-upload-aws-s3)
-- **Email**: Nodemailer — aktif otomatis saat `SMTP_USER` + `SMTP_PASS` tersedia
-- **Runtime**: Node.js 20 (diperlukan oleh Strapi v5)
 
-## Menjalankan di Replit
+| Layer     | Tech                     | Port  |
+|-----------|--------------------------|-------|
+| CMS       | Strapi v5 (SQLite dev)   | 3001  |
+| Frontend  | Next.js 15 (App Router)  | 5000  |
+| Storage   | Cloudflare R2 (optional) | —     |
 
-Dua workflow berjalan bersamaan:
-- **Start CMS** → `npm run develop` (root) → Strapi di port 3001
-- **Start application** → `cd frontend && npm run dev` → Next.js di port 5000
+## Running the project
 
-Admin Strapi: buka preview di port 3001, lalu `/admin`.
+Two workflows are configured:
 
-Setelah Strapi berjalan pertama kali, buat admin account lewat `/admin`,
-lalu buat API Token (Settings → API Tokens) dan isi `STRAPI_API_TOKEN` di Replit Secrets.
+- **Start CMS** — runs `npm run develop` from the root. Strapi admin available at the CMS console port.
+- **Start application** — runs `cd frontend && npm run dev`. Frontend visible in the webview.
 
-## Struktur Monorepo
-```
-/ (root)          → Strapi CMS
-  config/         → Strapi config (database, plugins, middleware, server)
-  src/            → Content types, lifecycle hooks, policies, bootstrap
-  frontend/       → Next.js App Router
-    app/          → Pages & layouts
-    components/   → UI components
-    lib/          → Strapi fetch helpers
-```
+Start the CMS first; the frontend fetches articles from it at `http://localhost:3001`.
 
-## Content Types
-| Tipe | Keterangan |
-|---|---|
-| `Article` | Artikel berita — draftAndPublish, editorial_status, is_breaking_news |
-| `Category` | Kategori berita (parent/child hierarchy) |
-| `Tag` | Tag multi-pilih untuk artikel |
-| `Author` | Profil penulis — linked ke Strapi User |
-| `Page` | Halaman statis (About, Privacy Policy, dll) |
+## Environment variables
 
-## Editorial Workflow
-- `editorial_status`: `draft` → `review` → `published`
-- Sinkron otomatis dengan `publishedAt` via lifecycle hook
-- Hanya 1 artikel breaking news aktif sekaligus (enforced via lifecycle)
-- Penulis hanya bisa edit artikel milik sendiri (policy `is-own-article`)
+All secrets and env vars are stored as Replit Secrets/env vars (not in `.env` files).
 
-## Env Vars & Secrets
-Semua tersimpan di Replit Secrets / Env Vars (bukan file .env).
+Key variables:
+- `PORT=3001`, `HOST=0.0.0.0` — Strapi listen address
+- `DATABASE_CLIENT=sqlite`, `DATABASE_FILENAME=.tmp/data.db` — SQLite for dev
+- `APP_KEYS`, `ADMIN_JWT_SECRET`, `JWT_SECRET`, `API_TOKEN_SALT`, `TRANSFER_TOKEN_SALT` — Strapi security keys
+- `REVALIDATION_SECRET` — shared between CMS and frontend for ISR revalidation
+- `STRAPI_API_TOKEN` — set this in `frontend/.env.local` after creating a token in the Strapi admin
 
-| Key | Keterangan |
-|---|---|
-| `APP_KEYS`, `JWT_SECRET`, `ADMIN_JWT_SECRET`, `API_TOKEN_SALT`, `TRANSFER_TOKEN_SALT` | Strapi security keys (Secrets) |
-| `STRAPI_API_TOKEN` | Token untuk Next.js fetch ke Strapi (Secret) |
-| `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` | Cloudflare R2 (Secrets) |
-| `SMTP_PASS` | SMTP password (Secret) |
-| `REVALIDATION_SECRET` | Webhook revalidasi Next.js (Secret) |
-| `DATABASE_CLIENT` | `sqlite` (dev) / `postgres` (prod) |
-| `PORT` | `3001` (Strapi) |
-| `STRAPI_API_URL` | `http://localhost:3001` |
+For production, add Cloudflare R2 credentials (`R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_ENDPOINT`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL`) and switch `DATABASE_CLIENT` to `postgres`.
 
-## Deploy ke cPanel (Production)
-Lihat `doc/CPANEL_DEPLOY_CHECKLIST.md` dan `doc/AI_PROMPTS.md` §11.
-SMTP env vars production: `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`.
+## Node.js version
 
-## User Preferences
-- Bahasa komentar & log: Indonesia
-- Strapi v5 `documentId` pattern untuk ownership checks
-- Tidak gunakan GraphQL — REST only
+Node.js **20** is required (Strapi 5.50 uses `Array.prototype.toSorted`). The project runs on Node.js 20.20.0.
+
+## First-time Strapi admin setup
+
+On first run Strapi prompts you to create an administrator account at the admin panel URL. After that, go to **Settings → API Tokens** to create a Read-only token and paste it into `frontend/.env.local` as `STRAPI_API_TOKEN`.
+
+## User preferences
+
+- Keep existing project structure — do not restructure or migrate the monorepo layout.
+- Install frontend dependencies with `--ignore-scripts` flag.

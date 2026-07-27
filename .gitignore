@@ -10,7 +10,7 @@ node_modules/
 dist/
 .strapi/
 .cache/
-frontend/.next/cache/
+frontend/.next/
 
 # ── Environment variables — JANGAN commit ke GitHub ───────────
 .env
