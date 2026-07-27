@@ -247,8 +247,22 @@ install_deps() {
 #     (bukan /tmp) agar tidak kena EDQUOTA.
 
 TARBALL_PATH="$APP_DIR/node_modules-strapi.tar.gz"
+PART_AA="$APP_DIR/node_modules-strapi.partaa"
+PART_AB="$APP_DIR/node_modules-strapi.partab"
+PART_AC="$APP_DIR/node_modules-strapi.partac"
 
-if [ -f "$TARBALL_PATH" ]; then
+# OPSI 1a — Part files (diutamakan): gabungkan lalu ekstrak, hapus setelah selesai
+if [ -f "$PART_AA" ]; then
+  echo "  → Part files ditemukan — menggabungkan & mengekstrak node_modules ..."
+  rm -rf "$APP_DIR/node_modules"
+  cat "$PART_AA" "$PART_AB" "$PART_AC" | tar -xz -C "$APP_DIR"
+  echo "  ✓ Strapi node_modules: diekstrak dari part files"
+  echo "  → Hapus part files setelah ekstrak (hemat disk) ..."
+  rm -f "$PART_AA" "$PART_AB" "$PART_AC"
+  # Simpan hash agar install_deps tidak dijalankan lagi
+  md5sum "$APP_DIR/package.json" | awk '{print $1}' > "$APP_DIR/.pkg_hash"
+# OPSI 1b — Tarball tunggal (legacy / upload manual)
+elif [ -f "$TARBALL_PATH" ]; then
   echo "  → Tarball ditemukan: $TARBALL_PATH"
   echo "  → Mengekstrak node_modules (tidak perlu npm install) ..."
   rm -rf "$APP_DIR/node_modules"
@@ -259,9 +273,9 @@ if [ -f "$TARBALL_PATH" ]; then
   # Simpan hash agar install_deps tidak dijalankan lagi
   md5sum "$APP_DIR/package.json" | awk '{print $1}' > "$APP_DIR/.pkg_hash"
 else
-  echo "  ℹ️  Tarball tidak ada — fallback ke npm install"
+  echo "  ℹ️  Tarball & part files tidak ada — fallback ke npm install"
   echo "  ℹ️  Tip: buat tarball di Replit dengan 'npm run pack:node-modules'"
-  echo "  ℹ️  lalu upload ke $APP_DIR untuk skip npm install sepenuhnya"
+  echo "  ℹ️  lalu commit part files ke GitHub untuk skip npm install sepenuhnya"
   # Install root (Strapi) saja — frontend pakai Next.js standalone output
   # (tidak butuh npm install; .next/standalone/ sudah bundle semua deps)
   install_deps "Strapi (root)" "$APP_DIR" "$APP_DIR/.pkg_hash"
