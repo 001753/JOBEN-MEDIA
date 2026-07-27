@@ -190,9 +190,13 @@ install_deps() {
   unset NODE_OPTIONS
 
   # Cache valid ke /tmp (bukan home quota)
-  local NPM_CACHE; NPM_CACHE=$(mktemp -d /tmp/npm-cache-XXXXXX)
+  # Cache ke $HOME/.npm (bukan /tmp — /tmp punya quota kecil di shared hosting)
+  # errno -122 = EDQUOTA: /tmp kehabisan quota saat npm extract tarballs besar
+  local NPM_CACHE="$HOME/.npm"
+  mkdir -p "$NPM_CACHE"
 
-  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit --cache $NPM_CACHE"
+  # --omit=dev --omit=optional: kurangi jumlah package & inode secara signifikan
+  local FLAGS="--omit=dev --omit=optional --ignore-scripts --no-fund --no-audit --prefer-dedupe --cache $NPM_CACHE"
 
   for try in 1 2 3; do
     echo "  → $LABEL install (percobaan $try/3) ..."
@@ -205,13 +209,9 @@ install_deps() {
       (cd "$DIR" && npm install $FLAGS) && SUCCESS=1 && break
     fi
 
-    rm -rf "$NPM_CACHE"
-    NPM_CACHE=$(mktemp -d /tmp/npm-cache-XXXXXX)
     echo "  ⚠️  Gagal — tunggu 10 detik ..."
     sleep 10
   done
-
-  rm -rf "$NPM_CACHE"
 
   if [ "$SUCCESS" -eq 0 ]; then
     echo ""
@@ -227,9 +227,38 @@ install_deps() {
   echo "  ✓ $LABEL: dependencies diperbarui"
 }
 
-# Install root (Strapi) saja — frontend pakai Next.js standalone output
-# (tidak butuh npm install; .next/standalone/ sudah bundle semua deps)
-install_deps "Strapi (root)" "$APP_DIR" "$APP_DIR/.pkg_hash"
+# ── Install Strapi node_modules ───────────────────────────────────────────────
+# STRATEGI PRESISI TINGGI (menghindari errno -122 EDQUOTA di cPanel /tmp):
+#
+#   OPSI 1 — Tarball pre-packed dari Replit (DIUTAMAKAN):
+#     Jika node_modules-strapi.tar.gz ada di APP_DIR, ekstrak langsung.
+#     Tidak ada npm install → tidak ada /tmp quota issue → tidak ada inode race.
+#     Buat tarball: npm run pack:node-modules (di Replit) → upload ke cPanel.
+#
+#   OPSI 2 — npm install (fallback):
+#     Digunakan jika tarball tidak ada. Cache diarahkan ke $HOME/.npm
+#     (bukan /tmp) agar tidak kena EDQUOTA.
+
+TARBALL_PATH="$APP_DIR/node_modules-strapi.tar.gz"
+
+if [ -f "$TARBALL_PATH" ]; then
+  echo "  → Tarball ditemukan: $TARBALL_PATH"
+  echo "  → Mengekstrak node_modules (tidak perlu npm install) ..."
+  rm -rf "$APP_DIR/node_modules"
+  tar -xzf "$TARBALL_PATH" -C "$APP_DIR"
+  echo "  ✓ Strapi node_modules: diekstrak dari tarball"
+  echo "  → Hapus tarball setelah ekstrak (hemat disk) ..."
+  rm -f "$TARBALL_PATH"
+  # Simpan hash agar install_deps tidak dijalankan lagi
+  md5sum "$APP_DIR/package.json" | awk '{print $1}' > "$APP_DIR/.pkg_hash"
+else
+  echo "  ℹ️  Tarball tidak ada — fallback ke npm install"
+  echo "  ℹ️  Tip: buat tarball di Replit dengan 'npm run pack:node-modules'"
+  echo "  ℹ️  lalu upload ke $APP_DIR untuk skip npm install sepenuhnya"
+  # Install root (Strapi) saja — frontend pakai Next.js standalone output
+  # (tidak butuh npm install; .next/standalone/ sudah bundle semua deps)
+  install_deps "Strapi (root)" "$APP_DIR" "$APP_DIR/.pkg_hash"
+fi
 
 # Pastikan static files Next.js tersedia di dalam standalone dir
 # (Next.js standalone butuh .next/static & public/ dicopy/symlink ke sana)

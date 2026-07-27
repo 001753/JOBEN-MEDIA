@@ -10,7 +10,8 @@ node_modules/
 dist/
 .strapi/
 .cache/
-frontend/.next/
+# frontend/.next/ — JANGAN ignore! Build di-commit ke git untuk cPanel.
+# Lihat komentar di atas dan doc/CPANEL_DEPLOY_CHECKLIST.md §5.
 
 # ── Environment variables — JANGAN commit ke GitHub ───────────
 .env
