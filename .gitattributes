@@ -3,4 +3,5 @@
 node_modules-strapi.partaa -text
 node_modules-strapi.partab -text
 node_modules-strapi.partac -text
+# tarball dihapus — gunakan part files di bawah
 node_modules-strapi.tar.gz filter=lfs diff=lfs merge=lfs -text
