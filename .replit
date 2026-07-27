@@ -1,4 +1,4 @@
-modules = ["nodejs-18", "web", "bash"]
+modules = ["nodejs-20", "web", "bash"]
 [agent]
 expertMode = true
 stack = "BEST_EFFORT_FALLBACK"
@@ -21,6 +21,11 @@ R2_ENDPOINT = "https://6ffcdac7c1cf3d08b80450851f6646a3.r2.cloudflarestorage.com
 R2_PUBLIC_URL = "https://pub-eb6a0f12e3b748628e7fb3494cb105a4.r2.dev"
 STRAPI_API_URL = "http://localhost:3001"
 NEXT_PUBLIC_SITE_URL = "https://news.jobenapp.cloud"
+ADMIN_JWT_SECRET = "Hel23JrOm3f3P4c6ZIFWx1g1EdGZnBKiqlQSn0qOwwk="
+API_TOKEN_SALT = "RVrTp6gJwNSMJTA/yW/aBczKqiUc90rNgkjZftPRb2Y="
+APP_KEYS = "0NZeChiqYOznT6GGQmaadwLefvR8W+xt37OzWQEPAnE=,uMTew8bKU4b5YD1U2k2n/5xNEWfOZQciZWsawc336TA=,pQiHHQ0OeXVprL9NKOjYppcAaHhyOT4HfLruEg6GTvs=,utQ7dkDcy62JH0N/0B8mrqnIut8OwK6qq2lvMwmGeYw="
+JWT_SECRET = "BsZx3fPMzd0OpuOW1NCZBapZZlwa5nWd6oDkW7ziIfY="
+TRANSFER_TOKEN_SALT = "tIbX5HhHWVpx1Bxp8+JaJLd0AmqD8tUgzB1U/cK+wRc="
 
 [workflows]
 runButton = "Project"

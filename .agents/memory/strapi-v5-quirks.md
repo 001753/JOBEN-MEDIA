@@ -19,7 +19,7 @@ description: Non-obvious gotchas discovered when setting up Strapi v5.50.0 in Re
 
 **Author → User relation must be unidirectional**: Cannot use `inversedBy: "author"` pointing to `plugin::users-permissions.user` because the User model doesn't have an `author` attribute. Use a plain unidirectional `oneToOne` relation (no `inversedBy`).
 
-**Node.js version**: Strapi v5.50.0 requires Node >=20. Node 18 fails with `Array.prototype.toSorted is not a function`. After upgrading to nodejs-20 module, run `npm rebuild better-sqlite3` to recompile native addon.
+**Node.js version**: Strapi v5.50.0 requires Node >=20. Node 18 fails with `Array.prototype.toSorted is not a function`. In .replit: change `modules = ["nodejs-18", ...]` → `modules = ["nodejs-20", ...]` via verifyAndReplaceDotReplit, then `npm rebuild better-sqlite3` to recompile native addon.
 
 **Lifecycle result does not populate relations**: In `afterCreate`/`afterUpdate`/`afterDelete`, `event.result` only contains direct fields — NOT related data (category.slug, author.name, etc.). Must do a separate `strapi.db.query().findOne({ populate: ... })` inside the lifecycle if related data is needed (e.g., for webhook payload).
 
