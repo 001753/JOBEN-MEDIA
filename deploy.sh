@@ -99,6 +99,7 @@ if [ -f "$BUILD_COMMIT_FILE" ]; then
       | grep -v '^doc/' \
       | grep -v '^\.agents/' \
       | grep -v '^\.gitignore$' \
+      | grep -v '^node_modules-strapi\.part' \
       | wc -l | tr -d ' ')
 
     if [ "$NON_BUILD_CHANGES" = "0" ]; then
@@ -251,9 +252,62 @@ PART_AA="$APP_DIR/node_modules-strapi.partaa"
 PART_AB="$APP_DIR/node_modules-strapi.partab"
 PART_AC="$APP_DIR/node_modules-strapi.partac"
 
-# OPSI 1a — Part files (diutamakan): gabungkan lalu ekstrak, hapus setelah selesai
-if [ -f "$PART_AA" ]; then
-  echo "  → Part files ditemukan — menggabungkan & mengekstrak node_modules ..."
+# Bersihkan tarball lama yang mungkin tertinggal sebagai untracked file
+# (git reset --hard tidak menghapus untracked files)
+if [ -f "$TARBALL_PATH" ]; then
+  echo "  → Hapus tarball lama (untracked sisa git-lfs) ..."
+  rm -f "$TARBALL_PATH"
+fi
+
+# Fungsi: cek apakah file adalah LFS pointer (< 200 byte = pointer, bukan data nyata)
+is_lfs_pointer() {
+  local f="$1"
+  [ -f "$f" ] && [ "$(wc -c < "$f")" -lt 200 ]
+}
+
+# Fungsi: download part file dari GitHub raw jika tidak ada / masih LFS pointer
+download_part() {
+  local FILE="$1"
+  local FILENAME
+  FILENAME=$(basename "$FILE")
+  local URL="https://raw.githubusercontent.com/001753/JOBEN-MEDIA/main/$FILENAME"
+
+  echo "  → Download $FILENAME dari GitHub raw ..."
+  if command -v wget &>/dev/null; then
+    wget -q --show-progress -O "$FILE" "$URL" 2>&1 || \
+    wget -q -O "$FILE" "$URL"
+  elif command -v curl &>/dev/null; then
+    curl -fL --progress-bar -o "$FILE" "$URL"
+  else
+    echo "  ✗ wget/curl tidak ditemukan — tidak bisa download part files"
+    return 1
+  fi
+
+  # Verifikasi hasil download (harus > 1MB)
+  local SIZE
+  SIZE=$(wc -c < "$FILE" 2>/dev/null || echo 0)
+  if [ "$SIZE" -lt 1000000 ]; then
+    echo "  ✗ Download gagal atau file terlalu kecil ($SIZE byte)"
+    rm -f "$FILE"
+    return 1
+  fi
+  echo "  ✓ $FILENAME: $(( SIZE / 1048576 ))MB"
+}
+
+# Pastikan semua part files ada dan valid (bukan LFS pointer)
+PARTS_OK=1
+for PART in "$PART_AA" "$PART_AB" "$PART_AC"; do
+  if [ ! -f "$PART" ] || is_lfs_pointer "$PART"; then
+    echo "  ℹ️  $(basename $PART): tidak ada / masih LFS pointer — perlu download"
+    download_part "$PART" || { PARTS_OK=0; break; }
+  else
+    echo "  ✓ $(basename $PART): $(( $(wc -c < "$PART") / 1048576 ))MB — valid"
+  fi
+done
+
+# OPSI 1 — Part files valid: gabungkan lalu ekstrak
+if [ "$PARTS_OK" -eq 1 ] && [ -f "$PART_AA" ] && [ -f "$PART_AB" ] && [ -f "$PART_AC" ]; then
+  echo "  → Menggabungkan & mengekstrak node_modules ..."
   rm -rf "$APP_DIR/node_modules"
   cat "$PART_AA" "$PART_AB" "$PART_AC" | tar -xz -C "$APP_DIR"
   echo "  ✓ Strapi node_modules: diekstrak dari part files"
@@ -261,23 +315,9 @@ if [ -f "$PART_AA" ]; then
   rm -f "$PART_AA" "$PART_AB" "$PART_AC"
   # Simpan hash agar install_deps tidak dijalankan lagi
   md5sum "$APP_DIR/package.json" | awk '{print $1}' > "$APP_DIR/.pkg_hash"
-# OPSI 1b — Tarball tunggal (legacy / upload manual)
-elif [ -f "$TARBALL_PATH" ]; then
-  echo "  → Tarball ditemukan: $TARBALL_PATH"
-  echo "  → Mengekstrak node_modules (tidak perlu npm install) ..."
-  rm -rf "$APP_DIR/node_modules"
-  tar -xzf "$TARBALL_PATH" -C "$APP_DIR"
-  echo "  ✓ Strapi node_modules: diekstrak dari tarball"
-  echo "  → Hapus tarball setelah ekstrak (hemat disk) ..."
-  rm -f "$TARBALL_PATH"
-  # Simpan hash agar install_deps tidak dijalankan lagi
-  md5sum "$APP_DIR/package.json" | awk '{print $1}' > "$APP_DIR/.pkg_hash"
 else
-  echo "  ℹ️  Tarball & part files tidak ada — fallback ke npm install"
-  echo "  ℹ️  Tip: buat tarball di Replit dengan 'npm run pack:node-modules'"
-  echo "  ℹ️  lalu commit part files ke GitHub untuk skip npm install sepenuhnya"
-  # Install root (Strapi) saja — frontend pakai Next.js standalone output
-  # (tidak butuh npm install; .next/standalone/ sudah bundle semua deps)
+  # OPSI 2 — Fallback ke npm install jika download gagal
+  echo "  ℹ️  Part files tidak tersedia — fallback ke npm install"
   install_deps "Strapi (root)" "$APP_DIR" "$APP_DIR/.pkg_hash"
 fi
 
