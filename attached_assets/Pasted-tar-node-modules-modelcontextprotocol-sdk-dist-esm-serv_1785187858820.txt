@@ -1,0 +1,832 @@
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/completable.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/express.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/express.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/sse.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/sse.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/streamableHttp.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/streamableHttp.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/webStandardStreamableHttp.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/webStandardStreamableHttp.js.map: Cannot open: No suchfile or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-compat.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-compat.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-json-schema-compat.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-json-schema-compat.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/completable.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/express.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/index.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/sse.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/stdio.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/streamableHttp.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/webStandardStreamableHttp.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-compat.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/server/zod-json-schema-compat.d.ts: Cannot open: No such fileor directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client: Cannot mkdir: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/auth-extensions.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/auth.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/index.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/middleware.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/sse.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/stdio.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/streamableHttp.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/websocket.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/auth-extensions.d.ts.map: Cannot open: No such file ordirectory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/auth-extensions.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/auth.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/auth.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/index.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/index.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/middleware.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/middleware.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/sse.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/sse.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/stdio.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/stdio.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/streamableHttp.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/streamableHttp.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/websocket.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/websocket.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/auth-extensions.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/auth.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/index.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/middleware.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/sse.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/stdio.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/streamableHttp.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/client/websocket.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared: Cannot mkdir: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth-utils.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/metadataUtils.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/responseMessage.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/toolNameValidation.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/transport.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/uriTemplate.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth-utils.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth-utils.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/metadataUtils.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/metadataUtils.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/responseMessage.d.ts.map: Cannot open: No such file ordirectory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/responseMessage.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/toolNameValidation.d.ts.map: Cannot open: No such fileor directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/toolNameValidation.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/transport.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/transport.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/uriTemplate.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/uriTemplate.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth-utils.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/auth.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/metadataUtils.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/protocol.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/responseMessage.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/stdio.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/toolNameValidation.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/transport.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/shared/uriTemplate.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental: Cannot mkdir: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks: Cannot mkdir: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/client.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/helpers.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/stores: Cannot mkdir: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/stores/in-memory.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/stores/in-memory.d.ts.map: Cannot open: Nosuch file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/stores/in-memory.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/stores/in-memory.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/index.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/mcp-server.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/types.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/client.d.ts.map: Cannot open: No such fileor directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/client.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/helpers.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/helpers.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/index.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/index.js.map: Cannot open: No such file ordirectory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/mcp-server.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/mcp-server.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.d.ts.map: Cannot open: No such fileor directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/types.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/types.js.map: Cannot open: No such file ordirectory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/client.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/helpers.d.ts: Cannot open: No such file ordirectory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/index.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/interfaces.d.ts: Cannot open: No such fileor directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/mcp-server.d.ts: Cannot open: No such fileor directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/server.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/tasks/types.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/index.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/index.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/index.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/experimental/index.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples: Cannot mkdir: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server: Cannot mkdir: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/demoInMemoryOAuthProvider.js: Cannot open: Nosuch file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/elicitationFormExample.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/elicitationUrlExample.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/honoWebStandardStreamableHttp.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/jsonResponseStreamableHttp.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/mcpServerOutputSchema.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/progressExample.js: Cannot open: No such fileor directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleSseServer.js: Cannot open: No such fileor directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleStatelessStreamableHttp.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleStreamableHttp.js: Cannot open: No suchfile or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleTaskInteractive.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/sseAndStreamableHttpCompatibleServer.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/ssePollingExample.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/standaloneSseWithGetStreamableHttp.js: Cannotopen: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/toolWithSampleServer.js: Cannot open: No suchfile or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/demoInMemoryOAuthProvider.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/demoInMemoryOAuthProvider.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/elicitationFormExample.d.ts.map: Cannot open:No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/elicitationFormExample.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/elicitationUrlExample.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/elicitationUrlExample.js.map: Cannot open: Nosuch file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/honoWebStandardStreamableHttp.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/honoWebStandardStreamableHttp.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/jsonResponseStreamableHttp.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/jsonResponseStreamableHttp.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/mcpServerOutputSchema.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/mcpServerOutputSchema.js.map: Cannot open: Nosuch file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/progressExample.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/progressExample.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleSseServer.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleSseServer.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleStatelessStreamableHttp.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleStatelessStreamableHttp.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleStreamableHttp.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleStreamableHttp.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleTaskInteractive.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleTaskInteractive.js.map: Cannot open: Nosuch file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/sseAndStreamableHttpCompatibleServer.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/sseAndStreamableHttpCompatibleServer.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/ssePollingExample.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/ssePollingExample.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/standaloneSseWithGetStreamableHttp.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/standaloneSseWithGetStreamableHttp.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/toolWithSampleServer.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/toolWithSampleServer.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/demoInMemoryOAuthProvider.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/elicitationFormExample.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/elicitationUrlExample.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/honoWebStandardStreamableHttp.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/jsonResponseStreamableHttp.d.ts: Cannot open:No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/mcpServerOutputSchema.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/progressExample.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleSseServer.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleStatelessStreamableHttp.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleStreamableHttp.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/simpleTaskInteractive.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/sseAndStreamableHttpCompatibleServer.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/ssePollingExample.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/standaloneSseWithGetStreamableHttp.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/server/toolWithSampleServer.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client: Cannot mkdir: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/elicitationUrlExample.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/multipleClientsParallel.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/parallelToolCallsClient.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleClientCredentials.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleOAuthClient.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleOAuthClientProvider.js: Cannot open: Nosuch file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleStreamableHttp.js: Cannot open: No suchfile or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleTaskInteractiveClient.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/ssePollingClient.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/streamableHttpWithSseFallbackClient.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/elicitationUrlExample.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/elicitationUrlExample.js.map: Cannot open: Nosuch file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/multipleClientsParallel.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/multipleClientsParallel.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/parallelToolCallsClient.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/parallelToolCallsClient.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleClientCredentials.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleClientCredentials.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleOAuthClient.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleOAuthClient.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleOAuthClientProvider.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleOAuthClientProvider.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleStreamableHttp.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleStreamableHttp.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleTaskInteractiveClient.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleTaskInteractiveClient.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/ssePollingClient.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/ssePollingClient.js.map: Cannot open: No suchfile or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/streamableHttpWithSseFallbackClient.d.ts.map:Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/streamableHttpWithSseFallbackClient.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/elicitationUrlExample.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/multipleClientsParallel.d.ts: Cannot open: Nosuch file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/parallelToolCallsClient.d.ts: Cannot open: Nosuch file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleClientCredentials.d.ts: Cannot open: Nosuch file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleOAuthClient.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleOAuthClientProvider.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleStreamableHttp.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/simpleTaskInteractiveClient.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/ssePollingClient.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/client/streamableHttpWithSseFallbackClient.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/shared: Cannot mkdir: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/shared/inMemoryEventStore.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/shared/inMemoryEventStore.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/shared/inMemoryEventStore.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/examples/shared/inMemoryEventStore.d.ts: Cannot open: No suchfile or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/inMemory.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/spec.types.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/types.js: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/package.json: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/inMemory.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/inMemory.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/spec.types.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/spec.types.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/types.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/types.js.map: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/inMemory.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/spec.types.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/dist/esm/types.d.ts: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/package.json: Cannot open: No such file or directory
+tar: node_modules/@modelcontextprotocol: Cannot mkdir: Disk quota exceeded
+tar: node_modules/@modelcontextprotocol/sdk/README.md: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules: Cannot mkdir: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors: Cannot mkdir: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors: Cannot mkdir: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/LICENSE: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib: Cannot mkdir: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/maps: Cannot mkdir: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/maps/america.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/maps/rainbow.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/maps/random.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/maps/zebra.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/colors.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/extendStringPrototype.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/system: Cannot mkdir: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/system/has-flag.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/system/supports-colors.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/index.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/styles.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/custom: Cannot mkdir: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/custom/trap.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/lib/custom/zalgo.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/themes: Cannot mkdir: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/themes/generic-logging.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/examples: Cannot mkdir: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/examples/normal-usage.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/examples/safe-string.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/safe.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/package.json: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/README.md: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/index.d.ts: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/node_modules/@colors/colors/safe.d.ts: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/.babelrc: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/.eslintrc: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/.gitattributes: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/LICENSE: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/align.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist: Cannot mkdir: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/align.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/browser.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/cli.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/colorize.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/combine.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/errors.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/format.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/index.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/json.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/label.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/levels.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/logstash.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/metadata.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/ms.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/pad-levels.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/pretty-print.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/printf.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/simple.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/splat.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/timestamp.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/dist/uncolorize.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/browser.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/cli.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/colorize.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/combine.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/errors.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/format.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/index.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/json.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/label.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/levels.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/logstash.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/metadata.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/ms.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/pad-levels.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/pretty-print.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/printf.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/simple.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/splat.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/timestamp.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/uncolorize.js: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/package.json: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/tsconfig.json: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/CHANGELOG.md: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/README.md: Cannot open: No such file or directory
+tar: node_modules/logform: Cannot mkdir: Disk quota exceeded
+tar: node_modules/logform/index.d.ts: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/node_modules: Cannot mkdir: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/node_modules/@types: Cannot mkdir: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/node_modules/@types/unist: Cannot mkdir: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/node_modules/@types/unist/LICENSE: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/node_modules/@types/unist/README.md: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/node_modules/@types/unist/index.d.ts: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/node_modules/@types/unist/package.json: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/license: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/index.js: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/lib: Cannot mkdir: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/lib/index.js: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/lib/index.d.ts.map: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/lib/index.d.ts: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/package.json: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/readme.md: Cannot open: No such file or directory
+tar: node_modules/parse-entities: Cannot mkdir: Disk quota exceeded
+tar: node_modules/parse-entities/index.d.ts: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/parser: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/strapi: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/baseline-browser-mapping: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/bcrypt: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/browserslist: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/browserslist-to-esbuild: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/conc: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/concurrently: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/cross-env: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/cross-env-shell: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/cssesc: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/esbuild: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/acorn: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/esvalidate: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/handlebars: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/esparse: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/he: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/html-minifier-terser: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/is-docker: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/cloud-cli: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/js-yaml: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/jsesc: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/jscodeshift: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/json5: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/knex: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/loose-envify: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/lz-string: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/nanoid: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/markdown-it: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/nodemon: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/opener: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/plop: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/prebuild-install: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/prettier: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/rc: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/resolve: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/rimraf: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/rollup: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/semver: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/terser: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/nodetouch: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/tree-kill: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/typedoc: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/tsserver: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/tsc: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/update-browserslist-db: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/uuid: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/vite: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/webpack: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/node-which: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/webpack-bundle-analyzer: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/ansi-html: Cannot open: No such file or directory
+tar: node_modules/.bin: Cannot mkdir: Disk quota exceeded
+tar: node_modules/.bin/direction: Cannot open: No such file or directory
+tar: node_modules/.package-lock.json: Cannot open: Disk quota exceeded
+tar: Exiting with failure status due to previous errors
+[smknwon2@tirtonirmolo news]$ df -h ~/
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/vda1       1.0T  742G  283G  73% /home/smknwon2
+[smknwon2@tirtonirmolo news]$
