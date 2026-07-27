@@ -169,9 +169,6 @@ install_deps() {
   local NPM_CLI; NPM_CLI=$(find_npm_cli)
   local SUCCESS=0
 
-  # Cache ke /tmp — hindari home quota
-  local NPM_CACHE="/tmp/npm-cache-joben"
-
   # Simpan env lama agar bisa dikembalikan
   local _SAVED_PREFIX="${NPM_CONFIG_PREFIX:-}"
   local _SAVED_NODE_OPTIONS="${NODE_OPTIONS:-}"
@@ -195,24 +192,32 @@ install_deps() {
   export npm_config_userconfig="$_EMPTY_UCFG"
   #   3. Set prefix eksplisit ke project dir
   export npm_config_prefix="$DIR"
-  #   4. Set cache ke /tmp via env (lebih kuat dari --cache flag)
-  export npm_config_cache="$NPM_CACHE"
+
+  # Kurangi paralelisme download — cegah race condition EEXIST di cache
+  # (dua stream paralel coba buat directory yang sama di saat bersamaan)
+  export npm_config_maxsockets=1
+  export npm_config_network_concurrency=1
 
   local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit"
 
   for try in 1 2 3; do
     echo "  → $LABEL install (percobaan $try/3) ..."
 
-    # Wipe cache sepenuhnya sebelum tiap percobaan
-    # Cache korup (file di tempat direktori) menyebabkan EEXIST fatal
-    rm -rf "$NPM_CACHE"
-    mkdir -p "$NPM_CACHE"
+    # Pakai mktemp -d untuk cache — dijamin unik & bersih tiap percobaan,
+    # tidak ada risiko sisa file dari percobaan sebelumnya
+    local NPM_CACHE; NPM_CACHE=$(mktemp -d /tmp/npm-cache-joben-XXXXXX)
+    export npm_config_cache="$NPM_CACHE"
 
     if [ -n "$NPM_CLI" ]; then
-      node "$NPM_CLI" install $FLAGS && SUCCESS=1 && break
+      node "$NPM_CLI" install $FLAGS && SUCCESS=1
     else
-      npm install $FLAGS && SUCCESS=1 && break
+      npm install $FLAGS && SUCCESS=1
     fi
+
+    # Bersihkan cache temporer setelah tiap percobaan (hemat /tmp space)
+    rm -rf "$NPM_CACHE"
+
+    [ "$SUCCESS" -eq 1 ] && break
     echo "  ⚠️  Gagal — tunggu 10 detik ..."
     sleep 10
   done
