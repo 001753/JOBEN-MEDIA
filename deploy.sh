@@ -198,26 +198,20 @@ install_deps() {
   export npm_config_maxsockets=1
   export npm_config_network_concurrency=1
 
-  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit"
+  # --no-cache: bypass cacache sepenuhnya — cegah EEXIST race condition
+  # (dua download paralel yang menulis ke content-v2/sha512/xx/yy bersamaan)
+  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit --no-cache"
+  unset npm_config_cache
 
   for try in 1 2 3; do
     echo "  → $LABEL install (percobaan $try/3) ..."
 
-    # Pakai mktemp -d untuk cache — dijamin unik & bersih tiap percobaan,
-    # tidak ada risiko sisa file dari percobaan sebelumnya
-    local NPM_CACHE; NPM_CACHE=$(mktemp -d /tmp/npm-cache-joben-XXXXXX)
-    export npm_config_cache="$NPM_CACHE"
-
     if [ -n "$NPM_CLI" ]; then
-      node "$NPM_CLI" install $FLAGS && SUCCESS=1
+      node "$NPM_CLI" install $FLAGS && SUCCESS=1 && break
     else
-      npm install $FLAGS && SUCCESS=1
+      npm install $FLAGS && SUCCESS=1 && break
     fi
 
-    # Bersihkan cache temporer setelah tiap percobaan (hemat /tmp space)
-    rm -rf "$NPM_CACHE"
-
-    [ "$SUCCESS" -eq 1 ] && break
     echo "  ⚠️  Gagal — tunggu 10 detik ..."
     sleep 10
   done
@@ -230,7 +224,7 @@ install_deps() {
   [ -n "$_SAVED_NODE_OPTIONS" ] && export NODE_OPTIONS="$_SAVED_NODE_OPTIONS"  || unset NODE_OPTIONS
   [ -n "$_SAVED_GCFG" ]         && export npm_config_globalconfig="$_SAVED_GCFG" || unset npm_config_globalconfig
   [ -n "$_SAVED_UCFG" ]         && export npm_config_userconfig="$_SAVED_UCFG"   || unset npm_config_userconfig
-  unset npm_config_prefix npm_config_cache
+  unset npm_config_prefix
 
   if [ "$SUCCESS" -eq 0 ]; then
     echo ""
