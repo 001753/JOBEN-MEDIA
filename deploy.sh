@@ -248,9 +248,6 @@ install_deps() {
 #     (bukan /tmp) agar tidak kena EDQUOTA.
 
 TARBALL_PATH="$APP_DIR/node_modules-strapi.tar.gz"
-PART_AA="$APP_DIR/node_modules-strapi.partaa"
-PART_AB="$APP_DIR/node_modules-strapi.partab"
-PART_AC="$APP_DIR/node_modules-strapi.partac"
 
 # Bersihkan tarball lama yang mungkin tertinggal sebagai untracked file
 # (git reset --hard tidak menghapus untracked files)
@@ -294,31 +291,51 @@ download_part() {
   echo "  ✓ $FILENAME: $(( SIZE / 1048576 ))MB"
 }
 
-# Pastikan semua part files ada dan valid (bukan LFS pointer)
-PARTS_OK=1
-for PART in "$PART_AA" "$PART_AB" "$PART_AC"; do
-  if [ ! -f "$PART" ] || is_lfs_pointer "$PART"; then
-    echo "  ℹ️  $(basename $PART): tidak ada / masih LFS pointer — perlu download"
-    download_part "$PART" || { PARTS_OK=0; break; }
+# Deteksi part files secara dinamis (partaa, partab, partac, ...)
+# Mendukung 1–26 parts tanpa hardcode jumlah
+PART_FILES=()
+for SUFFIX in aa ab ac ad ae af ag ah ai aj; do
+  PART="$APP_DIR/node_modules-strapi.part${SUFFIX}"
+  # Masukkan ke list jika: file ada di git (tracked) ATAU bisa didownload
+  # Cek dengan pola: ada file nyata ATAU ada di daftar suffix yang di-track
+  # Pendekatan: coba download jika tidak ada, stop jika download gagal
+  if [ -f "$PART" ] || git ls-files --error-unmatch "node_modules-strapi.part${SUFFIX}" &>/dev/null 2>&1; then
+    PART_FILES+=("$PART")
   else
-    echo "  ✓ $(basename $PART): $(( $(wc -c < "$PART") / 1048576 ))MB — valid"
+    break  # tidak ada part berikutnya — hentikan
   fi
 done
 
-# OPSI 1 — Part files valid: gabungkan lalu ekstrak
-if [ "$PARTS_OK" -eq 1 ] && [ -f "$PART_AA" ] && [ -f "$PART_AB" ] && [ -f "$PART_AC" ]; then
-  echo "  → Menggabungkan & mengekstrak node_modules ..."
-  rm -rf "$APP_DIR/node_modules"
-  cat "$PART_AA" "$PART_AB" "$PART_AC" | tar -xz -C "$APP_DIR"
-  echo "  ✓ Strapi node_modules: diekstrak dari part files"
-  echo "  → Hapus part files setelah ekstrak (hemat disk) ..."
-  rm -f "$PART_AA" "$PART_AB" "$PART_AC"
-  # Simpan hash agar install_deps tidak dijalankan lagi
-  md5sum "$APP_DIR/package.json" | awk '{print $1}' > "$APP_DIR/.pkg_hash"
-else
-  # OPSI 2 — Fallback ke npm install jika download gagal
-  echo "  ℹ️  Part files tidak tersedia — fallback ke npm install"
+if [ ${#PART_FILES[@]} -eq 0 ]; then
+  echo "  ℹ️  Tidak ada part files — fallback ke npm install"
   install_deps "Strapi (root)" "$APP_DIR" "$APP_DIR/.pkg_hash"
+else
+  echo "  ℹ️  Ditemukan ${#PART_FILES[@]} part file(s)"
+
+  # Pastikan semua part files ada dan valid (bukan LFS pointer)
+  PARTS_OK=1
+  for PART in "${PART_FILES[@]}"; do
+    if [ ! -f "$PART" ] || is_lfs_pointer "$PART"; then
+      echo "  ℹ️  $(basename "$PART"): tidak ada / LFS pointer — download dari GitHub raw ..."
+      download_part "$PART" || { PARTS_OK=0; break; }
+    else
+      echo "  ✓ $(basename "$PART"): $(( $(wc -c < "$PART") / 1048576 ))MB — valid"
+    fi
+  done
+
+  if [ "$PARTS_OK" -eq 1 ]; then
+    echo "  → Menggabungkan & mengekstrak node_modules ..."
+    rm -rf "$APP_DIR/node_modules"
+    cat "${PART_FILES[@]}" | tar -xz -C "$APP_DIR"
+    echo "  ✓ Strapi node_modules: diekstrak dari ${#PART_FILES[@]} part file(s)"
+    echo "  → Hapus part files setelah ekstrak (hemat disk) ..."
+    rm -f "${PART_FILES[@]}"
+    # Simpan hash agar install_deps tidak dijalankan lagi
+    md5sum "$APP_DIR/package.json" | awk '{print $1}' > "$APP_DIR/.pkg_hash"
+  else
+    echo "  ℹ️  Download gagal — fallback ke npm install"
+    install_deps "Strapi (root)" "$APP_DIR" "$APP_DIR/.pkg_hash"
+  fi
 fi
 
 # Pastikan static files Next.js tersedia di dalam standalone dir

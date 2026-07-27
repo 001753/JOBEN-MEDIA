@@ -1,7 +1,7 @@
-# node_modules-strapi.tar.gz split menjadi .partaa/.partab/.partac (maks 45MB per file)
+# node_modules-strapi.tar.gz di-split menjadi part files (maks 45MB per file)
 # agar tidak perlu git-lfs di cPanel
 node_modules-strapi.partaa -text
 node_modules-strapi.partab -text
 node_modules-strapi.partac -text
-# tarball dihapus — gunakan part files di bawah
-node_modules-strapi.tar.gz filter=lfs diff=lfs merge=lfs -text
+node_modules-strapi.partad -text
+# node_modules-strapi.tar.gz tidak di-track git (untracked, diabaikan)
