@@ -125,16 +125,26 @@ echo ""
 # ── 2. Install dependencies ───────────────────────────────────────────────────
 echo "▶ [2/4] Cek & install Node.js dependencies ..."
 
-# Cari npm-cli.js langsung (bypass wrapper cPanel yang rawan crash)
-find_npm_cli() {
-  local ver; ver=$(node --version 2>/dev/null | tr -d 'v' | cut -d. -f1)
+# Cari raw system node binary — BUKAN nodevenv wrapper di PATH
+# nodevenv wrapper set NPM_CONFIG_PREFIX ke ~/nodevenv/... sehingga npm
+# selalu install ke sana. Raw system node tidak punya behavior itu.
+find_system_node() {
+  for v in 22 20 18; do
+    local n="/opt/cpanel/ea-nodejs${v}/root/usr/bin/node"
+    [ -x "$n" ] && echo "$n" && return
+  done
+  # fallback ke node di PATH (tapi ini mungkin nodevenv wrapper)
+  command -v node 2>/dev/null || echo ""
+}
+
+# Cari npm-cli.js yang cocok dengan system node
+find_npm_cli_for() {
+  local NODE_BIN="$1"
+  # Cari berdasarkan versi node binary
+  local ver; ver=$("$NODE_BIN" --version 2>/dev/null | tr -d 'v' | cut -d. -f1)
   for v in "$ver" 22 20 18; do
-    for base in \
-      "/opt/cpanel/ea-nodejs${v}/root/usr/lib/node_modules/npm/bin" \
-      "/opt/cpanel/ea-nodejs${v}/lib/node_modules/npm/bin" \
-      "/opt/cpanel/ea-nodejs${v}/bin"; do
-      [ -f "$base/npm-cli.js" ] && echo "$base/npm-cli.js" && return
-    done
+    local cli="/opt/cpanel/ea-nodejs${v}/root/usr/lib/node_modules/npm/bin/npm-cli.js"
+    [ -f "$cli" ] && echo "$cli" && return
   done
   echo ""
 }
@@ -159,80 +169,57 @@ install_deps() {
       return
     else
       echo "  → $LABEL: package.json berubah — install diperlukan"
-      # Bersihkan node_modules lama agar tidak ada konflik
       rm -rf "$DIR/node_modules"
     fi
   else
     echo "  → $LABEL: node_modules belum ada — install diperlukan"
   fi
 
-  local NPM_CLI; NPM_CLI=$(find_npm_cli)
+  # Gunakan raw system node — bypass nodevenv wrapper yang terus intercept
+  local SYSTEM_NODE; SYSTEM_NODE=$(find_system_node)
+  local NPM_CLI; NPM_CLI=$(find_npm_cli_for "$SYSTEM_NODE")
+  echo "  ℹ️  Node: $SYSTEM_NODE ($(\"$SYSTEM_NODE\" --version 2>/dev/null))"
+  echo "  ℹ️  npm-cli: ${NPM_CLI:-fallback ke npm di PATH}"
+
   local SUCCESS=0
 
-  # Simpan env lama agar bisa dikembalikan
-  local _SAVED_PREFIX="${NPM_CONFIG_PREFIX:-}"
-  local _SAVED_NODE_OPTIONS="${NODE_OPTIONS:-}"
-  local _SAVED_GCFG="${npm_config_globalconfig:-}"
-  local _SAVED_UCFG="${npm_config_userconfig:-}"
-
-  # Unset NODE_OPTIONS — --max-old-space-size=256 dari nodevenv membunuh npm
-  # saat resolve Strapi deps (butuh >256MB heap)
+  # Buang SEMUA env yang di-set oleh nodevenv activate agar tidak ada intercept
+  unset NPM_CONFIG_PREFIX npm_config_prefix
+  unset NPM_CONFIG_CACHE npm_config_cache
+  unset npm_config_globalconfig npm_config_userconfig
   unset NODE_OPTIONS
 
-  # Blokir SEMUA mekanisme nodevenv yang override install location:
-  #   1. Unset environment variables
-  unset NPM_CONFIG_PREFIX npm_config_prefix
-  #   2. Override globalconfig & userconfig ke file kosong terpisah agar npmrc
-  #      nodevenv (yang set prefix ke ~/nodevenv/...) tidak terbaca.
-  #      CATATAN: tidak bisa keduanya /dev/null — npm v10+ tolak double-loading
-  #      dari path yang sama; pakai mktemp (dua file berbeda).
-  local _EMPTY_GCFG; _EMPTY_GCFG=$(mktemp)
-  local _EMPTY_UCFG; _EMPTY_UCFG=$(mktemp)
-  export npm_config_globalconfig="$_EMPTY_GCFG"
-  export npm_config_userconfig="$_EMPTY_UCFG"
-  #   3. Set prefix eksplisit ke project dir
-  export npm_config_prefix="$DIR"
+  # Cache valid ke /tmp (bukan home quota)
+  local NPM_CACHE; NPM_CACHE=$(mktemp -d /tmp/npm-cache-XXXXXX)
 
-  # Kurangi paralelisme download — cegah race condition EEXIST di cache
-  # (dua stream paralel coba buat directory yang sama di saat bersamaan)
-  export npm_config_maxsockets=1
-  export npm_config_network_concurrency=1
-
-  # --no-cache: bypass cacache sepenuhnya — cegah EEXIST race condition
-  # (dua download paralel yang menulis ke content-v2/sha512/xx/yy bersamaan)
-  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit --no-cache"
-  unset npm_config_cache
+  local FLAGS="--omit=dev --ignore-scripts --no-fund --no-audit --cache $NPM_CACHE"
 
   for try in 1 2 3; do
     echo "  → $LABEL install (percobaan $try/3) ..."
 
+    # cd ke DIR dulu — npm install tanpa flag target selalu ke ./node_modules
+    # (lebih reliable dari --prefix yang bisa di-override nodevenv)
     if [ -n "$NPM_CLI" ]; then
-      node "$NPM_CLI" install $FLAGS && SUCCESS=1 && break
+      (cd "$DIR" && "$SYSTEM_NODE" "$NPM_CLI" install $FLAGS) && SUCCESS=1 && break
     else
-      npm install $FLAGS && SUCCESS=1 && break
+      (cd "$DIR" && npm install $FLAGS) && SUCCESS=1 && break
     fi
 
+    rm -rf "$NPM_CACHE"
+    NPM_CACHE=$(mktemp -d /tmp/npm-cache-XXXXXX)
     echo "  ⚠️  Gagal — tunggu 10 detik ..."
     sleep 10
   done
 
-  # Hapus temp config files
-  rm -f "$_EMPTY_GCFG" "$_EMPTY_UCFG"
-
-  # Kembalikan env vars
-  [ -n "$_SAVED_PREFIX" ]       && export NPM_CONFIG_PREFIX="$_SAVED_PREFIX"   || unset NPM_CONFIG_PREFIX
-  [ -n "$_SAVED_NODE_OPTIONS" ] && export NODE_OPTIONS="$_SAVED_NODE_OPTIONS"  || unset NODE_OPTIONS
-  [ -n "$_SAVED_GCFG" ]         && export npm_config_globalconfig="$_SAVED_GCFG" || unset npm_config_globalconfig
-  [ -n "$_SAVED_UCFG" ]         && export npm_config_userconfig="$_SAVED_UCFG"   || unset npm_config_userconfig
-  unset npm_config_prefix
+  rm -rf "$NPM_CACHE"
 
   if [ "$SUCCESS" -eq 0 ]; then
     echo ""
     echo "  ✗ npm install gagal di $DIR setelah 3 percobaan."
-    echo "  Coba manual di SSH:"
-    echo "    unset NPM_CONFIG_PREFIX NODE_OPTIONS"
-    echo "    rm -rf /tmp/npm-cache-joben"
-    echo "    npm install --prefix $DIR --omit=dev --ignore-scripts --no-fund --no-audit --cache /tmp/npm-cache-joben"
+    echo "  Debug: jalankan manual di SSH (TANPA source activate):"
+    echo "    SYSTEM_NODE=/opt/cpanel/ea-nodejs22/root/usr/bin/node"
+    echo "    NPM_CLI=/opt/cpanel/ea-nodejs22/root/usr/lib/node_modules/npm/bin/npm-cli.js"
+    echo "    cd $DIR && \"\$SYSTEM_NODE\" \"\$NPM_CLI\" install --omit=dev --ignore-scripts"
     exit 1
   fi
 
