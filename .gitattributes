@@ -2,6 +2,4 @@
 # agar tidak perlu git-lfs di cPanel
 node_modules-strapi.partaa -text
 node_modules-strapi.partab -text
-node_modules-strapi.partac -text
-node_modules-strapi.partad -text
 # node_modules-strapi.tar.gz tidak di-track git (untracked, diabaikan)

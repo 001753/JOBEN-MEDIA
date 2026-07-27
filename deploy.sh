@@ -170,6 +170,7 @@ install_deps() {
 
   local CUR_HASH; CUR_HASH=$(md5sum "$PKG_FILE" | awk '{print $1}')
 
+  # -d juga true untuk symlink ke direktori, sehingga cocok untuk CloudLinux venv
   if [ -d "$DIR/node_modules" ] && [ -f "$HASH_FILE" ]; then
     local SAVED_HASH; SAVED_HASH=$(cat "$HASH_FILE" 2>/dev/null || echo "")
     if [ "$CUR_HASH" = "$SAVED_HASH" ]; then
@@ -177,7 +178,16 @@ install_deps() {
       return
     else
       echo "  → $LABEL: package.json berubah — install diperlukan"
-      rm -rf "$DIR/node_modules"
+      # CloudLinux NodeJS Selector: node_modules adalah symlink ke virtual env.
+      # rm -rf pada symlink menghapus symlink itu sendiri, lalu npm install
+      # gagal karena tidak ada symlink dan CloudLinux menolak pembuatan folder nyata.
+      # Solusi: hapus ISI symlink target, pertahankan symlink-nya.
+      if [ -L "$DIR/node_modules" ]; then
+        echo "  ℹ️  CloudLinux venv symlink — hapus isi, pertahankan symlink ..."
+        find "$DIR/node_modules" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
+      else
+        rm -rf "$DIR/node_modules"
+      fi
     fi
   else
     echo "  → $LABEL: node_modules belum ada — install diperlukan"
@@ -292,14 +302,14 @@ download_part() {
 }
 
 # Deteksi part files secara dinamis (partaa, partab, partac, ...)
-# Mendukung 1–26 parts tanpa hardcode jumlah
+# Hanya sertakan file yang BENAR-BENAR ada di git (tracked + committed).
+# Jangan gunakan -f check filesystem — file sisa dari run sebelumnya
+# (leftover/untracked) bisa memicu false-positive dan menyebabkan loop
+# mencoba download file yang tidak ada di repo.
 PART_FILES=()
 for SUFFIX in aa ab ac ad ae af ag ah ai aj; do
   PART="$APP_DIR/node_modules-strapi.part${SUFFIX}"
-  # Masukkan ke list jika: file ada di git (tracked) ATAU bisa didownload
-  # Cek dengan pola: ada file nyata ATAU ada di daftar suffix yang di-track
-  # Pendekatan: coba download jika tidak ada, stop jika download gagal
-  if [ -f "$PART" ] || git ls-files --error-unmatch "node_modules-strapi.part${SUFFIX}" &>/dev/null 2>&1; then
+  if git ls-files --error-unmatch "node_modules-strapi.part${SUFFIX}" &>/dev/null 2>&1; then
     PART_FILES+=("$PART")
   else
     break  # tidak ada part berikutnya — hentikan
@@ -325,7 +335,15 @@ else
 
   if [ "$PARTS_OK" -eq 1 ]; then
     echo "  → Menggabungkan & mengekstrak node_modules ..."
-    rm -rf "$APP_DIR/node_modules"
+    # CloudLinux NodeJS Selector: node_modules adalah symlink ke virtual env.
+    # Jangan rm -rf symlink-nya — hapus ISI target, lalu tar akan extract
+    # melalui symlink ke dalam venv (tar mengikuti symlink saat extract ke -C).
+    if [ -L "$APP_DIR/node_modules" ]; then
+      echo "  ℹ️  CloudLinux venv terdeteksi — hapus isi venv, pertahankan symlink ..."
+      find "$APP_DIR/node_modules" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
+    else
+      rm -rf "$APP_DIR/node_modules"
+    fi
     cat "${PART_FILES[@]}" | tar -xz -C "$APP_DIR"
     echo "  ✓ Strapi node_modules: diekstrak dari ${#PART_FILES[@]} part file(s)"
     echo "  → Hapus part files setelah ekstrak (hemat disk) ..."
