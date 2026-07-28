@@ -4,3 +4,5 @@
 - [Strapi v5 admin roles bootstrap](strapi-admin-roles.md) — use strapi.db.query('admin::role') not strapi.service('admin::role'); roleService.findAll() does not exist in v5
 - [Strapi v5 upload & Next.js quirks](strapi-upload-nextjs-quirks.md) — upload via AWS SDK directly (not strapi upload service); populate[content]=true causes 400; BlocksRenderer needs 'use client'
 - [Dark/light mode CSS architecture](dark-light-mode.md) — CSS custom properties in :root (light) + html.dark override; avoid style jsx in App Router; TechGrid uses plain CSS classes not styled-jsx
+- [Node.js version requirement](nodejs-version.md) — must use Node.js 20 (not 18); Strapi 5.50 uses Array.prototype.toSorted which is Node 20+; cPanel uses nodevenv/public_html/news/22/
+- [cPanel deploy flow](cpanel-deploy-flow.md) — builds done on Replit (npm run build:all), committed to git; cPanel uses --ignore-scripts + git pull only; never run strapi build on cPanel

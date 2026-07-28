@@ -1,1 +1,0 @@
-import{a as l,bu as p,bv as b,r as d}from"./strapi-Fyk2Dvqz.js";const x=(r={},o)=>{const{locale:t}=l(),s=p(t,{sensitivity:"base"}),{data:e,error:a,isError:n,isLoading:c,refetch:i}=b(r,o);return{roles:d.useMemo(()=>[...e??[]].sort((m,u)=>s.compare(m.name,u.name)),[e,s]),error:a,isError:n,isLoading:c,refetch:i}};export{x as u};
