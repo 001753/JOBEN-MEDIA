@@ -385,16 +385,27 @@ else
 fi
 
 # ── Ekstrak next-build.tar.gz → frontend/.next/ ──────────────────────────────
-# Build artifact di-commit sebagai tarball (bukan direktori .next/) agar tidak
-# dihapus oleh cleanup commit otomatis. Ekstrak sebelum verifikasi artifacts.
+# Build artifact di-commit sebagai tarball agar tidak dihapus cleanup agent.
+# Hash check: skip ekstrak jika tarball belum berubah sejak ekstrak terakhir.
 NEXT_TARBALL="$FRONTEND_DIR/next-build.tar.gz"
+NEXT_HASH_FILE="$FRONTEND_DIR/.next_build_hash"
+
 if [ -f "$NEXT_TARBALL" ]; then
-  echo "  → Ekstrak next-build.tar.gz → frontend/.next/ ..."
-  rm -rf "$FRONTEND_DIR/.next"
-  tar -xzf "$NEXT_TARBALL" -C "$FRONTEND_DIR"
-  echo "  ✓ frontend/.next/ diekstrak (BUILD_ID: $(cat "$FRONTEND_DIR/.next/BUILD_ID" 2>/dev/null | head -1))"
+  TARBALL_HASH=$(md5sum "$NEXT_TARBALL" | awk '{print $1}')
+  SAVED_HASH=$(cat "$NEXT_HASH_FILE" 2>/dev/null || echo "")
+
+  if [ "$TARBALL_HASH" = "$SAVED_HASH" ] && [ -f "$FRONTEND_DIR/.next/BUILD_ID" ]; then
+    echo "  → skip ekstrak next-build.tar.gz (tidak berubah)"
+    echo "  ✓ frontend/.next/ sudah up-to-date (BUILD_ID: $(cat "$FRONTEND_DIR/.next/BUILD_ID" | head -1))"
+  else
+    echo "  → Ekstrak next-build.tar.gz → frontend/.next/ ..."
+    rm -rf "$FRONTEND_DIR/.next"
+    tar -xzf "$NEXT_TARBALL" -C "$FRONTEND_DIR"
+    echo "$TARBALL_HASH" > "$NEXT_HASH_FILE"
+    echo "  ✓ frontend/.next/ diekstrak (BUILD_ID: $(cat "$FRONTEND_DIR/.next/BUILD_ID" 2>/dev/null | head -1))"
+  fi
 else
-  echo "  ⚠️  next-build.tar.gz tidak ada — .next/ harus sudah ada dari git atau build sebelumnya"
+  echo "  ⚠️  next-build.tar.gz tidak ada — .next/ harus sudah ada dari build sebelumnya"
 fi
 
 # Pastikan static files Next.js tersedia di dalam standalone dir
