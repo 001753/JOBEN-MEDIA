@@ -1,4 +1,4 @@
-modules = ["web", "nodejs-18", "bash"]
+modules = ["nodejs-18", "web", "bash"]
 [agent]
 expertMode = true
 stack = "BEST_EFFORT_FALLBACK"
