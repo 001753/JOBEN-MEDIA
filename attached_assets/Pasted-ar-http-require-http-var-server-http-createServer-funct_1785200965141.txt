@@ -1,0 +1,207 @@
+ar http = require('http');
+var server = http.createServer(function(req, res) {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+    var message = 'It works!\n',
+        version = 'NodeJS ' + process.versions.node + '\n',
+        response = [message, version].join('\n');
+    res.end(response);
+});
+server.listen();
+[public_html/strapi (22)] [smknwon2@tirtonirmolo strapi]$ node -e "
+> const path = require('path');
+> const NEWS_DIR = path.resolve('/home/smknwon2/public_html/news');
+> console.log('NEWS_DIR:', NEWS_DIR);
+> console.log('exists:', require('fs').existsSync(NEWS_DIR));
+> const strapiPath = path.join(NEWS_DIR, 'node_modules', '@strapi', 'strapi');
+> console.log('strapi path:', strapiPath);
+> console.log('strapi exists:', require('fs').existsSync(strapiPath));
+> "^C
+[public_html/strapi (22)] [smknwon2@tirtonirmolo strapi]$ cat > ~/public_html/strapi/server.js << 'EOF'
+> 'use strict';
+> const path = require('path');
+> const NEWS_DIR = path.resolve(__dirname, '../news');
+> process.chdir(NEWS_DIR);
+> process.env.PORT = process.env.PORT || '1337';
+> require(path.join(NEWS_DIR, 'node_modules', '@strapi', 'strapi'))
+>   .createStrapi({ appDir: NEWS_DIR })
+>   .start();
+> EOF
+[public_html/strapi (22)] [smknwon2@tirtonirmolo strapi]$ node server.js 2>&1
+[2026-07-28 07:57:10.207] error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+Error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+    at loadJsFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:24:19)
+    at Object.loadConfigFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:43:20)
+    at loadPlugins (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/plugins/index.js:140:45)
+    at async Promise.all (index 3)
+    at async Object.loadApplicationContext (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/index.js:13:5)
+    at async Object.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/providers/registries.js:28:9)
+    at async Strapi.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:326:13)
+    at async Strapi.load (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:317:9)
+    at async Strapi.start (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:203:17)
+[2026-07-28 07:57:10.211] info: Shutting down Strapi
+[public_html/strapi (22)] [smknwon2@tirtonirmolo strapi]$ source ~/nodevenv/public_html/news/22/bin/activate
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ cd ~/public_html/news
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ npm rebuild sharp better-sqlite3 2>&1
+rebuilt dependencies successfully
+npm notice
+npm notice New major version of npm available! 10.9.8 -> 12.0.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.0.1
+npm notice To update run: npm install -g npm@12.0.1
+npm notice
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ cd ~/public_html/strapi && node server.js 2>&1
+[2026-07-28 08:00:32.659] error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+Error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+    at loadJsFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:24:19)
+    at Object.loadConfigFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:43:20)
+    at loadPlugins (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/plugins/index.js:140:45)
+    at async Promise.all (index 3)
+    at async Object.loadApplicationContext (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/index.js:13:5)
+    at async Object.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/providers/registries.js:28:9)
+    at async Strapi.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:326:13)
+    at async Strapi.load (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:317:9)
+    at async Strapi.start (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:203:17)
+[2026-07-28 08:00:32.662] info: Shutting down Strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ source ~/nodevenv/public_html/news/22/bin/activate
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ cd ~/public_html/news
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ npm install @img/sharp-linux-x64 --no-save 2>&1
+Cloudlinux NodeJS Selector demands to store node modules for application in separate folder (virtual environment) pointed by symlink called "node_modules". That's why application should not contain folder/file with such name in application root
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ cd ~/public_html/strapi && node server.js 2>&1
+[2026-07-28 08:04:41.663] error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+Error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+    at loadJsFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:24:19)
+    at Object.loadConfigFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:43:20)
+    at loadPlugins (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/plugins/index.js:140:45)
+    at async Promise.all (index 3)
+    at async Object.loadApplicationContext (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/index.js:13:5)
+    at async Object.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/providers/registries.js:28:9)
+    at async Strapi.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:326:13)
+    at async Strapi.load (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:317:9)
+    at async Strapi.start (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:203:17)
+[2026-07-28 08:04:41.666] info: Shutting down Strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ # 1. Cek apakah node_modules masih symlink atau sudah jadidirektori nyata
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ ls -la ~/public_html/news/node_modules | head -1
+total 940
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ # 2. Download @img/sharp-linux-x64 tanpa npm install (bypass CloudLinux)
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ cd /tmp
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ npm pack @img/sharp-linux-x64 2>&1
+npm notice
+npm notice 📦  @img/sharp-linux-x64@0.35.3
+npm notice Tarball Contents
+npm notice 10.3kB LICENSE
+npm notice 697B README.md
+npm notice 135B index.cjs
+npm notice 415.1kB lib/sharp-linux-x64-0.35.3.node
+npm notice 921B package.json
+npm notice Tarball Details
+npm notice name: @img/sharp-linux-x64
+npm notice version: 0.35.3
+npm notice filename: img-sharp-linux-x64-0.35.3.tgz
+npm notice package size: 185.6 kB
+npm notice unpacked size: 427.1 kB
+npm notice shasum: 9843c32f39aeac4b60dd60f9e3416520a4e4de46
+npm notice integrity: sha512-8pqvxubL2PGdh[...]VWcKPvtiPB4cA==
+npm notice total files: 5
+npm notice
+img-sharp-linux-x64-0.35.3.tgz
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ # 3. Extract ke dalam node_modules
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ VENV=$(readlink -f ~/public_html/news/node_modules 2>/dev/null || echo ~/public_html/news/node_modules)
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ echo "Target: $VENV"
+Target: /home/smknwon2/public_html/news/node_modules
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ mkdir -p "$VENV/@img/sharp-linux-x64"
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ tar -xzf /tmp/@img-sharp-linux-x64-*.tgz --strip-components=1-C "$VENV/@img/sharp-linux-x64"
+tar (child): /tmp/@img-sharp-linux-x64-*.tgz: Cannot open: No such file or directory
+tar (child): Error is not recoverable: exiting now
+tar: Child returned status 2
+tar: Error is not recoverable: exiting now
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ echo "Done"
+Done
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ # 4. Test Strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ cd ~/public_html/strapi && node server.js 2>&1
+[2026-07-28 08:08:47.739] error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+Error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+    at loadJsFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:24:19)
+    at Object.loadConfigFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:43:20)
+    at loadPlugins (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/plugins/index.js:140:45)
+    at async Promise.all (index 3)
+    at async Object.loadApplicationContext (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/index.js:13:5)
+    at async Object.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/providers/registries.js:28:9)
+    at async Strapi.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:326:13)
+    at async Strapi.load (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:317:9)
+    at async Strapi.start (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:203:17)
+[2026-07-28 08:08:47.742] info: Shutting down Strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$
