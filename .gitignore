@@ -11,6 +11,10 @@ dist/
 .strapi/
 .cache/
 # frontend/.next/ — JANGAN ignore! Build di-commit ke git untuk cPanel.
+# Tapi cache & hot-update TIDAK perlu di-commit (dev-only noise):
+frontend/.next/cache/
+frontend/.next/static/webpack/*.hot-update.*
+frontend/.next/static/webpack/**/*.hot-update.*
 # Lihat komentar di atas dan doc/CPANEL_DEPLOY_CHECKLIST.md §5.
 
 # ── Environment variables — JANGAN commit ke GitHub ───────────
