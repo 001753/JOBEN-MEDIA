@@ -265,7 +265,7 @@ export async function getAuthors() {
   const res = await fetchStrapi(
     '/authors',
     {
-      'populate[photo]=true': '',
+      'populate[photo]': 'true',
       'sort[0]': 'name:asc',
       'pagination[pageSize]': 50,
     },
