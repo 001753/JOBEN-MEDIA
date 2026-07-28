@@ -29,6 +29,19 @@ APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FRONTEND_DIR="$APP_DIR/frontend"
 cd "$APP_DIR"
 
+# ── Self-re-exec guard ────────────────────────────────────────────────────────
+# bash membuffer script sebelum eksekusi. Jika deploy.sh berubah saat
+# git reset --hard di step 1, bash tetap menjalankan versi lama dari buffer.
+# Guard ini melakukan git update DIAM-DIAM di awal, lalu re-exec agar
+# seluruh script berjalan dengan versi terbaru dari disk.
+# Variabel _JOBEN_DEPLOY_EXEC mencegah loop tak terbatas.
+if [ -z "${_JOBEN_DEPLOY_EXEC}" ]; then
+  git -C "$APP_DIR" fetch origin -q 2>/dev/null || true
+  git -C "$APP_DIR" reset --hard origin/main -q 2>/dev/null || true
+  export _JOBEN_DEPLOY_EXEC=1
+  exec bash "$0" "$@"
+fi
+
 echo ""
 echo "════════════════════════════════════════════════════════"
 echo "  JOBEN NEWS — Deploy Script"
