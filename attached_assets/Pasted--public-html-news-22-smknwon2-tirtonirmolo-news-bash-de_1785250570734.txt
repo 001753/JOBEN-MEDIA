@@ -1,0 +1,87 @@
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Tue Jul 28 21:19:46 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+remote: Enumerating objects: 730, done.
+remote: Counting objects: 100% (730/730), done.
+remote: Compressing objects: 100% (519/519), done.
+remote: Total 692 (delta 177), reused 622 (delta 147), pack-reused 0 (from 0)
+Receiving objects: 100% (692/692), 6.47 MiB | 2.23 MiB/s, done.
+Resolving deltas: 100% (177/177), completed with 19 local objects.
+From https://github.com/001753/JOBEN-MEDIA
+   be038e6..1d5a80c  main       -> origin/main
+Updating files: 100% (378/378), done.
+HEAD is now at 1d5a80c Clean up Next.js build artifacts
+  ✓ Kode diperbarui — HEAD: 1d5a80c5df2e
+
+  ⚠️  .build_commit belum ada — jalankan npm run build:all di Replit
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild native modules (sharp, better-sqlite3) ...
+rebuilt dependencies successfully
+  ✓ Native modules rebuilt
+  ✓ Next.js standalone: skip npm install (deps sudah di-bundle)
+  ✓ Semua dependencies siap
+
+▶ [3/4] Verifikasi build artifacts ...
+  ✓ Strapi admin (build/) ada
+
+  ✗ FATAL: Next.js .next/ tidak ada atau tidak valid!
+    Frontend tidak bisa berjalan tanpa build.
+    Jalankan: npm run build:all di Replit → commit → push
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Tue Jul 28 21:29:51 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+remote: Enumerating objects: 205, done.
+remote: Counting objects: 100% (205/205), done.
+remote: Compressing objects: 100% (128/128), done.
+remote: Total 186 (delta 51), reused 168 (delta 38), pack-reused 0 (from 0)
+Receiving objects: 100% (186/186), 434.96 KiB | 2.23 MiB/s, done.
+Resolving deltas: 100% (51/51), completed with 4 local objects.
+From https://github.com/001753/JOBEN-MEDIA
+   1d5a80c..4a56434  main       -> origin/main
+Updating files: 100% (5/5), done.
+HEAD is now at 4a56434 Clean frontend build artifacts and cache files
+  ✓ Kode diperbarui — HEAD: 4a564349eb92
+
+  ⚠️  .build_commit belum ada — jalankan npm run build:all di Replit
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild native modules (sharp, better-sqlite3) ...
+rebuilt dependencies successfully
+  ✓ Native modules rebuilt
+  ✓ Next.js standalone: skip npm install (deps sudah di-bundle)
+  ✓ Semua dependencies siap
+
+▶ [3/4] Verifikasi build artifacts ...
+  ✓ Strapi admin (build/) ada
+
+  ✗ FATAL: Next.js .next/ tidak ada atau tidak valid!
+    Frontend tidak bisa berjalan tanpa build.
+    Jalankan: npm run build:all di Replit → commit → push
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$

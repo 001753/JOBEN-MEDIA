@@ -2,20 +2,17 @@
 node_modules/
 
 # ── Build outputs ──────────────────────────────────────────────
-# CATATAN: build/ (Strapi admin) dan frontend/.next/ SENGAJA TIDAK
-# di-ignore — build dilakukan di Replit, hasil build di-commit &
-# di-push ke GitHub, lalu cPanel tinggal `git pull` + restart TANPA
-# perlu build ulang di cPanel (menghindari limit resource shared hosting).
+# build/ (Strapi admin) dan frontend/next-build.tar.gz di-commit ke git.
+# frontend/.next/ di-ignore — di-pack ke next-build.tar.gz oleh build-all.sh.
+# deploy.sh di cPanel mengekstrak next-build.tar.gz → frontend/.next/ saat deploy.
 # Lihat doc/CPANEL_DEPLOY_CHECKLIST.md §5.
 dist/
 .strapi/
 .cache/
-# frontend/.next/ — JANGAN ignore! Build di-commit ke git untuk cPanel.
-# Tapi cache & hot-update TIDAK perlu di-commit (dev-only noise):
-frontend/.next/cache/
-frontend/.next/static/webpack/*.hot-update.*
-frontend/.next/static/webpack/**/*.hot-update.*
-# Lihat komentar di atas dan doc/CPANEL_DEPLOY_CHECKLIST.md §5.
+# frontend/.next/ — di-pack ke next-build.tar.gz, TIDAK di-commit langsung
+frontend/.next/
+# next-build.tar.gz — JANGAN ignore! Ini adalah build artifact yang di-commit
+# !frontend/next-build.tar.gz  ← tidak perlu karena .next/ saja yang di-ignore
 
 # ── Environment variables — JANGAN commit ke GitHub ───────────
 .env

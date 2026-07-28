@@ -384,6 +384,19 @@ else
   fi
 fi
 
+# ── Ekstrak next-build.tar.gz → frontend/.next/ ──────────────────────────────
+# Build artifact di-commit sebagai tarball (bukan direktori .next/) agar tidak
+# dihapus oleh cleanup commit otomatis. Ekstrak sebelum verifikasi artifacts.
+NEXT_TARBALL="$FRONTEND_DIR/next-build.tar.gz"
+if [ -f "$NEXT_TARBALL" ]; then
+  echo "  → Ekstrak next-build.tar.gz → frontend/.next/ ..."
+  rm -rf "$FRONTEND_DIR/.next"
+  tar -xzf "$NEXT_TARBALL" -C "$FRONTEND_DIR"
+  echo "  ✓ frontend/.next/ diekstrak (BUILD_ID: $(cat "$FRONTEND_DIR/.next/BUILD_ID" 2>/dev/null | head -1))"
+else
+  echo "  ⚠️  next-build.tar.gz tidak ada — .next/ harus sudah ada dari git atau build sebelumnya"
+fi
+
 # Pastikan static files Next.js tersedia di dalam standalone dir
 # (Next.js standalone butuh .next/static & public/ dicopy/symlink ke sana)
 if [ -d "$FRONTEND_DIR/.next/standalone" ]; then
