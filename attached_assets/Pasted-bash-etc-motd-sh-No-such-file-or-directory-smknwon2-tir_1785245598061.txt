@@ -1,0 +1,38 @@
+bash: /etc/motd.sh: No such file or directory
+[smknwon2@tirtonirmolo ~]$ cd ~/public_html/news
+[smknwon2@tirtonirmolo news]$ source /home/smknwon2/nodevenv/public_html/news/20/bin/activate && node --version
+bash: /home/smknwon2/nodevenv/public_html/news/20/bin/activate: No such file or directory
+[smknwon2@tirtonirmolo news]$
+[smknwon2@tirtonirmolo news]$ # Build admin panel dulu
+[smknwon2@tirtonirmolo news]$ NODE_ENV=production node_modules/.bin/strapi build
+/usr/bin/env: ‘node’: Permission denied
+[smknwon2@tirtonirmolo news]$
+[smknwon2@tirtonirmolo news]$ source /home/smknwon2/nodevenv/public_html/news/22/bin/activate && cd /home/smknwon2/public_html/news
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ cd ~/public_html/news
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ source /home/smknwon2/nodevenv/public_html/news/20/bin/activate && node --version
+bash: /home/smknwon2/nodevenv/public_html/news/20/bin/activate: No such file or directory
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ # Build admin panel dulu
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ NODE_ENV=production node_modules/.bin/strapi build
+⠋ Building build context
+✔ Building build context (346ms)
+⠋ Building admin panel
+✖ Building admin panel
+[ERROR]  There seems to be an unexpected error, try again with --debug for more information
+
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                                                                                                          │
+│   Error: Failed to load native binding                                                                                   │
+│       at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/@swc/core/binding.js:345:11)                   │
+│       at Module._compile (node:internal/modules/cjs/loader:1781:14)                                                      │
+│       at Module._extensions..js (node:internal/modules/cjs/loader:1913:10)                                               │
+│       at Object.newLoader [as .js] (/home/smknwon2/public_html/news/node_modules/esbuild-register/dist/node.js:2262:9)   │
+│       at Module.load (node:internal/modules/cjs/loader:1505:32)                                                          │
+│       at Module._load (node:internal/modules/cjs/loader:1309:12)                                                         │
+│       at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)                                                        │
+│       at Module.require (node:internal/modules/cjs/loader:1527:12)                                                       │
+│       at require (node:internal/modules/helpers:147:16)                                                                  │
+│       at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/@swc/core/index.js:66:17)                      │
+│                                                                                                                          │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
