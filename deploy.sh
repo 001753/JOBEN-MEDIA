@@ -350,6 +350,25 @@ else
     rm -f "${PART_FILES[@]}"
     # Simpan hash agar install_deps tidak dijalankan lagi
     md5sum "$APP_DIR/package.json" | awk '{print $1}' > "$APP_DIR/.pkg_hash"
+
+    # Rebuild native modules agar cocok dengan Node.js versi di server ini.
+    # sharp & better-sqlite3 adalah native modules — binary-nya harus dikompile
+    # ulang di server target. Tarball dibangun di Replit (Node 20), cPanel bisa
+    # Node 20 atau 22 → ABI berbeda → harus rebuild.
+    echo "  → Rebuild native modules (sharp, better-sqlite3) ..."
+    SYSTEM_NODE=$(find_system_node)
+    NPM_CLI=$(find_npm_cli_for "$SYSTEM_NODE")
+    unset NPM_CONFIG_PREFIX npm_config_prefix NODE_OPTIONS
+    REBUILD_FLAGS="--no-fund --no-audit"
+    if [ -n "$NPM_CLI" ]; then
+      (cd "$APP_DIR" && "$SYSTEM_NODE" "$NPM_CLI" rebuild sharp better-sqlite3 $REBUILD_FLAGS 2>&1) \
+        && echo "  ✓ Native modules rebuilt" \
+        || echo "  ⚠️  Rebuild warning — cek manual jika Strapi gagal load sharp"
+    else
+      (cd "$APP_DIR" && npm rebuild sharp better-sqlite3 $REBUILD_FLAGS 2>&1) \
+        && echo "  ✓ Native modules rebuilt" \
+        || echo "  ⚠️  Rebuild warning — cek manual jika Strapi gagal load sharp"
+    fi
   else
     echo "  ℹ️  Download gagal — fallback ke npm install"
     install_deps "Strapi (root)" "$APP_DIR" "$APP_DIR/.pkg_hash"

@@ -53,8 +53,9 @@ fi
 
 # ── 2. Prune ke production + optional ───────────────────────────────────────
 echo ""
-echo "▶ [2/4] Prune devDependencies & optionalDependencies ..."
-echo "  (Membuat salinan sementara untuk di-prune tanpa merusak dev setup)"
+echo "▶ [2/4] Prune devDependencies (PERTAHANKAN optional) ..."
+echo "  (Optional deps WAJIB disertakan — sharp menggunakan @img/sharp-linux-x64"
+echo "   sebagai optionalDependency untuk pre-built binary. Tanpanya sharp gagal load.)"
 
 # Buat temp dir, salin manifest ke sana, lalu install dari dalam temp dir
 # (npm install tanpa --prefix jauh lebih reliable — --prefix bisa di-override
@@ -68,9 +69,12 @@ echo "  → Install prod-only dari $TEMP_NM ..."
 # Jalankan npm install tanpa pipe agar exit code terdeteksi dengan benar
 # (pipe ke grep/head menyembunyikan error dan mencegah pembuatan node_modules)
 NPM_INSTALL_LOG=$(mktemp /tmp/npm-install-XXXXXX.log)
+# PENTING: --omit=optional DIHAPUS
+# sharp v0.34.x memakai @img/sharp-linux-x64 sebagai optionalDependency.
+# Jika di-omit, sharp tidak punya binary → crash saat Strapi load upload plugin.
+# Tradeoff: tarball ~15MB lebih besar, tapi sharp berfungsi tanpa rebuild.
 (cd "$TEMP_NM" && npm install \
   --omit=dev \
-  --omit=optional \
   --ignore-scripts \
   --no-fund \
   --no-audit \
