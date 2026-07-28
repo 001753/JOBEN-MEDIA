@@ -335,16 +335,25 @@ else
 
   if [ "$PARTS_OK" -eq 1 ]; then
     echo "  → Menggabungkan & mengekstrak node_modules ..."
-    # CloudLinux NodeJS Selector: node_modules adalah symlink ke virtual env.
-    # Jangan rm -rf symlink-nya — hapus ISI target, lalu tar akan extract
-    # melalui symlink ke dalam venv (tar mengikuti symlink saat extract ke -C).
+    # CloudLinux NodeJS Selector: node_modules adalah SYMLINK ke virtual env.
+    # JANGAN biarkan tar extract ke $APP_DIR — tar akan MENIMPA symlink dengan
+    # direktori nyata karena tarball punya entry "node_modules/" sebagai direktori.
+    # Setelah symlink diganti direktori nyata, npm install akan diblokir CloudLinux.
+    #
+    # Solusi BENAR: resolve symlink target terlebih dahulu, lalu extract langsung
+    # ke sana dengan --strip-components=1 (menghapus prefix "node_modules/" dari path).
+    # Symlink tidak pernah disentuh — hanya ISI target yang diperbarui.
     if [ -L "$APP_DIR/node_modules" ]; then
-      echo "  ℹ️  CloudLinux venv terdeteksi — hapus isi venv, pertahankan symlink ..."
-      find "$APP_DIR/node_modules" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
+      VENV_DIR=$(readlink -f "$APP_DIR/node_modules")
+      echo "  ℹ️  CloudLinux venv: $VENV_DIR"
+      echo "  → Hapus isi venv, extract langsung ke target (pertahankan symlink) ..."
+      rm -rf "$VENV_DIR"
+      mkdir -p "$VENV_DIR"
+      cat "${PART_FILES[@]}" | tar -xz --strip-components=1 -C "$VENV_DIR"
     else
       rm -rf "$APP_DIR/node_modules"
+      cat "${PART_FILES[@]}" | tar -xz -C "$APP_DIR"
     fi
-    cat "${PART_FILES[@]}" | tar -xz -C "$APP_DIR"
     echo "  ✓ Strapi node_modules: diekstrak dari ${#PART_FILES[@]} part file(s)"
     echo "  → Hapus part files setelah ekstrak (hemat disk) ..."
     rm -f "${PART_FILES[@]}"
