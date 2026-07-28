@@ -17,7 +17,7 @@
 #      - cms.news.jobenapp.cloud  (startup: server.js → Strapi)
 #
 # Prasyarat:
-#   - ~/public_html/news-cms adalah symlink ke ~/public_html/news
+#   - ~/public_html/strapi adalah direktori Strapi CMS (startup: server.js)
 #   - .env sudah diisi di ~/public_html/news/.env
 #   - frontend/.env.local sudah diisi di ~/public_html/news/frontend/.env.local
 #   - Kedua Node.js app sudah terdaftar di cPanel Node.js Selector
@@ -43,11 +43,11 @@ echo ""
 # Node 22 hanya sebagai fallback jika Node 20 tidak tersedia di cPanel.
 for _NDIR in \
   "$HOME/nodevenv/public_html/news/20/bin" \
-  "$HOME/nodevenv/public_html/news-cms/20/bin" \
+  "$HOME/nodevenv/public_html/strapi/20/bin" \
   "/opt/cpanel/ea-nodejs20/root/usr/bin" \
   "/opt/cpanel/ea-nodejs20/bin" \
   "$HOME/nodevenv/public_html/news/22/bin" \
-  "$HOME/nodevenv/public_html/news-cms/22/bin" \
+  "$HOME/nodevenv/public_html/strapi/22/bin" \
   "/opt/cpanel/ea-nodejs22/root/usr/bin" \
   "/opt/cpanel/ea-nodejs22/bin" \
   "$HOME/.nvm/versions/node/$(ls "$HOME/.nvm/versions/node/" 2>/dev/null | sort -V | tail -1)/bin"; do
@@ -405,17 +405,22 @@ else
   exit 1
 fi
 
-# news-cms — harus direktori NYATA (bukan symlink) agar bisa didaftarkan
-# sebagai app terpisah di cPanel Node.js Selector.
-# cPanel menolak app kedua di path yang sama (atau symlink ke path yang sama).
-# Solusi: news-cms = direktori real dengan server.js wrapper yang load Strapi
-# dari ../news menggunakan absolute require path — tanpa npm install.
-CMS_DIR="$HOME/public_html/news-cms"
+# CMS_DIR = ~/public_html/strapi  (BUKAN news-cms!)
+#
+# cPanel Node.js Selector menggunakan string prefix check untuk mendeteksi
+# app yang "bersarang" di dalam app lain. Karena ada app di public_html/news,
+# path apapun yang diawali "news" (termasuk "news-cms") akan ditolak dengan
+# error "cannot be located inside of already existing one: public_html/news".
+# Ini adalah bug cPanel — bukan filesystem check, tapi string prefix check.
+#
+# Solusi: gunakan nama direktori yang tidak diawali string "news".
+# public_html/strapi → path.resolve('../news') = public_html/news ✓
+CMS_DIR="$HOME/public_html/strapi"
 
-# Hapus symlink lama jika masih ada
-if [ -L "$CMS_DIR" ]; then
-  echo "  → Hapus symlink news-cms lama (ganti dengan direktori nyata) ..."
-  rm "$CMS_DIR"
+# Hapus direktori / symlink news-cms lama jika masih ada
+if [ -e "$HOME/public_html/news-cms" ] || [ -L "$HOME/public_html/news-cms" ]; then
+  echo "  → Hapus news-cms lama (diganti dengan strapi/) ..."
+  rm -rf "$HOME/public_html/news-cms"
 fi
 
 # Buat direktori dan server.js wrapper
@@ -430,7 +435,7 @@ cat > "$CMS_DIR/server.js" << 'EOJS'
  * Tidak perlu npm install di direktori ini — node_modules di-require
  * dengan path absolut dari ../news/node_modules.
  *
- * Application root  : ~/public_html/news-cms   (direktori ini)
+ * Application root  : ~/public_html/strapi   (direktori ini)
  * Application URL   : cms.news.jobenapp.cloud
  * Startup file      : server.js
  * Node.js version   : 20 (sama dengan news/)
@@ -452,7 +457,7 @@ require(path.join(NEWS_DIR, 'node_modules', '@strapi', 'strapi'))
   .start();
 EOJS
 
-echo "  ✓ news-cms/ direktori nyata + server.js wrapper dibuat"
+echo "  ✓ strapi/ direktori + server.js wrapper dibuat (app root cPanel: public_html/strapi)"
 
 # frontend/.env.local
 if [ -f "$FRONTEND_DIR/.env.local" ]; then
@@ -521,8 +526,8 @@ restart_passenger() {
 # Frontend — app root: ~/public_html/news
 restart_passenger "Frontend (news.jobenapp.cloud)" "$APP_DIR"
 
-# Strapi CMS — app root: ~/public_html/news-cms (direktori nyata, bukan symlink)
-CMS_DIR="$HOME/public_html/news-cms"
+# Strapi CMS — app root: ~/public_html/strapi
+# CMS_DIR sudah di-set di step 3 (bagian verifikasi)
 if [ -d "$CMS_DIR" ] && [ -f "$CMS_DIR/server.js" ]; then
   restart_passenger "Strapi CMS (cms.news.jobenapp.cloud)" "$CMS_DIR"
 else
