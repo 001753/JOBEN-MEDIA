@@ -1,14 +1,14 @@
 # Product Requirements Document (PRD)
 # Portal Berita Online — JOBEN NEWS
 
-**Versi:** 1.4 (Update Implementasi Lengkap)
-**Tanggal:** 4 Juli 2026
-**Status:** In Progress — Fase 0–3 selesai secara kode & runtime; Fase 4 (cPanel deploy) pending
+**Versi:** 1.5 (Fix Deploy Script)
+**Tanggal:** 28 Juli 2026
+**Status:** In Progress — Fase 0–3 selesai secara kode & runtime; Fase 4 (cPanel deploy) in progress
 **Domain:** news.jobenapp.cloud
 
 ---
 
-## STATUS IMPLEMENTASI (per 3 Juli 2026)
+## STATUS IMPLEMENTASI (per 28 Juli 2026)
 
 > Bagian ini mencatat apa yang sudah dan belum dikerjakan berdasarkan kondisi kode terakhir di Replit.
 
@@ -136,6 +136,20 @@
 | Proses server | PM2 + Nginx (root access VPS) | cPanel "Setup Node.js App" (Passenger) — tanpa root access |
 | Media storage | Cloudflare R2 | Tidak berubah — Cloudflare R2 (S3-compatible, independen dari pilihan hosting) |
 | Kesiapan scale-up | — | Ditambahkan: pondasi migrasi ke Google Cloud (Dockerfile, dokumentasi env var, panduan migrasi DB) disiapkan sejak awal |
+
+### v1.4 → v1.5 (Fix Deploy Script — 28 Juli 2026)
+
+| Aspek | Sebelumnya | Sesudahnya |
+|---|---|---|
+| Node.js versi di Replit | nodejs-18 (`.replit`) | nodejs-20 — Strapi v5 memanggil `Array.prototype.toSorted` yang hanya ada di Node ≥ 20 |
+| Strapi admin build (`build/`) | Belum pernah di-build | Di-build via `npm run build:all` dan di-commit ke repo agar cPanel tidak perlu build sendiri |
+| `frontend/next-build.tar.gz` | Tidak mengandung `.build_commit` | Sekarang mengandung `.build_commit` — hash commit saat build dijalankan |
+| `deploy.sh` — exclusion list | `frontend/next-build.tar.gz` tidak dikecualikan dari diff "kode berubah" | Ditambahkan `grep -v '^frontend/next-build\.tar\.gz$'` — tarball adalah artefak build, bukan kode sumber |
+| `deploy.sh` — self-re-exec guard | Tidak ada — bash membuffer script sebelum eksekusi, sehingga perubahan pada `deploy.sh` saat `git reset --hard` tidak pernah efektif di run yang sama | Ditambahkan guard di baris paling awal: silent `git fetch + reset`, lalu `exec bash "$0"` dengan `_JOBEN_DEPLOY_EXEC=1` sebagai anti-loop |
+
+**Akar masalah yang diperbaiki:**
+- `build:all` menulis `.build_commit` = HEAD saat itu, lalu artefak build di-commit → HEAD maju 1 commit. `deploy.sh` mendiff `.build_commit` vs HEAD dan menemukan `frontend/next-build.tar.gz` berubah (tidak ada di exclusion list) → selalu warning "1 file kode belum di-build" meski build valid.
+- Fix exclusion list benar secara logika, tapi bash sudah membuffer blok 88–103 sebelum `git reset --hard` di baris 71 memperbarui file — jadi fix tidak pernah aktif di run pertama setelah di-push. Self-re-exec guard menyelesaikan ini secara permanen.
 
 ### v1.1 → v1.2 (Revisi Teknis — perubahan ini)
 | Aspek | v1.1 | v1.2 |
