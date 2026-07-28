@@ -1,0 +1,88 @@
+  "@img/sharp-win32-x64": "0.34.5"
+}
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ cd /tmp
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ # Download kedua package yang dibutuhkan
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ npm pack @img/sharp-linux-x64@0.34.5
+npm notice
+npm notice ??  @img/sharp-linux-x64@0.34.5
+npm notice Tarball Contents
+npm notice 10.3kB LICENSE
+npm notice 697B README.md
+npm notice 411.0kB lib/sharp-linux-x64.node
+npm notice 942B package.json
+npm notice Tarball Details
+npm notice name: @img/sharp-linux-x64
+npm notice version: 0.34.5
+npm notice filename: img-sharp-linux-x64-0.34.5.tgz
+npm notice package size: 182.8 kB
+npm notice unpacked size: 422.9 kB
+npm notice shasum: 55abc7cd754ffca5002b6c2b719abdfc846819a8
+npm notice integrity: sha512-MEzd8HPKxVxVe[...]9zStiHBTJQQQQ==
+npm notice total files: 4
+npm notice
+img-sharp-linux-x64-0.34.5.tgz
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ npm pack @img/sharp-libvips-linux-x64@1.2.4
+npm notice
+npm notice ??  @img/sharp-libvips-linux-x64@1.2.4
+npm notice Tarball Contents
+npm notice 4.3kB README.md
+npm notice 6.0kB lib/glib-2.0/include/glibconfig.h
+npm notice 28B lib/index.js
+npm notice 16.6MB lib/libvips-cpp.so.8.17.3
+npm notice 888B package.json
+npm notice 594B versions.json
+npm notice Tarball Details
+npm notice name: @img/sharp-libvips-linux-x64
+npm notice version: 1.2.4
+npm notice filename: img-sharp-libvips-linux-x64-1.2.4.tgz
+npm notice package size: 7.5 MB
+npm notice unpacked size: 16.7 MB
+npm notice shasum: df4183jdPDqXBWaJVu4vFEJxG4cyRWu7CXTe31ce
+npm notice integrity: sha512-tJxiiLsmHc9Ax[...]ZsFtSfAdquPrw==
+npm notice total files: 6
+npm notice
+img-sharp-libvips-linux-x64-1.2.4.tgz
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ VENV=~/public_html/news/node_modules
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ # Extract @img/sharp-linux-x64
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ mkdir -p "$VENV/@img/sharp-linux-x64"
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ tar -xzf /tmp/img-sharp-linux-x64-0.34.5.tgz --strip-components=1 -C "$VENV/@img/sharp-linux-x64"
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ # Extract @img/sharp-libvips-linux-x64
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ mkdir -p "$VENV/@img/sharp-libvips-linux-x64"
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ tar -xzf /tmp/img-sharp-libvips-linux-x64-1.2.4.tgz --strip-components=1 -C "$VENV/@img/sharp-libvips-linux-x64"
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ echo "=== Hasil ===" && ls "$VENV/@img/"
+=== Hasil ===
+colour  sharp-libvips-linux-x64  sharp-linux-x64
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ # Test Strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo tmp]$ cd ~/public_html/strapi && node server.js 2>&1
+[2026-07-28 08:12:57.041] info: [discard-drafts] Migration started
+[2026-07-28 08:12:57.113] info: [discard-drafts] Stage 1/5 – cloning published entries into draft rows
+[2026-07-28 08:12:57.114] info: [discard-drafts] Stage 1/5 complete
+[2026-07-28 08:12:57.114] info: [discard-drafts] Stage 2/5 – copying relations and components to drafts
+[2026-07-28 08:12:57.114] info: [discard-drafts] Stage 2/5 complete
+[2026-07-28 08:12:57.115] info: [discard-drafts] Stage 3/5 – fixing existing draft relations
+[2026-07-28 08:12:57.115] info: [discard-drafts] Stage 3/5 complete
+[2026-07-28 08:12:57.115] info: [discard-drafts] Stage 4/5 – fixing existing draft component relations
+[2026-07-28 08:12:57.115] info: [discard-drafts] Stage 4/5 complete
+[2026-07-28 08:12:57.115] info: [discard-drafts] Stage 4b/5 – fixing published component relations to published targets
+[2026-07-28 08:12:57.115] info: [discard-drafts] Stage 4b/5 complete
+[2026-07-28 08:12:57.116] info: [discard-drafts] Stage 5/5 – updating foreign key references to draft targets
+[2026-07-28 08:12:57.116] info: [discard-drafts] Stage 5/5 complete
+[2026-07-28 08:12:57.116] info: [discard-drafts] Migration completed successfully
+[2026-07-28 08:13:23.980] error: Middleware "strapi::session": App keys are required. Please set app.keys in config/server.js (ex: keys: ['myKeyA', 'myKeyB'])
+Error: Middleware "strapi::session": App keys are required. Please set app.keys in config/server.js (ex: keys: ['myKeyA', 'myKeyB'])
+    at instantiateMiddleware (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/services/server/middleware.js:18:19)
+    at Object.resolveMiddlewares (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/services/server/middleware.js:50:26)
+    at registerApplicationMiddlewares (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/services/server/register-middlewares.js:45:42)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async Object.initMiddlewares (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/services/server/index.js:73:13)
+    at async Strapi.bootstrap (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:397:9)
+    at async Strapi.load (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:318:9)
+    at async Strapi.start (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:203:17)
+[2026-07-28 08:13:23.981] info: Shutting down Strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$
