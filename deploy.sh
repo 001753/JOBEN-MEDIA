@@ -100,6 +100,7 @@ if [ -f "$BUILD_COMMIT_FILE" ]; then
       | grep -v '^\.agents/' \
       | grep -v '^\.gitignore$' \
       | grep -v '^node_modules-strapi\.part' \
+      | grep -v '^frontend/next-build\.tar\.gz$' \
       | wc -l | tr -d ' ')
 
     if [ "$NON_BUILD_CHANGES" = "0" ]; then
