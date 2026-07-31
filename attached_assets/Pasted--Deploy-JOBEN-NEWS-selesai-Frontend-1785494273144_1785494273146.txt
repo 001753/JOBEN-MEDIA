@@ -1,0 +1,71 @@
+════════════════════════════════════════════════════════
+  ✅ Deploy JOBEN NEWS selesai!
+  Frontend : https://news.jobenapp.cloud
+  CMS Admin: https://cms.news.jobenapp.cloud/admin
+════════════════════════════════════════════════════════
+
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ cd /home/smknwon2/public_html/strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ node server.js
+[2026-07-31 17:36:06.824] error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+Error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+    at loadJsFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:24:19)
+    at Object.loadConfigFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:43:20)
+    at loadPlugins (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/plugins/index.js:140:45)
+    at async Promise.all (index 3)
+    at async Object.loadApplicationContext (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/index.js:13:5)
+    at async Object.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/providers/registries.js:28:9)
+    at async Strapi.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:326:13)
+    at async Strapi.load (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:317:9)
+    at async Strapi.start (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:203:17)
+[2026-07-31 17:36:06.827] info: Shutting down Strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ cd /home/smknwon2/public_html/strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ node server.js 2>&1 | head -50
+[2026-07-31 17:37:35.137] error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+Error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+    at loadJsFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:24:19)
+    at Object.loadConfigFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:43:20)
+    at loadPlugins (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/plugins/index.js:140:45)
+    at async Promise.all (index 3)
+    at async Object.loadApplicationContext (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/index.js:13:5)
+    at async Object.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/providers/registries.js:28:9)
+    at async Strapi.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:326:13)
+    at async Strapi.load (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:317:9)
+    at async Strapi.start (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:203:17)
+[2026-07-31 17:37:35.140] info: Shutting down Strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$
