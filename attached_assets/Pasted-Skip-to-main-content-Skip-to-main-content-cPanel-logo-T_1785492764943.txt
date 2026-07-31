@@ -1,0 +1,132 @@
+Skip to main content
+Skip to main content
+cPanel logo
+Tools
+Social Media Management
+Sitejet Builder
+WordPress Management
+Site Quality Monitoring
+WordPress Manager by Softaculous
+Search Tools (/)
+
+Zone Editor
+Domain Manage Zone
+DNS converts domain names into computer-readable IP addresses. Use this feature to manage DNS zones. For more information, read the documentation.
+
+Zone Records for “cms.news.jobenapp.cloud”
+Configured nameservers for this zone: ns1.idwebhost.comns2.idwebhost.com
+Filter by name
+Filter: 
+Semua
+A
+CNAME
+MX
+SRV
+TXT
+<<<>>>
+Displaying 1 to 26 out of 26 item
+
+  
+Nama	TTL	Tipe	Record	Tindakan
+cms.news.jobenapp.cloud.	14400	A	
+202.52.146.217
+ 
+cms.news.jobenapp.cloud.	14400	MX	
+Prioritas: 0
+Tujuan: cms.news.jobenapp.cloud
+ 
+mail.cms.news.jobenapp.cloud.	14400	CNAME	
+cms.news.jobenapp.cloud
+ 
+www.cms.news.jobenapp.cloud.	14400	CNAME	
+cms.news.jobenapp.cloud
+ 
+ftp.cms.news.jobenapp.cloud.	14400	CNAME	
+cms.news.jobenapp.cloud
+ 
+webmail.cms.news.jobenapp.cloud.	14400	A	
+202.52.146.217
+ 
+webdisk.cms.news.jobenapp.cloud.	14400	A	
+202.52.146.217
+ 
+whm.cms.news.jobenapp.cloud.	14400	A	
+202.52.146.217
+ 
+_caldavs._tcp.cms.news.jobenapp.cloud.	14400	SRV	
+Prioritas: 0
+Berat: 0
+Port : 2080
+Target: cms.news.jobenapp.cloud
+ 
+_caldavs._tcp.cms.news.jobenapp.cloud.	14400	TXT	
+path=/
+ 
+cpcontacts.cms.news.jobenapp.cloud.	14400	A	
+202.52.146.217
+ 
+autoconfig.cms.news.jobenapp.cloud.	14400	A	
+202.52.146.217
+ 
+_carddavs._tcp.cms.news.jobenapp.cloud.	14400	SRV	
+Prioritas: 0
+Berat: 0
+Port : 2080
+Target: cms.news.jobenapp.cloud
+ 
+_carddavs._tcp.cms.news.jobenapp.cloud.	14400	TXT	
+path=/
+ 
+cpcalendars.cms.news.jobenapp.cloud.	14400	A	
+202.52.146.217
+ 
+_carddav._tcp.cms.news.jobenapp.cloud.	14400	SRV	
+Prioritas: 0
+Berat: 0
+Port : 2079
+Target: cms.news.jobenapp.cloud
+ 
+_carddav._tcp.cms.news.jobenapp.cloud.	14400	TXT	
+path=/
+ 
+_autodiscover._tcp.cms.news.jobenapp.cloud.	14400	SRV	
+Prioritas: 0
+Berat: 0
+Port : 443
+Target: cpanelemaildiscovery.cpanel.net
+ 
+cpanel.cms.news.jobenapp.cloud.	14400	A	
+202.52.146.217
+ 
+_caldav._tcp.cms.news.jobenapp.cloud.	14400	SRV	
+Prioritas: 0
+Berat: 0
+Port : 2079
+Target: cms.news.jobenapp.cloud
+ 
+_caldav._tcp.cms.news.jobenapp.cloud.	14400	TXT	
+path=/
+ 
+autodiscover.cms.news.jobenapp.cloud.	14400	A	
+202.52.146.217
+ 
+default._domainkey.cms.news.jobenapp.cloud.	14400	TXT	
+v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA5w7j9s7Ya1RwaU5JHngD2Hntv3a2nMKyiK7au2efKZqD+Ao9n8B6P994ExMNrwV8zrrdSmJ8tO378yg0DbZ/jkV2jAJfCNPXsliTbTyrgIKjSTmuK+Sdg5qDuOvps9w6lnJ4TPhXHPmmZSXotrndNfkRlVnXBZGOy/cMGkv6AjNGEAE4LA1DSsP7fPxBHTe54
+SYKIMEmWALRwgrnYaBtyUMFopWBCcx9X8Oa0oexxNLfhBvnla7ugpdtRYkXwDSanjtUaDxIdR4CRKi717k9vppHzwtv+OPcM6aY2NybTDspDtAFSL0t3KKIvTZcuESgqERg5EIlJNsSPIqF8EZVvQIDAQAB;
+ 
+cms.news.jobenapp.cloud.	14400	TXT	
+v=spf1 +a +mx +ip4:202.52.146.217 ~all
+ 
+_dmarc.cms.news.jobenapp.cloud.	14400	TXT	
+v=DMARC1; p=none;
+ 
+_acme-challenge.cms.news.jobenapp.cloud.	14400	TXT	
+njJVT3mgrJ8OqrMc-7CH5gEFQGLOC_xFHMSctGi1U98
+ 
+cPanel logo
+134.0.48
+Beranda
+Merek dagang
+Kebijakan Privasi
+Dokumentasi
+Beri Umpan Balik
