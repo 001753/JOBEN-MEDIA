@@ -580,8 +580,8 @@ restart_passenger() {
 
   # Cara 3: touch tmp/restart.txt (Passenger reload pada request berikutnya)
   if [ "$RESTARTED" -eq 0 ]; then
-    mkdir -p "$APP_DIR/tmp"
-    touch "$APP_DIR/tmp/restart.txt"
+    mkdir -p "$DIR/tmp"
+    touch "$DIR/tmp/restart.txt"
     RESTARTED=1
     echo "  ✓ $LABEL — restart via tmp/restart.txt"
     echo "    ℹ️  Passenger reload saat request pertama masuk setelah ini."
