@@ -1,0 +1,112 @@
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ cd ~/public_html/news[public_html/news (22)] [smknwon2@tirtonirmolo news]$ source /home/smknwon2/nodevenv/public_html/news/22/bin/activate
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Fri Jul 31 16:22:12 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at 528f0dd build: update production build 2026-07-31
+  ✓ Kode diperbarui — HEAD: 528f0dd07d21
+
+
+  ⚠️  ══════════════════════════════════════════════════════════
+  ⚠️  PERINGATAN: Build TIDAK sinkron dengan commit terbaru!
+  ⚠️  HEAD saat ini : 528f0dd07d21
+  ⚠️  Dibangun dari : 2fe72ee44df8
+  ⚠️  File kode belum di-build: 1 file
+  ⚠️
+  ⚠️  Halaman produksi akan menampilkan versi LAMA.
+  ⚠️
+  ⚠️  Solusi — jalankan di Replit:
+  ⚠️    npm run build:all
+  ⚠️    git add -A && git commit -m 'build: update production build'
+  ⚠️    git push origin main
+  ⚠️    → lalu jalankan bash deploy.sh lagi
+  ⚠️  ══════════════════════════════════════════════════════════
+
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+^C
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ cd ~/public_html/news
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ source /home/smknwon2/nodevenv/public_html/news/22/bin/activate
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Fri Jul 31 16:22:44 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at 89a7e07 Remove obsolete build artifacts
+  ✓ Kode diperbarui — HEAD: 89a7e074c5e2
+
+
+  ⚠️  ══════════════════════════════════════════════════════════
+  ⚠️  PERINGATAN: Build TIDAK sinkron dengan commit terbaru!
+  ⚠️  HEAD saat ini : 89a7e074c5e2
+  ⚠️  Dibangun dari : 2fe72ee44df8
+  ⚠️  File kode belum di-build: 1 file
+  ⚠️
+  ⚠️  Halaman produksi akan menampilkan versi LAMA.
+  ⚠️
+  ⚠️  Solusi — jalankan di Replit:
+  ⚠️    npm run build:all
+  ⚠️    git add -A && git commit -m 'build: update production build'
+  ⚠️    git push origin main
+  ⚠️    → lalu jalankan bash deploy.sh lagi
+  ⚠️  ══════════════════════════════════════════════════════════
+
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild native modules (sharp, better-sqlite3) ...
+rebuilt dependencies successfully
+  ✓ Native modules rebuilt
+  → Ekstrak next-build.tar.gz → frontend/.next/ ...
+  ✓ frontend/.next/ diekstrak (BUILD_ID: 8te8eVxpEM6sYSyS2TL3b)
+  ✓ Symlink .next/static → standalone/.next/static dibuat
+  ✓ Next.js standalone: skip npm install (deps sudah di-bundle)
+  ✓ Semua dependencies siap
+
+▶ [3/4] Verifikasi build artifacts ...
+  ⚠️  Strapi admin build/ tidak lengkap — /admin mungkin error
+      Solusi: npm run build:all di Replit → commit → push → deploy lagi
+  ✓ Next.js (.next/) ada — BUILD_ID: 8te8eVxpEM6s
+  ✓ strapi/ direktori + server.js wrapper dibuat (app root cPanel: public_html/strapi)
+  ⚠️  frontend/.env.local tidak ada — STRAPI_API_URL belum diset!
+      Buat file: /home/smknwon2/public_html/news/frontend/.env.local
+      Isi minimal: STRAPI_API_URL=https://cms.news.jobenapp.cloud
+
+▶ [4/4] Restart aplikasi ...
+  ✓ NODE_ENV=production terverifikasi di .env
+  ℹ️  Proses Node.js aktif sebelum restart: 3
+
+  ✓ Frontend (news.jobenapp.cloud) — restart via tmp/restart.txt
+    ℹ️  Passenger reload saat request pertama masuk setelah ini.
+    ℹ️  Untuk immediate: cPanel → Node.js Selector → Restart App
+  ✓ Strapi CMS (cms.news.jobenapp.cloud) — restart via tmp/restart.txt
+    ℹ️  Passenger reload saat request pertama masuk setelah ini.
+    ℹ️  Untuk immediate: cPanel → Node.js Selector → Restart App
+
+════════════════════════════════════════════════════════
+  ✅ Deploy JOBEN NEWS selesai!
+  Frontend : https://news.jobenapp.cloud
+  CMS Admin: https://cms.news.jobenapp.cloud/admin
+════════════════════════════════════════════════════════
+
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
