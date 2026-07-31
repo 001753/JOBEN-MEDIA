@@ -1,0 +1,1 @@
+import{f as s,t as r,cf as o,cg as u}from"./strapi-Dbt4h1Z-.js";function m(a,t){s(2,arguments);var e=r(a),n=r(t);return e.getTime()>n.getTime()}function g(a,t){s(2,arguments);var e=u(t);return o(a,-e)}export{m as i,g as s};
