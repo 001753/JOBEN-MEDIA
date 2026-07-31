@@ -1,0 +1,61 @@
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ cd /home/smknwon2/public_html/strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ node server.js 2>&1 | head -50
+[2026-07-31 17:37:35.137] error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+Error: Could not load js config file /home/smknwon2/public_html/news/node_modules/@strapi/upload/dist/server/index.js: Could not load the "sharp" module using the linux-x64 runtime
+Possible solutions:
+- Ensure optional dependencies can be installed:
+    npm install --include=optional sharp
+- Ensure your package manager supports multi-platform installation:
+    See https://sharp.pixelplumbing.com/install#cross-platform
+- Add platform-specific dependencies:
+    npm install --os=linux --cpu=x64 sharp
+- Consult the installation documentation:
+    See https://sharp.pixelplumbing.com/install
+    at loadJsFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:24:19)
+    at Object.loadConfigFile (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/utils/load-config-file.js:43:20)
+    at loadPlugins (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/plugins/index.js:140:45)
+    at async Promise.all (index 3)
+    at async Object.loadApplicationContext (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/loaders/index.js:13:5)
+    at async Object.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/providers/registries.js:28:9)
+    at async Strapi.register (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:326:13)
+    at async Strapi.load (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:317:9)
+    at async Strapi.start (/home/smknwon2/public_html/news/node_modules/@strapi/core/dist/Strapi.js:203:17)
+[2026-07-31 17:37:35.140] info: Shutting down Strapi
+[public_html/news (22)] [smknwon2@tirtonirmolo strapi]$ cd /home/smknwon2/public_html/news
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ # Unset semua intercept nodevenv
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ unset NPM_CONFIG_PREFIX npm_config_prefix NPM_CONFIG_CACHE npm_config_cache npm_config_globalconfig npm_config_userconfig NODE_OPTIONS
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ # Install sharp prebuilt binary untuk Node 22 (tanpa --ignore-scripts)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ /opt/cpanel/ea-nodejs22/root/usr/bin/node \
+>   /opt/cpanel/ea-nodejs22/root/usr/lib/node_modules/npm/bin/npm-cli.js \
+>   install --no-save --no-fund --no-audit sharp
+bash: /opt/cpanel/ea-nodejs22/root/usr/bin/node: No such file or directory
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ # Verifikasi binary bisa dimuat
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ /opt/cpanel/ea-nodejs22/root/usr/bin/node -e "require('sharp'); console.log('sharp OK')"
+bash: /opt/cpanel/ea-nodejs22/root/usr/bin/node: No such file or directory
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ cd /home/smknwon2/public_html/news
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ # Unset semua intercept nodevenv
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ unset NPM_CONFIG_PREFIX npm_config_prefix NPM_CONFIG_CACHE npm_config_cache npm_config_globalconfig npm_config_userconfig NODE_OPTIONS
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ # Install sharp prebuilt binary untuk Node 22 (tanpa --ignore-scripts)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ /opt/cpanel/ea-nodejs22/root/usr/bin/node \
+>   /opt/cpanel/ea-nodejs22/root/usr/lib/node_modules/npm/bin/npm-cli.js \
+>   install --no-save --no-fund --no-audit sharp
+bash: /opt/cpanel/ea-nodejs22/root/usr/bin/node: No such file or directory
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ # Verifikasi binary bisa dimuat
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ /opt/cpanel/ea-nodejs22/root/usr/bin/node -e "require('sharp'); console.log('sharp OK')"
+bash: /opt/cpanel/ea-nodejs22/root/usr/bin/node: No such file or directory
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$

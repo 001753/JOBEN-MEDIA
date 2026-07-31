@@ -150,24 +150,51 @@ echo "▶ [2/4] Cek & install Node.js dependencies ..."
 # nodevenv wrapper set NPM_CONFIG_PREFIX ke ~/nodevenv/... sehingga npm
 # selalu install ke sana. Raw system node tidak punya behavior itu.
 find_system_node() {
-  # Node 20 diutamakan — native modules (better-sqlite3, sharp) dibangun Node 20
+  # Prioritas 1: cPanel ea-nodejs package (Node 20 diutamakan — tarball dibangun Node 20)
   for v in 20 22 18; do
     local n="/opt/cpanel/ea-nodejs${v}/root/usr/bin/node"
     [ -x "$n" ] && echo "$n" && return
   done
-  # fallback ke node di PATH (tapi ini mungkin nodevenv wrapper)
+  # Prioritas 2: CloudLinux nodevenv (digunakan jika ea-nodejs tidak terinstall)
+  # Cari di semua app dirs yang mungkin, Node 20 diutamakan
+  for v in 20 22 18; do
+    for app_dir in news strapi frontend; do
+      local n="$HOME/nodevenv/public_html/${app_dir}/${v}/bin/node"
+      [ -x "$n" ] && echo "$n" && return
+    done
+  done
+  # Prioritas 3: node di PATH (nodevenv wrapper, tapi masih bisa dipakai)
   command -v node 2>/dev/null || echo ""
 }
 
 # Cari npm-cli.js yang cocok dengan system node
 find_npm_cli_for() {
   local NODE_BIN="$1"
-  # Cari berdasarkan versi node binary
   local ver; ver=$("$NODE_BIN" --version 2>/dev/null | tr -d 'v' | cut -d. -f1)
+
+  # cPanel ea-nodejs path
   for v in "$ver" 22 20 18; do
     local cli="/opt/cpanel/ea-nodejs${v}/root/usr/lib/node_modules/npm/bin/npm-cli.js"
     [ -f "$cli" ] && echo "$cli" && return
   done
+
+  # CloudLinux nodevenv path — npm-cli ada di lib/node_modules atau share/node_modules
+  local node_dir; node_dir="$(dirname "$NODE_BIN")"         # .../bin
+  local prefix;   prefix="$(dirname "$node_dir")"           # .../22
+  for sub in lib share; do
+    local cli="$prefix/$sub/node_modules/npm/bin/npm-cli.js"
+    [ -f "$cli" ] && echo "$cli" && return
+  done
+
+  # Fallback: cari npm-cli.js relatif terhadap node binary yang aktif
+  local npm_root; npm_root=$(dirname "$(command -v npm 2>/dev/null || echo "")")
+  if [ -n "$npm_root" ]; then
+    local cli="$(dirname "$npm_root")/lib/node_modules/npm/bin/npm-cli.js"
+    [ -f "$cli" ] && echo "$cli" && return
+    cli="$(dirname "$npm_root")/share/node_modules/npm/bin/npm-cli.js"
+    [ -f "$cli" ] && echo "$cli" && return
+  fi
+
   echo ""
 }
 
