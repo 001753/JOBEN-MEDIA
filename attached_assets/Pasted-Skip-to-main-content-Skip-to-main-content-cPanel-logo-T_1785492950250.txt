@@ -1,0 +1,92 @@
+Skip to main content
+Skip to main content
+cPanel logo
+Tools
+Social Media Management
+Sitejet Builder
+WordPress Management
+Site Quality Monitoring
+WordPress Manager by Softaculous
+Search Tools (/)
+
+Node.js
+Web applicationscms.news.jobenapp.cloud/DestroyCancelSave
+Web applicationscms.news.jobenapp.cloud/DestroyCancelSave
+Enter to the virtual environment.To enter to virtual environment, run the command: source /home/smknwon2/nodevenv/public_html/strapi/22/bin/activate && cd /home/smknwon2/public_html/strapi
+Node.js
+Stop appRestart
+Node.js version
+Application mode
+Adds value for NODE_ENV variable
+Application root
+It is a physical address to your application on a server that corresponds with its URI. Upload your application files here.
+public_html/strapi
+Application URL
+It is an HTTP/HTTPS link to your application
+Open
+Application startup file
+server.js
+Detected configuration files
+Run NPM Install
+Environment variables
+Add variable
+Name
+Value
+Actions
+ADMIN_JWT_SECRET	r3KP7xPbGL881NydJIjM1lzsocH7B3si1QRb8v/xxC4=	
+
+API_TOKEN_SALT	szSHLUe1ENfU/9kEwMlPicAEYTGTlPZe8BwmWjc/oOE=	
+
+APP_KEYS	BZoQdPj8Z/ryG3o7T8336MnXiUNCilArQhyPoO9KEOE=,w1dsHCV63Xhq8BZe/EW5G9MvOroIQDi6gIL1LqRauew=,CAQ7AnEVEksAq7NPHiJFyrKLW02CH7MY3i3J8VYiwEE=,DNDKXyC5nQTZUlyaRuIlLvMpFtC936YcfHQjU/L+l3s=	
+
+DATABASE_CLIENT	postgres	
+
+DATABASE_HOST	127.0.0.1	
+
+DATABASE_NAME	smknwon2_jobennews_db	
+
+DATABASE_PASSWORD	Benaya13***	
+
+DATABASE_PORT	5432	
+
+DATABASE_SSL	false	
+
+DATABASE_USERNAME	smknwon2_jobennews_user	
+
+ENCRYPTION_KEY	d114oBEpGYXN93RBoqmBmQrPBFBqDamENsa880e8e9834b3af3492efab989adf1	
+
+JWT_SECRET	Cr+RSfz1e7XxYs9MgeSqKTqIPSJ8G/CGA4wkCRCf/uo=	
+
+NODE_ENV	production	
+
+PUBLIC_URL	https://cms.news.jobenapp.cloud	
+
+R2_ACCESS_KEY_ID	ab023a5ebcbfd6600e4a93882a1fdd00	
+
+R2_BUCKET_NAME	joben-news	
+
+R2_ENDPOINT	https://6ffcdac7c1cf3d08b80450851f6646a3.r2.cloudflarestorage.com	
+
+R2_PUBLIC_URL	https://pub-eb6a0f12e3b748628e7fb3494cb105a4.r2.dev	
+
+R2_SECRET_ACCESS_KEY	38dcd7100ee2f9c6dd741829225b39fae0e363b827db2ae790c26ac14d5dee3d	
+
+REVALIDATION_SECRET	d456aaec9d00de9512569bc777c287884056695bf64bee3788d5f4d8b33e9dc77e626f14d877235193fd7584f8311bc9	
+
+SMTP_HOST	mail.jobenapp.cloud	
+
+SMTP_PASS	Benaya13***	
+
+SMTP_PORT	465	
+
+SMTP_USER	admin@jobenapp.cloud	
+
+TRANSFER_TOKEN_SALT	UcjOxRZt+AzxohK6T3F3Ldivdrvl7DOTG9mVkikALDs=	
+
+cPanel logo
+134.0.48
+Beranda
+Merek dagang
+Kebijakan Privasi
+Dokumentasi
+Beri Umpan Balik
