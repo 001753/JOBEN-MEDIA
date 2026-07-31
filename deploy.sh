@@ -374,23 +374,53 @@ else
     # Simpan hash agar install_deps tidak dijalankan lagi
     md5sum "$APP_DIR/package.json" | awk '{print $1}' > "$APP_DIR/.pkg_hash"
 
-    # Rebuild native modules agar cocok dengan Node.js versi di server ini.
-    # sharp & better-sqlite3 adalah native modules — binary-nya harus dikompile
-    # ulang di server target. Tarball dibangun di Replit (Node 20), cPanel bisa
-    # Node 20 atau 22 → ABI berbeda → harus rebuild.
-    echo "  → Rebuild native modules (sharp, better-sqlite3) ..."
+    # Fix native modules agar cocok dengan Node.js versi di server ini.
+    # PENTING: jangan gunakan `npm rebuild sharp` — cPanel tidak punya libvips
+    # development headers sehingga kompilasi dari source GAGAL diam-diam.
+    # Solusi: `npm install --no-save sharp` (TANPA --ignore-scripts) agar
+    # sharp postinstall script bisa download prebuilt binary yang sesuai
+    # dengan Node.js versi saat ini (Node 20 atau 22).
     SYSTEM_NODE=$(find_system_node)
     NPM_CLI=$(find_npm_cli_for "$SYSTEM_NODE")
-    unset NPM_CONFIG_PREFIX npm_config_prefix NODE_OPTIONS
-    REBUILD_FLAGS="--no-fund --no-audit"
+    unset NPM_CONFIG_PREFIX npm_config_prefix NODE_OPTIONS NPM_CONFIG_CACHE npm_config_cache npm_config_globalconfig npm_config_userconfig
+    NPM_CACHE="$HOME/.npm"
+    mkdir -p "$NPM_CACHE"
+    NODE_VER=$("$SYSTEM_NODE" --version 2>/dev/null)
+
+    # ── sharp: install (bukan rebuild) agar prebuilt binary didownload ─────────
+    echo "  → Install sharp prebuilt binary untuk $NODE_VER ..."
+    SHARP_OK=0
     if [ -n "$NPM_CLI" ]; then
-      (cd "$APP_DIR" && "$SYSTEM_NODE" "$NPM_CLI" rebuild sharp better-sqlite3 $REBUILD_FLAGS 2>&1) \
-        && echo "  ✓ Native modules rebuilt" \
-        || echo "  ⚠️  Rebuild warning — cek manual jika Strapi gagal load sharp"
+      (cd "$APP_DIR" && "$SYSTEM_NODE" "$NPM_CLI" install --no-save --no-fund --no-audit \
+        --cache "$NPM_CACHE" sharp 2>&1) && SHARP_OK=1
     else
-      (cd "$APP_DIR" && npm rebuild sharp better-sqlite3 $REBUILD_FLAGS 2>&1) \
-        && echo "  ✓ Native modules rebuilt" \
-        || echo "  ⚠️  Rebuild warning — cek manual jika Strapi gagal load sharp"
+      (cd "$APP_DIR" && npm install --no-save --no-fund --no-audit \
+        --cache "$NPM_CACHE" sharp 2>&1) && SHARP_OK=1
+    fi
+
+    if [ "$SHARP_OK" -eq 1 ]; then
+      # Verifikasi binary bisa dimuat
+      if "$SYSTEM_NODE" -e "require('sharp')" 2>/dev/null; then
+        echo "  ✓ sharp prebuilt binary OK ($NODE_VER)"
+      else
+        echo "  ⚠️  sharp terinstall tapi binary belum bisa dimuat — Strapi mungkin crash"
+      fi
+    else
+      echo "  ⚠️  sharp install gagal — cek koneksi internet cPanel atau install manual:"
+      echo "      cd ~/public_html/news && npm install --no-save sharp"
+    fi
+
+    # ── better-sqlite3: rebuild (kompilasi ringan, tidak butuh libvips) ────────
+    echo "  → Rebuild better-sqlite3 untuk $NODE_VER ..."
+    if [ -n "$NPM_CLI" ]; then
+      (cd "$APP_DIR" && "$SYSTEM_NODE" "$NPM_CLI" rebuild better-sqlite3 \
+        --no-fund --no-audit 2>&1) \
+        && echo "  ✓ better-sqlite3 rebuilt" \
+        || echo "  ⚠️  better-sqlite3 rebuild warning"
+    else
+      (cd "$APP_DIR" && npm rebuild better-sqlite3 --no-fund --no-audit 2>&1) \
+        && echo "  ✓ better-sqlite3 rebuilt" \
+        || echo "  ⚠️  better-sqlite3 rebuild warning"
     fi
   else
     echo "  ℹ️  Download gagal — fallback ke npm install"
