@@ -1,0 +1,50 @@
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 20:19:49 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at 1f0ef40 Add news content asset
+  ✓ Kode diperbarui — HEAD: 1f0ef40d042b
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: 1f0ef40d042b)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus sharp lama (ABI mismatch) dari node_modules ...
+  → Install sharp prebuilt binary untuk v22.23.0 (direct download) ...
+  ℹ️  @img/sharp-linux-x64@0.34.5, @img/sharp-libvips-linux-x64@1.1.0
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.1.0 ...
+  ✓ @img/sharp-libvips-linux-x64@1.1.0 extracted (7226KB)
+
+  ✗ FATAL: sharp tidak bisa dimuat setelah install (v22.23.0)
+    Deploy DIBATALKAN — Strapi TIDAK di-restart.
+    (Jika Strapi sudah jalan, versi lama tetap aktif.)
+
+    Solusi manual di SSH cPanel:
+      NODE=$(find_system_node 2>/dev/null || which node)
+      NM=$(readlink -f ~/public_html/news/node_modules)
+      rm -rf "$NM/sharp" "$NM/@img"
+      # Ganti versi sesuai sharp yang terinstall:
+      mkdir -p "$NM/@img/sharp-linux-x64"
+      wget -O /tmp/s.tgz https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz
+      tar -xzf /tmp/s.tgz --strip-components=1 -C "$NM/@img/sharp-linux-x64"
+      mkdir -p "$NM/@img/sharp-libvips-linux-x64"
+      wget -O /tmp/lv.tgz https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.1.0.tgz
+      tar -xzf /tmp/lv.tgz --strip-components=1 -C "$NM/@img/sharp-libvips-linux-x64"
+      node -e "require('sharp'); console.log('sharp OK')"
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
