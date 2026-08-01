@@ -404,46 +404,103 @@ else
     # Fix native modules agar cocok dengan Node.js versi di server ini.
     # PENTING: jangan gunakan `npm rebuild sharp` — cPanel tidak punya libvips
     # development headers sehingga kompilasi dari source GAGAL diam-diam.
-    # Solusi: `npm install --no-save sharp` (TANPA --ignore-scripts) agar
-    # sharp postinstall script bisa download prebuilt binary yang sesuai
-    # dengan Node.js versi saat ini (Node 20 atau 22).
+    # Solusi: hapus sharp lama lalu install ulang agar postinstall script
+    # mendownload prebuilt binary yang sesuai Node versi saat ini.
     SYSTEM_NODE=$(find_system_node)
     NPM_CLI=$(find_npm_cli_for "$SYSTEM_NODE")
-    unset NPM_CONFIG_PREFIX npm_config_prefix NODE_OPTIONS NPM_CONFIG_CACHE npm_config_cache npm_config_globalconfig npm_config_userconfig
+    NODE_VER=$("$SYSTEM_NODE" --version 2>/dev/null)
     NPM_CACHE="$HOME/.npm"
     mkdir -p "$NPM_CACHE"
-    NODE_VER=$("$SYSTEM_NODE" --version 2>/dev/null)
 
-    # ── sharp: install (bukan rebuild) agar prebuilt binary didownload ─────────
-    # Hapus sharp lama terlebih dahulu — jika tidak dihapus, npm melihat sharp
-    # sudah ada (dari tarball Node 20) dan mengembalikan "up to date" tanpa
-    # mendownload prebuilt binary yang sesuai Node versi saat ini (Node 22).
+    # Simpan env nodevenv SEBELUM di-unset — dibutuhkan kembali saat sharp install
+    # via fallback (nodevenv npm wrapper menggunakan NPM_CONFIG_PREFIX untuk tahu
+    # lokasi venv; jika di-unset maka CloudLinux menolak install).
+    _SAVED_NPM_PREFIX="${NPM_CONFIG_PREFIX:-}"
+    _SAVED_NPM_CACHE="${NPM_CONFIG_CACHE:-}"
+
+    # Unset hanya untuk konteks better-sqlite3 rebuild (pakai SYSTEM_NODE langsung)
+    # Sharp install akan restore env yang dibutuhkan nodevenv sebelum dijalankan.
+    unset NPM_CONFIG_PREFIX npm_config_prefix NODE_OPTIONS NPM_CONFIG_CACHE npm_config_cache npm_config_globalconfig npm_config_userconfig
+
+    # ── sharp: reinstall prebuilt binary untuk Node versi server ───────────────
+    # MASALAH KRITIS (dua lapis):
+    #   1. Tarball node_modules dibangun di Replit (Node 20) — binary sharp ABI-nya
+    #      tidak kompatibel dengan Node 22 di cPanel → require('sharp') crash.
+    #   2. npm install --no-save sharp mengembalikan "up to date" jika sharp sudah
+    #      ada di node_modules → tidak mendownload binary baru → ABI tetap salah.
+    #
+    # Solusi:
+    #   a. Hapus sharp + @img dari node_modules DULU (paksa npm download ulang).
+    #   b. Install via NPM_CLI (ea-nodejs) jika tersedia — paling reliable.
+    #   c. Jika tidak ada NPM_CLI: source nodevenv activate → npm tahu lokasi venv.
+    #   d. Fallback terakhir: restore NPM_CONFIG_PREFIX → nodevenv wrapper bekerja.
+    #   e. Verifikasi require('sharp') WAJIB sukses — jika gagal, deploy DIBATALKAN.
+
+    # Resolve venv target (CloudLinux: node_modules bisa symlink ke venv)
+    _NM_TARGET="$APP_DIR/node_modules"
+    [ -L "$_NM_TARGET" ] && _NM_TARGET="$(readlink -f "$_NM_TARGET")"
+
     echo "  → Hapus sharp lama (ABI Node 20) dari node_modules ..."
-    _SHARP_NM="$APP_DIR/node_modules"
-    [ -L "$_SHARP_NM" ] && _SHARP_NM="$(readlink -f "$_SHARP_NM")"
-    rm -rf "$_SHARP_NM/sharp" "$_SHARP_NM/@img"
-    unset _SHARP_NM
+    rm -rf "$_NM_TARGET/sharp" "$_NM_TARGET/@img"
 
     echo "  → Install sharp prebuilt binary untuk $NODE_VER ..."
     SHARP_OK=0
-    if [ -n "$NPM_CLI" ]; then
-      (cd "$APP_DIR" && "$SYSTEM_NODE" "$NPM_CLI" install --no-save --no-fund --no-audit \
-        --cache "$NPM_CACHE" sharp 2>&1) && SHARP_OK=1
-    else
-      (cd "$APP_DIR" && npm install --no-save --no-fund --no-audit \
-        --cache "$NPM_CACHE" sharp 2>&1) && SHARP_OK=1
-    fi
 
-    if [ "$SHARP_OK" -eq 1 ]; then
-      # Verifikasi binary bisa dimuat
-      if "$SYSTEM_NODE" -e "require('sharp')" 2>/dev/null; then
-        echo "  ✓ sharp prebuilt binary OK ($NODE_VER)"
-      else
-        echo "  ⚠️  sharp terinstall tapi binary belum bisa dimuat — Strapi mungkin crash"
-      fi
+    if [ -n "$NPM_CLI" ]; then
+      # Metode 1: ea-nodejs NPM_CLI — bypass nodevenv, raw system node
+      (cd "$APP_DIR" && "$SYSTEM_NODE" "$NPM_CLI" install --no-save --no-fund --no-audit \
+        --include=optional --cache "$NPM_CACHE" sharp 2>&1) && SHARP_OK=1
+
     else
-      echo "  ⚠️  sharp install gagal — cek koneksi internet cPanel atau install manual:"
-      echo "      cd ~/public_html/news && npm install --no-save sharp"
+      # Metode 2: nodevenv activate script — CloudLinux-native, paling kompatibel.
+      # activate script me-set NPM_CONFIG_PREFIX ke venv sehingga npm tahu target install.
+      _ACTIVATE=""
+      for _ver in 22 20 18; do
+        for _app in news strapi frontend; do
+          _f="$HOME/nodevenv/public_html/${_app}/${_ver}/bin/activate"
+          [ -f "$_f" ] && _ACTIVATE="$_f" && break 2
+        done
+      done
+
+      if [ -n "$_ACTIVATE" ]; then
+        echo "  ℹ️  Menggunakan nodevenv activate: $_ACTIVATE"
+        bash --noprofile --norc -c \
+          "source '${_ACTIVATE}' && cd '${APP_DIR}' && \
+           npm install --no-save --no-fund --no-audit --include=optional \
+           --cache '${NPM_CACHE}' sharp" 2>&1 \
+          && SHARP_OK=1
+
+      else
+        # Metode 3: npm dari PATH dengan NPM_CONFIG_PREFIX direstorasi.
+        # Tanpa PREFIX, nodevenv wrapper tidak tahu lokasi venv → CloudLinux reject.
+        echo "  ℹ️  activate tidak ditemukan — fallback npm dengan env nodevenv direstorasi"
+        [ -n "$_SAVED_NPM_PREFIX" ] && export NPM_CONFIG_PREFIX="$_SAVED_NPM_PREFIX"
+        [ -n "$_SAVED_NPM_CACHE"  ] && export NPM_CONFIG_CACHE="$_SAVED_NPM_CACHE"
+        (cd "$APP_DIR" && npm install --no-save --no-fund --no-audit \
+          --include=optional --cache "$NPM_CACHE" sharp 2>&1) && SHARP_OK=1
+        unset NPM_CONFIG_PREFIX NPM_CONFIG_CACHE
+      fi
+      unset _ACTIVATE _ver _app _f
+    fi
+    unset _NM_TARGET _SAVED_NPM_PREFIX _SAVED_NPM_CACHE
+
+    # Verifikasi WAJIB — gagal = ABORT sebelum restart agar Strapi tidak crash
+    if [ "$SHARP_OK" -eq 1 ] && "$SYSTEM_NODE" -e "require('sharp')" 2>/dev/null; then
+      echo "  ✓ sharp prebuilt binary OK ($NODE_VER)"
+    else
+      echo ""
+      echo "  ✗ FATAL: sharp tidak bisa dimuat setelah install ($NODE_VER)"
+      echo "    Deploy DIBATALKAN — Strapi TIDAK di-restart."
+      echo "    (Jika Strapi sudah jalan, versi lama tetap aktif.)"
+      echo ""
+      echo "    Solusi manual di SSH cPanel:"
+      echo "      cd ~/public_html/news"
+      echo "      source ~/nodevenv/public_html/news/22/bin/activate"
+      echo "      NM=\$(readlink -f node_modules)"
+      echo "      rm -rf \"\$NM/sharp\" \"\$NM/@img\""
+      echo "      npm install --no-save --include=optional sharp"
+      echo "      node -e \"require('sharp'); console.log('sharp OK')\""
+      exit 1
     fi
 
     # ── better-sqlite3: rebuild (kompilasi ringan, tidak butuh libvips) ────────
