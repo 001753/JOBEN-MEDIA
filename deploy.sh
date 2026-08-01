@@ -427,31 +427,24 @@ fi
 
 # ── sharp: fix ABI mismatch — WAJIB setelah SEMUA jalur instalasi deps ────────
 #
-# Masalah (dua lapis):
-#   1. Tarball dibangun di Replit (Node 20); server cPanel berjalan Node 22.
-#      Binary @img/sharp-linux-x64 tidak kompatibel → require('sharp') crash.
-#   2. install_deps memakai --omit=optional --ignore-scripts, sehingga paket
-#      @img/sharp-linux-x64 (optional dep sharp) tidak terinstall sama sekali.
-#      Bahkan jika sudah ada dari tarball, npm install berkata "up to date"
-#      dan tidak mendownload binary baru — ABI tetap salah.
+# ROOT CAUSE (diverifikasi dari log cPanel):
+#   npm install dengan nodevenv activate → NPM_CONFIG_PREFIX di-set ke venv dir.
+#   npm memperlakukan ini sebagai "global prefix" → install ke $PREFIX/lib/node_modules/
+#   (BUKAN ke ./node_modules/ yang merupakan symlink ke venv).
+#   Akibatnya: "up to date in 3s" tapi sharp tidak ada di app's node_modules.
+#   npm install manual pun ditolak CloudLinux: "demands to store node modules
+#   in separate folder (virtual environment)".
 #
-# Solusi:
-#   a. Resolve node_modules symlink (CloudLinux venv) → hapus sharp + @img lama.
-#   b. Reinstall sharp via tiga metode berurutan (NPM_CLI → nodevenv activate
-#      → npm dari PATH dengan NPM_CONFIG_PREFIX direstorasi).
-#   c. Semua metode pakai --include=optional agar @img/sharp-linux-x64 terinstall.
-#   d. Verifikasi require('sharp') WAJIB sukses — jika gagal, exit 1 sebelum
-#      restart Passenger (Strapi tidak boleh restart dengan sharp rusak).
+# SOLUSI: bypass npm sepenuhnya — download tarball @img langsung dari npm
+#   registry via wget/curl, extract ke venv target. Tidak ada npm intercept,
+#   tidak ada PREFIX confusion, tidak ada CloudLinux restriction.
+#
+# Package yang dibutuhkan untuk Linux x64 (glibc):
+#   - @img/sharp-linux-x64       — addon Node.js (.node file)
+#   - @img/sharp-libvips-linux-x64 — shared library libvips
 
 _SH_NODE=$(find_system_node)
-_SH_CLI=$(find_npm_cli_for "$_SH_NODE")
 _SH_VER=$("$_SH_NODE" --version 2>/dev/null)
-_SH_CACHE="$HOME/.npm"
-mkdir -p "$_SH_CACHE"
-
-# Simpan env nodevenv SEBELUM unset — fallback Metode 3 butuh PREFIX ini
-_SH_SAVED_PREFIX="${NPM_CONFIG_PREFIX:-}"
-_SH_SAVED_NPMCACHE="${NPM_CONFIG_CACHE:-}"
 
 # Resolve node_modules target (CloudLinux: bisa symlink ke venv)
 _SH_NM="$APP_DIR/node_modules"
@@ -460,47 +453,89 @@ _SH_NM="$APP_DIR/node_modules"
 echo "  → Hapus sharp lama (ABI mismatch) dari node_modules ..."
 rm -rf "$_SH_NM/sharp" "$_SH_NM/@img"
 
-echo "  → Install sharp prebuilt binary untuk $_SH_VER ..."
-SHARP_OK=0
+echo "  → Install sharp prebuilt binary untuk $_SH_VER (direct download) ..."
 
-if [ -n "$_SH_CLI" ]; then
-  # Metode 1: ea-nodejs NPM_CLI — raw node binary, bypass nodevenv wrapper
-  unset NPM_CONFIG_PREFIX npm_config_prefix NODE_OPTIONS NPM_CONFIG_CACHE npm_config_cache npm_config_globalconfig npm_config_userconfig
-  (cd "$APP_DIR" && "$_SH_NODE" "$_SH_CLI" install --no-save --no-fund --no-audit \
-    --include=optional --cache "$_SH_CACHE" sharp 2>&1) && SHARP_OK=1
-
+# Baca versi dari package.json sharp yang sudah terinstall
+_SH_PKG="$_SH_NM/sharp/package.json"
+if [ -f "$_SH_PKG" ]; then
+  _SH_X64_VER=$("$_SH_NODE" -e "
+    try {
+      var p = require('$_SH_PKG');
+      var v = (p.optionalDependencies||{})['@img/sharp-linux-x64'] || p.version;
+      console.log(v.replace(/^[\\^~]/,''));
+    } catch(e) { console.log('0.34.5'); }
+  " 2>/dev/null || echo "0.34.5")
+  _SH_LIBVIPS_VER=$("$_SH_NODE" -e "
+    try {
+      var p = require('$_SH_PKG');
+      var v = (p.optionalDependencies||{})['@img/sharp-libvips-linux-x64'] || '1.1.0';
+      console.log(v.replace(/^[\\^~]/,''));
+    } catch(e) { console.log('1.1.0'); }
+  " 2>/dev/null || echo "1.1.0")
 else
-  # Metode 2: source nodevenv activate — CloudLinux-native, set PREFIX otomatis
-  # sehingga npm tahu lokasi venv tanpa harus bypass CloudLinux wrapper.
-  _SH_ACTIVATE=""
-  for _v in 22 20 18; do
-    for _a in news strapi frontend; do
-      _f="$HOME/nodevenv/public_html/${_a}/${_v}/bin/activate"
-      [ -f "$_f" ] && _SH_ACTIVATE="$_f" && break 2
-    done
-  done
-
-  if [ -n "$_SH_ACTIVATE" ]; then
-    echo "  ℹ️  Menggunakan nodevenv activate: $_SH_ACTIVATE"
-    bash --noprofile --norc -c \
-      "source '${_SH_ACTIVATE}' && cd '${APP_DIR}' && \
-       npm install --no-save --no-fund --no-audit --include=optional \
-       --cache '${_SH_CACHE}' sharp" 2>&1 \
-      && SHARP_OK=1
-
-  else
-    # Metode 3: npm dari PATH; restorasi NPM_CONFIG_PREFIX agar nodevenv wrapper
-    # tahu lokasi venv (tanpa PREFIX → CloudLinux menolak install).
-    echo "  ℹ️  activate tidak ditemukan — npm PATH dengan env nodevenv direstorasi"
-    [ -n "$_SH_SAVED_PREFIX"   ] && export NPM_CONFIG_PREFIX="$_SH_SAVED_PREFIX"
-    [ -n "$_SH_SAVED_NPMCACHE" ] && export NPM_CONFIG_CACHE="$_SH_SAVED_NPMCACHE"
-    (cd "$APP_DIR" && npm install --no-save --no-fund --no-audit \
-      --include=optional --cache "$_SH_CACHE" sharp 2>&1) && SHARP_OK=1
-    unset NPM_CONFIG_PREFIX NPM_CONFIG_CACHE
-  fi
-  unset _SH_ACTIVATE _v _a _f
+  # sharp/package.json tidak ada (jalur install_deps, belum sempat install)
+  # Baca dari package.json root → versi sharp → asumsi @img sama
+  _SH_X64_VER=$("$_SH_NODE" -e "
+    try {
+      var p = require('$APP_DIR/package.json');
+      var v = (p.dependencies||{}).sharp || '0.34.5';
+      console.log(v.replace(/^[\\^~]/,''));
+    } catch(e) { console.log('0.34.5'); }
+  " 2>/dev/null || echo "0.34.5")
+  _SH_LIBVIPS_VER="1.1.0"
 fi
-unset _SH_NM _SH_SAVED_PREFIX _SH_SAVED_NPMCACHE
+echo "  ℹ️  @img/sharp-linux-x64@$_SH_X64_VER, @img/sharp-libvips-linux-x64@$_SH_LIBVIPS_VER"
+
+# Download helper — coba wget lalu curl
+_dl() {
+  local URL="$1" OUT="$2"
+  if command -v wget &>/dev/null; then
+    wget -q -O "$OUT" "$URL" 2>&1 && return 0
+  fi
+  if command -v curl &>/dev/null; then
+    curl -fsSL -o "$OUT" "$URL" 2>&1 && return 0
+  fi
+  return 1
+}
+
+# Download + extract dua paket ke venv target
+SHARP_OK=0
+_SH_DL_FAIL=0
+for _SH_PKGSPEC in \
+    "sharp-linux-x64:$_SH_X64_VER" \
+    "sharp-libvips-linux-x64:$_SH_LIBVIPS_VER"; do
+  _SH_PKG_NAME="${_SH_PKGSPEC%%:*}"
+  _SH_PKG_VER="${_SH_PKGSPEC##*:}"
+  _SH_URL="https://registry.npmjs.org/@img/${_SH_PKG_NAME}/-/${_SH_PKG_NAME}-${_SH_PKG_VER}.tgz"
+  _SH_TMP="/tmp/${_SH_PKG_NAME}-${_SH_PKG_VER}.tgz"
+  _SH_TARGET="$_SH_NM/@img/$_SH_PKG_NAME"
+
+  echo "  → Download @img/${_SH_PKG_NAME}@${_SH_PKG_VER} ..."
+  if ! _dl "$_SH_URL" "$_SH_TMP"; then
+    echo "  ✗ wget/curl gagal"
+    _SH_DL_FAIL=1; break
+  fi
+
+  _SH_SIZE=$(wc -c < "$_SH_TMP" 2>/dev/null || echo 0)
+  if [ "$_SH_SIZE" -lt 10000 ]; then
+    echo "  ✗ Download terlalu kecil (${_SH_SIZE} byte) — kemungkinan 404 atau error"
+    cat "$_SH_TMP" 2>/dev/null | head -5
+    rm -f "$_SH_TMP"
+    _SH_DL_FAIL=1; break
+  fi
+
+  rm -rf "$_SH_TARGET"
+  mkdir -p "$_SH_TARGET"
+  # npm tarball selalu punya prefix "package/" — strip satu level
+  tar -xzf "$_SH_TMP" --strip-components=1 -C "$_SH_TARGET"
+  rm -f "$_SH_TMP"
+  echo "  ✓ @img/${_SH_PKG_NAME}@${_SH_PKG_VER} extracted ($(( _SH_SIZE / 1024 ))KB)"
+done
+unset _SH_PKGSPEC _SH_PKG_NAME _SH_PKG_VER _SH_URL _SH_TMP _SH_TARGET _SH_SIZE
+unset _SH_X64_VER _SH_LIBVIPS_VER _SH_PKG
+
+[ "$_SH_DL_FAIL" -eq 0 ] && SHARP_OK=1
+unset _SH_DL_FAIL _SH_NM
 
 # Verifikasi WAJIB — gagal = exit 1 sebelum Passenger restart
 if [ "$SHARP_OK" -eq 1 ] && "$_SH_NODE" -e "require('sharp')" 2>/dev/null; then
@@ -511,21 +546,21 @@ else
   echo "    Deploy DIBATALKAN — Strapi TIDAK di-restart."
   echo "    (Jika Strapi sudah jalan, versi lama tetap aktif.)"
   echo ""
-  echo "    Penyebab umum:"
-  echo "    1. Koneksi internet cPanel terblokir → npm tidak bisa download binary"
-  echo "    2. nodevenv activate tidak ditemukan → CloudLinux menolak npm install"
-  echo "    3. Node.js Passenger berbeda dari yang dideteksi script"
-  echo ""
   echo "    Solusi manual di SSH cPanel:"
-  echo "      cd ~/public_html/news"
-  echo "      source ~/nodevenv/public_html/news/22/bin/activate"
-  echo "      NM=\$(readlink -f node_modules)"
+  echo "      NODE=\$(find_system_node 2>/dev/null || which node)"
+  echo "      NM=\$(readlink -f ~/public_html/news/node_modules)"
   echo "      rm -rf \"\$NM/sharp\" \"\$NM/@img\""
-  echo "      npm install --no-save --include=optional sharp"
+  echo "      # Ganti versi sesuai sharp yang terinstall:"
+  echo "      mkdir -p \"\$NM/@img/sharp-linux-x64\""
+  echo "      wget -O /tmp/s.tgz https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz"
+  echo "      tar -xzf /tmp/s.tgz --strip-components=1 -C \"\$NM/@img/sharp-linux-x64\""
+  echo "      mkdir -p \"\$NM/@img/sharp-libvips-linux-x64\""
+  echo "      wget -O /tmp/lv.tgz https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.1.0.tgz"
+  echo "      tar -xzf /tmp/lv.tgz --strip-components=1 -C \"\$NM/@img/sharp-libvips-linux-x64\""
   echo "      node -e \"require('sharp'); console.log('sharp OK')\""
   exit 1
 fi
-unset _SH_NODE _SH_CLI _SH_VER _SH_CACHE
+unset _SH_NODE _SH_VER
 
 # ── Ekstrak next-build.tar.gz → frontend/.next/ ──────────────────────────────
 # Build artifact di-commit sebagai tarball agar tidak dihapus cleanup agent.
