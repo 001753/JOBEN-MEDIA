@@ -449,6 +449,13 @@ fi
 #   BUG 3 — Versi libvips fallback salah:
 #     Fallback hardcode 1.1.0, tapi sharp@0.34.5 mensyaratkan 1.2.4.
 #
+#   BUG 4 — @emnapi/runtime tidak diinstall bersama wasm32:
+#     @img/sharp-wasm32/package.json: "dependencies": {"@emnapi/runtime": "^1.7.0"}
+#     _download_img_pkg hanya ekstrak tarball — tidak install transitive deps.
+#     Akibat: wasm32 load → require('@emnapi/runtime') → MODULE_NOT_FOUND → semua
+#     path sharp.js gagal → throw "linux-x64 runtime" (generic error, bukan indikasi
+#     linux-x64 yang dicoba). Fix: _install_emnapi_runtime() setelah tiap wasm32 install.
+#
 # SOLUSI PRESISI:
 #   1. Deteksi SSE4.2 di /proc/cpuinfo sebagai hints awal.
 #   2. Jika SSE4.2 terdeteksi → install x64 dulu, lalu RUNTIME CHECK lewat Node.
@@ -555,6 +562,46 @@ _download_img_pkg() {
   return 0
 }
 
+# Install @emnapi/runtime — dependency wajib dari @img/sharp-wasm32.
+# _download_img_pkg hanya ekstrak tarball, tidak install transitive deps.
+# @img/sharp-wasm32 memanggil require('@emnapi/runtime') saat init — tanpanya
+# wasm32 gagal load dan sharp melempar error "linux-x64 runtime" (generic error
+# saat semua path gagal, bukan indikasi linux-x64 yang dicoba).
+# tslib (dep dari @emnapi/runtime) sudah ada di node_modules — tidak perlu install.
+_install_emnapi_runtime() {
+  local NM="$1"   # path ke node_modules (sudah di-resolve dari symlink)
+
+  # Baca versi minimum dari wasm32/package.json yang sudah diekstrak
+  local MIN_VER
+  MIN_VER=$("$_SH_NODE" -e "
+    try {
+      var v = require('${NM}/@img/sharp-wasm32/package.json').dependencies['@emnapi/runtime'] || '1.7.0';
+      console.log(v.replace(/^[\\^~>=<* ]+/, '').split(/[ \\t]/)[0]);
+    } catch(e) { console.log('1.7.0'); }
+  " 2>/dev/null || echo "1.7.0")
+
+  echo "  → Install @emnapi/runtime@^${MIN_VER} (dep @img/sharp-wasm32) ..."
+  local TMP="/tmp/emnapi-runtime-${MIN_VER}.tgz"
+  local URL="https://registry.npmjs.org/@emnapi/runtime/-/runtime-${MIN_VER}.tgz"
+
+  if ! _dl "$URL" "$TMP"; then
+    echo "  ✗ Gagal download @emnapi/runtime@${MIN_VER} — wasm32 tidak akan bisa load"
+    return 1
+  fi
+  local SZ; SZ=$(wc -c < "$TMP" 2>/dev/null || echo 0)
+  if [ "$SZ" -lt 1000 ]; then
+    echo "  ✗ Download terlalu kecil (${SZ} byte)"
+    rm -f "$TMP"
+    return 1
+  fi
+  rm -rf "${NM}/@emnapi/runtime"
+  mkdir -p "${NM}/@emnapi/runtime"
+  tar -xzf "$TMP" --strip-components=1 -C "${NM}/@emnapi/runtime"
+  rm -f "$TMP"
+  echo "  ✓ @emnapi/runtime@${MIN_VER} installed ($(( SZ / 1024 ))KB)"
+  return 0
+}
+
 SHARP_OK=0
 _SH_DL_FAIL=0
 
@@ -580,6 +627,7 @@ if [ "$_SH_CPU_V2" -eq 1 ]; then
       rm -rf "$_SH_NM/@img"
       _SH_CPU_V2=0
       _download_img_pkg "sharp-wasm32" "$_SH_X64_VER" "$_SH_NM/@img/sharp-wasm32" || _SH_DL_FAIL=1
+      [ "$_SH_DL_FAIL" -eq 0 ] && { _install_emnapi_runtime "$_SH_NM" || _SH_DL_FAIL=1; }
     fi
     unset _SH_X64_EXIT
   fi
@@ -592,6 +640,7 @@ else
   # wasm32 (path ke-4) karena loop sudah break. Tidak ada x64 = loop terus ke wasm32.
   echo "  ℹ️  @img/sharp-wasm32@$_SH_X64_VER (wasm32 = CPU-agnostic, no libvips needed)"
   _download_img_pkg "sharp-wasm32" "$_SH_X64_VER" "$_SH_NM/@img/sharp-wasm32" || _SH_DL_FAIL=1
+  [ "$_SH_DL_FAIL" -eq 0 ] && { _install_emnapi_runtime "$_SH_NM" || _SH_DL_FAIL=1; }
 fi
 
 unset _SH_X64_VER _SH_LIBVIPS_VER _SH_PKG

@@ -1,0 +1,155 @@
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 21:52:00 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at 8a2b854 fix(deploy): add ERR trap to print failing line number
+  ✓ Kode diperbarui — HEAD: 8a2b854843eb
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: 8a2b854843eb)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus @img lama dari node_modules ...
+  ℹ️  CPU: x86-64-v2 ✓ (SSE4.2 terdeteksi) — native linux-x64 binary
+  ℹ️  @img/sharp-linux-x64@0.34.5 + @img/sharp-libvips-linux-x64@1.2.4
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.2.4 ...
+  ✓ @img/sharp-libvips-linux-x64@1.2.4 extracted (7357KB)
+  ⚠️  x64 binary gagal di runtime (CPUID masking di VM) — fallback ke wasm32 ...
+  → Download @img/sharp-wasm32@0.34.5 ...
+  ✓ @img/sharp-wasm32@0.34.5 extracted (3723KB)
+
+╔══════════════════════════════════════════════════════╗
+║  deploy.sh GAGAL di baris 610 — exit code: 0
+╚══════════════════════════════════════════════════════╝
+
+  ✗ FATAL: sharp tidak bisa dimuat setelah install (v22.23.0)
+    CPU SSE4.2: 0  (1=ada → native x64, 0=tidak ada → wasm32)
+    node_modules path: /home/smknwon2/public_html/news/node_modules
+    @img packages terinstall:
+      sharp-wasm32
+
+    Error detail:
+    /home/smknwon2/public_html/news/node_modules/sharp/lib/sharp.js:120
+      throw new Error(help.join('\n'));
+      ^
+
+    Error: Could not load the "sharp" module using the linux-x64 runtime
+    Possible solutions:
+    - Ensure optional dependencies can be installed:
+        npm install --include=optional sharp
+    - Ensure your package manager supports multi-platform installation:
+        See https://sharp.pixelplumbing.com/install#cross-platform
+    - Add platform-specific dependencies:
+        npm install --os=linux --cpu=x64 sharp
+    - Consult the installation documentation:
+        See https://sharp.pixelplumbing.com/install
+        at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/sharp/lib/sharp.js:120:9)
+        at Module._compile (node:internal/modules/cjs/loader:1781:14)
+        at Module._extensions..js (node:internal/modules/cjs/loader:1913:10)
+        at Module.load (node:internal/modules/cjs/loader:1505:32)
+        at Module._load (node:internal/modules/cjs/loader:1309:12)
+        at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+        at Module.require (node:internal/modules/cjs/loader:1527:12)
+        at require (node:internal/modules/helpers:147:16)
+        at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/sharp/lib/constructor.js:10:1)
+        at Module._compile (node:internal/modules/cjs/loader:1781:14)
+
+    Node.js v22.23.0
+
+    Deploy DIBATALKAN — Strapi TIDAK di-restart.
+    (Jika Strapi sudah jalan, versi lama tetap aktif.)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 22:21:02 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at e34f267 Clean up build artifacts and update configuration files
+  ✓ Kode diperbarui — HEAD: e34f267371e5
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: e34f267371e5)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus @img lama dari node_modules ...
+  ℹ️  CPU: x86-64-v2 ✓ (SSE4.2 terdeteksi) — native linux-x64 binary
+  ℹ️  @img/sharp-linux-x64@0.34.5 + @img/sharp-libvips-linux-x64@1.2.4
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.2.4 ...
+  ✓ @img/sharp-libvips-linux-x64@1.2.4 extracted (7357KB)
+  ⚠️  x64 binary gagal di runtime (CPUID masking di VM) — fallback ke wasm32 ...
+  → Download @img/sharp-wasm32@0.34.5 ...
+  ✓ @img/sharp-wasm32@0.34.5 extracted (3723KB)
+
+╔══════════════════════════════════════════════════════╗
+║  deploy.sh GAGAL di baris 610 — exit code: 0
+╚══════════════════════════════════════════════════════╝
+
+  ✗ FATAL: sharp tidak bisa dimuat setelah install (v22.23.0)
+    CPU SSE4.2: 0  (1=ada → native x64, 0=tidak ada → wasm32)
+    node_modules path: /home/smknwon2/public_html/news/node_modules
+    @img packages terinstall:
+      sharp-wasm32
+
+    Error detail:
+    /home/smknwon2/public_html/news/node_modules/sharp/lib/sharp.js:120
+      throw new Error(help.join('\n'));
+      ^
+
+    Error: Could not load the "sharp" module using the linux-x64 runtime
+    Possible solutions:
+    - Ensure optional dependencies can be installed:
+        npm install --include=optional sharp
+    - Ensure your package manager supports multi-platform installation:
+        See https://sharp.pixelplumbing.com/install#cross-platform
+    - Add platform-specific dependencies:
+        npm install --os=linux --cpu=x64 sharp
+    - Consult the installation documentation:
+        See https://sharp.pixelplumbing.com/install
+        at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/sharp/lib/sharp.js:120:9)
+        at Module._compile (node:internal/modules/cjs/loader:1781:14)
+        at Module._extensions..js (node:internal/modules/cjs/loader:1913:10)
+        at Module.load (node:internal/modules/cjs/loader:1505:32)
+        at Module._load (node:internal/modules/cjs/loader:1309:12)
+        at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+        at Module.require (node:internal/modules/cjs/loader:1527:12)
+        at require (node:internal/modules/helpers:147:16)
+        at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/sharp/lib/constructor.js:10:1)
+        at Module._compile (node:internal/modules/cjs/loader:1781:14)
+
+    Node.js v22.23.0
+
+    Deploy DIBATALKAN — Strapi TIDAK di-restart.
+    (Jika Strapi sudah jalan, versi lama tetap aktif.)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
