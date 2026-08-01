@@ -596,8 +596,15 @@ unset _SH_DL_FAIL
 # ── Verifikasi WAJIB — tampilkan error LENGKAP jika gagal ────────────────────
 # CATATAN: jangan suppres stderr (2>/dev/null) — error message dari sharp
 # mengandung diagnosis penting (CPU arch, missing lib, wrong GLIBC, dll).
+#
+# PENTING: set +e wajib di sini.
+# set -e aktif di seluruh script, dan "VAR=$(failing_cmd)" di bawah set -e
+# menyebabkan bash exit SEBELUM baris berikutnya (_SHARP_EXIT=$?) sempat jalan.
+# Hasilnya: script exit silent tanpa pesan error, step 3 & 4 tidak pernah jalan.
+set +e
 _SHARP_ERR=$( (cd "$APP_DIR" && "$_SH_NODE" -e "require('sharp')") 2>&1 )
 _SHARP_EXIT=$?
+set -e
 
 if [ "$SHARP_OK" -eq 1 ] && [ "$_SHARP_EXIT" -eq 0 ]; then
   echo "  ✓ sharp OK ($_SH_VER)"
@@ -618,7 +625,7 @@ else
   echo "    (Jika Strapi sudah jalan, versi lama tetap aktif.)"
   exit 1
 fi
-unset _SH_NODE _SH_VER _SH_CPU_V2 _SH_NM _SHARP_ERR _SH_EXIT
+unset _SH_NODE _SH_VER _SH_CPU_V2 _SH_NM _SHARP_ERR _SHARP_EXIT
 
 # ── Ekstrak next-build.tar.gz → frontend/.next/ ──────────────────────────────
 # Build artifact di-commit sebagai tarball agar tidak dihapus cleanup agent.
