@@ -1,0 +1,566 @@
+hint: have locally. This is usually caused by another repository pushing to
+hint: the same ref. If you want to integrate the remote changes, use
+hint: 'git pull' before pushing again.
+hint: See the 'Note about fast-forwards' in 'git push --help' for details.
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 14:10:10 WIB 2026
+════════════════════════════════════════════════════════
+▶ [1/4] Git pull origin main ...
+HEAD is now at 6b5010e Add news asset for Tirtonirmolo bash article
+  ✓ Kode diperbarui — HEAD: 6b5010e42861
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: 6b5010e42861)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus sharp lama (ABI mismatch) dari node_modules ...
+  → Install sharp prebuilt binary untuk v22.23.0 ...
+  ℹ️  Menggunakan nodevenv activate: /home/smknwon2/nodevenv/public_html/news/22/bin/activate
+
+up to date in 3s
+
+  ✗ FATAL: sharp tidak bisa dimuat setelah install (v22.23.0)
+    Deploy DIBATALKAN — Strapi TIDAK di-restart.
+    (Jika Strapi sudah jalan, versi lama tetap aktif.)
+
+    Penyebab umum:
+    1. Koneksi internet cPanel terblokir → npm tidak bisa download binary
+    2. nodevenv activate tidak ditemukan → CloudLinux menolak npm install
+    3. Node.js Passenger berbeda dari yang dideteksi script
+
+    Solusi manual di SSH cPanel:
+      cd ~/public_html/news
+      source ~/nodevenv/public_html/news/22/bin/activate
+      NM=$(readlink -f node_modules)
+      rm -rf "$NM/sharp" "$NM/@img"
+      npm install --no-save --include=optional sharp
+      node -e "require('sharp'); console.log('sharp OK')"
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash: /etc/motd.sh: No such file or directory
+[smknwon2@tirtonirmolo ~]$ cd ~/public_html/news
+[smknwon2@tirtonirmolo news]$ source /home/smknwon2/nodevenv/public_html/news/22/bin/activate && cd /home/smknwon2/public_html/news
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 20:09:37 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at 6b5010e Add news asset for Tirtonirmolo bash article
+  ✓ Kode diperbarui — HEAD: 6b5010e42861
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: 6b5010e42861)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus sharp lama (ABI mismatch) dari node_modules ...
+  → Install sharp prebuilt binary untuk v22.23.0 ...
+  ℹ️  Menggunakan nodevenv activate: /home/smknwon2/nodevenv/public_html/news/22/bin/activate
+
+up to date in 3s
+
+  ✗ FATAL: sharp tidak bisa dimuat setelah install (v22.23.0)
+    Deploy DIBATALKAN — Strapi TIDAK di-restart.
+    (Jika Strapi sudah jalan, versi lama tetap aktif.)
+
+    Penyebab umum:
+    1. Koneksi internet cPanel terblokir → npm tidak bisa download binary
+    2. nodevenv activate tidak ditemukan → CloudLinux menolak npm install
+    3. Node.js Passenger berbeda dari yang dideteksi script
+
+    Solusi manual di SSH cPanel:
+      cd ~/public_html/news
+      source ~/nodevenv/public_html/news/22/bin/activate
+      NM=$(readlink -f node_modules)
+      rm -rf "$NM/sharp" "$NM/@img"
+      npm install --no-save --include=optional sharp
+      node -e "require('sharp'); console.log('sharp OK')"
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$  cd ~/public_html/news
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$       source ~/nodevenv/public_html/news/22/bin/activate
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$       NM=$(readlink -f node_modules)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$       rm -rf "$NM/sharp" "$NM/@img"
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$       npm install --no-save --include=optional sharp
+Cloudlinux NodeJS Selector demands to store node modules for application in separate folder (virtual environment) pointed by symlink called "node_modules". That's why application should not contain folder/file with such name in application root
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$       node -e "require('sharp'); console.log('sharp OK')"
+node:internal/modules/cjs/loader:1433
+  throw err;
+  ^
+
+Error: Cannot find module 'sharp'
+Require stack:
+- /home/smknwon2/public_html/news/[eval]
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1430:15)
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)
+    at Module._load (node:internal/modules/cjs/loader:1216:25)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+    at Module.require (node:internal/modules/cjs/loader:1527:12)
+    at require (node:internal/modules/helpers:147:16)
+    at [eval]:1:1
+    at runScriptInThisContext (node:internal/vm:209:10)
+    at node:internal/process/execution:446:12 {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [ '/home/smknwon2/public_html/news/[eval]' ]
+}
+
+Node.js v22.23.0
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 20:19:49 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at 1f0ef40 Add news content asset
+  ✓ Kode diperbarui — HEAD: 1f0ef40d042b
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: 1f0ef40d042b)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus sharp lama (ABI mismatch) dari node_modules ...
+  → Install sharp prebuilt binary untuk v22.23.0 (direct download) ...
+  ℹ️  @img/sharp-linux-x64@0.34.5, @img/sharp-libvips-linux-x64@1.1.0
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.1.0 ...
+  ✓ @img/sharp-libvips-linux-x64@1.1.0 extracted (7226KB)
+
+  ✗ FATAL: sharp tidak bisa dimuat setelah install (v22.23.0)
+    Deploy DIBATALKAN — Strapi TIDAK di-restart.
+    (Jika Strapi sudah jalan, versi lama tetap aktif.)
+
+    Solusi manual di SSH cPanel:
+      NODE=$(find_system_node 2>/dev/null || which node)
+      NM=$(readlink -f ~/public_html/news/node_modules)
+      rm -rf "$NM/sharp" "$NM/@img"
+      # Ganti versi sesuai sharp yang terinstall:
+      mkdir -p "$NM/@img/sharp-linux-x64"
+      wget -O /tmp/s.tgz https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz
+      tar -xzf /tmp/s.tgz --strip-components=1 -C "$NM/@img/sharp-linux-x64"
+      mkdir -p "$NM/@img/sharp-libvips-linux-x64"
+      wget -O /tmp/lv.tgz https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.1.0.tgz
+      tar -xzf /tmp/lv.tgz --strip-components=1 -C "$NM/@img/sharp-libvips-linux-x64"
+      node -e "require('sharp'); console.log('sharp OK')"
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ cd ~/public_html/news && bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 20:31:44 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at e8f1e5a Add news asset file
+  ✓ Kode diperbarui — HEAD: e8f1e5abfb7e
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: e8f1e5abfb7e)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus @img lama (ABI mismatch) dari node_modules ...
+  → Install sharp prebuilt binary untuk v22.23.0 (direct download) ...
+  ℹ️  @img/sharp-linux-x64@0.34.5, @img/sharp-libvips-linux-x64@1.2.4
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.2.4 ...
+  ✓ @img/sharp-libvips-linux-x64@1.2.4 extracted (7357KB)
+
+  ✗ FATAL: sharp tidak bisa dimuat setelah install (v22.23.0)
+    Deploy DIBATALKAN — Strapi TIDAK di-restart.
+    (Jika Strapi sudah jalan, versi lama tetap aktif.)
+
+    Solusi manual di SSH cPanel:
+      NODE=$(find_system_node 2>/dev/null || which node)
+      NM=$(readlink -f ~/public_html/news/node_modules)
+      rm -rf "$NM/@img"
+      # Ganti versi sesuai sharp yang terinstall:
+      mkdir -p "$NM/@img/sharp-linux-x64"
+      wget -O /tmp/s.tgz https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz
+      tar -xzf /tmp/s.tgz --strip-components=1 -C "$NM/@img/sharp-linux-x64"
+      mkdir -p "$NM/@img/sharp-libvips-linux-x64"
+      wget -O /tmp/lv.tgz https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.1.0.tgz
+      tar -xzf /tmp/lv.tgz --strip-components=1 -C "$NM/@img/sharp-libvips-linux-x64"
+      node -e "require('sharp'); console.log('sharp OK')"
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 21:01:08 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at 13d8efe Add Node.js version update notes
+  ✓ Kode diperbarui — HEAD: 13d8efe7c7f5
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: 13d8efe7c7f5)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus @img lama dari node_modules ...
+  ℹ️  CPU: x86-64-v2 ✓ (SSE4.2 terdeteksi) — native linux-x64 binary
+  ℹ️  @img/sharp-linux-x64@0.34.5 + @img/sharp-libvips-linux-x64@1.2.4
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.2.4 ...
+  ✓ @img/sharp-libvips-linux-x64@1.2.4 extracted (7357KB)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 21:14:18 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at 13d8efe Add Node.js version update notes
+  ✓ Kode diperbarui — HEAD: 13d8efe7c7f5
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: 13d8efe7c7f5)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus @img lama dari node_modules ...
+  ℹ️  CPU: x86-64-v2 ✓ (SSE4.2 terdeteksi) — native linux-x64 binary
+  ℹ️  @img/sharp-linux-x64@0.34.5 + @img/sharp-libvips-linux-x64@1.2.4
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.2.4 ...
+  ✓ @img/sharp-libvips-linux-x64@1.2.4 extracted (7357KB)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 21:17:51 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at a2fb84d Add assets to the project repository
+  ✓ Kode diperbarui — HEAD: a2fb84dc5636
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: a2fb84dc5636)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus @img lama dari node_modules ...
+  ℹ️  CPU: x86-64-v2 ✓ (SSE4.2 terdeteksi) — native linux-x64 binary
+  ℹ️  @img/sharp-linux-x64@0.34.5 + @img/sharp-libvips-linux-x64@1.2.4
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.2.4 ...
+  ✓ @img/sharp-libvips-linux-x64@1.2.4 extracted (7357KB)
+  ⚠️  x64 binary gagal di runtime (CPUID masking di VM) — fallback ke wasm32 ...
+  → Download @img/sharp-wasm32@0.34.5 ...
+  ✓ @img/sharp-wasm32@0.34.5 extracted (3723KB)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 21:52:00 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at 8a2b854 fix(deploy): add ERR trap to print failing line number
+  ✓ Kode diperbarui — HEAD: 8a2b854843eb
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: 8a2b854843eb)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus @img lama dari node_modules ...
+  ℹ️  CPU: x86-64-v2 ✓ (SSE4.2 terdeteksi) — native linux-x64 binary
+  ℹ️  @img/sharp-linux-x64@0.34.5 + @img/sharp-libvips-linux-x64@1.2.4
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.2.4 ...
+  ✓ @img/sharp-libvips-linux-x64@1.2.4 extracted (7357KB)
+  ⚠️  x64 binary gagal di runtime (CPUID masking di VM) — fallback ke wasm32 ...
+  → Download @img/sharp-wasm32@0.34.5 ...
+  ✓ @img/sharp-wasm32@0.34.5 extracted (3723KB)
+
+╔══════════════════════════════════════════════════════╗
+║  deploy.sh GAGAL di baris 610 — exit code: 0
+╚══════════════════════════════════════════════════════╝
+
+  ✗ FATAL: sharp tidak bisa dimuat setelah install (v22.23.0)
+    CPU SSE4.2: 0  (1=ada → native x64, 0=tidak ada → wasm32)
+    node_modules path: /home/smknwon2/public_html/news/node_modules
+    @img packages terinstall:
+      sharp-wasm32
+
+    Error detail:
+    /home/smknwon2/public_html/news/node_modules/sharp/lib/sharp.js:120
+      throw new Error(help.join('\n'));
+      ^
+
+    Error: Could not load the "sharp" module using the linux-x64 runtime
+    Possible solutions:
+    - Ensure optional dependencies can be installed:
+        npm install --include=optional sharp
+    - Ensure your package manager supports multi-platform installation:
+        See https://sharp.pixelplumbing.com/install#cross-platform
+    - Add platform-specific dependencies:
+        npm install --os=linux --cpu=x64 sharp
+    - Consult the installation documentation:
+        See https://sharp.pixelplumbing.com/install
+        at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/sharp/lib/sharp.js:120:9)
+        at Module._compile (node:internal/modules/cjs/loader:1781:14)
+        at Module._extensions..js (node:internal/modules/cjs/loader:1913:10)
+        at Module.load (node:internal/modules/cjs/loader:1505:32)
+        at Module._load (node:internal/modules/cjs/loader:1309:12)
+        at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+        at Module.require (node:internal/modules/cjs/loader:1527:12)
+        at require (node:internal/modules/helpers:147:16)
+        at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/sharp/lib/constructor.js:10:1)
+        at Module._compile (node:internal/modules/cjs/loader:1781:14)
+
+    Node.js v22.23.0
+
+    Deploy DIBATALKAN — Strapi TIDAK di-restart.
+    (Jika Strapi sudah jalan, versi lama tetap aktif.)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 22:21:02 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at e34f267 Clean up build artifacts and update configuration files
+  ✓ Kode diperbarui — HEAD: e34f267371e5
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: e34f267371e5)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus @img lama dari node_modules ...
+  ℹ️  CPU: x86-64-v2 ✓ (SSE4.2 terdeteksi) — native linux-x64 binary
+  ℹ️  @img/sharp-linux-x64@0.34.5 + @img/sharp-libvips-linux-x64@1.2.4
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.2.4 ...
+  ✓ @img/sharp-libvips-linux-x64@1.2.4 extracted (7357KB)
+  ⚠️  x64 binary gagal di runtime (CPUID masking di VM) — fallback ke wasm32 ...
+  → Download @img/sharp-wasm32@0.34.5 ...
+  ✓ @img/sharp-wasm32@0.34.5 extracted (3723KB)
+
+╔══════════════════════════════════════════════════════╗
+║  deploy.sh GAGAL di baris 610 — exit code: 0
+╚══════════════════════════════════════════════════════╝
+
+  ✗ FATAL: sharp tidak bisa dimuat setelah install (v22.23.0)
+    CPU SSE4.2: 0  (1=ada → native x64, 0=tidak ada → wasm32)
+    node_modules path: /home/smknwon2/public_html/news/node_modules
+    @img packages terinstall:
+      sharp-wasm32
+
+    Error detail:
+    /home/smknwon2/public_html/news/node_modules/sharp/lib/sharp.js:120
+      throw new Error(help.join('\n'));
+      ^
+
+    Error: Could not load the "sharp" module using the linux-x64 runtime
+    Possible solutions:
+    - Ensure optional dependencies can be installed:
+        npm install --include=optional sharp
+    - Ensure your package manager supports multi-platform installation:
+        See https://sharp.pixelplumbing.com/install#cross-platform
+    - Add platform-specific dependencies:
+        npm install --os=linux --cpu=x64 sharp
+    - Consult the installation documentation:
+        See https://sharp.pixelplumbing.com/install
+        at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/sharp/lib/sharp.js:120:9)
+        at Module._compile (node:internal/modules/cjs/loader:1781:14)
+        at Module._extensions..js (node:internal/modules/cjs/loader:1913:10)
+        at Module.load (node:internal/modules/cjs/loader:1505:32)
+        at Module._load (node:internal/modules/cjs/loader:1309:12)
+        at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+        at Module.require (node:internal/modules/cjs/loader:1527:12)
+        at require (node:internal/modules/helpers:147:16)
+        at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/sharp/lib/constructor.js:10:1)
+        at Module._compile (node:internal/modules/cjs/loader:1781:14)
+
+    Node.js v22.23.0
+
+    Deploy DIBATALKAN — Strapi TIDAK di-restart.
+    (Jika Strapi sudah jalan, versi lama tetap aktif.)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$ bash deploy.sh
+
+════════════════════════════════════════════════════════
+  JOBEN NEWS — Deploy Script
+  Dir : /home/smknwon2/public_html/news
+  Date: Sat Aug  1 22:34:47 WIB 2026
+════════════════════════════════════════════════════════
+
+▶ [1/4] Git pull origin main ...
+HEAD is now at 86e4db1 Update strapi-sharp-cpanel memory documentation
+  ✓ Kode diperbarui — HEAD: 86e4db1d52c5
+
+  ✓ Build valid — perubahan HEAD hanya di artifacts/meta (bukan kode)
+    (built: 89a7e074c5e2 → HEAD: 86e4db1d52c5)
+
+▶ [2/4] Cek & install Node.js dependencies ...
+  → Hapus tarball lama (untracked sisa git-lfs) ...
+  ℹ️  Ditemukan 2 part file(s)
+  ✓ node_modules-strapi.partaa: 45MB — valid
+  ✓ node_modules-strapi.partab: 21MB — valid
+  → Menggabungkan & mengekstrak node_modules ...
+  ✓ Strapi node_modules: diekstrak dari 2 part file(s)
+  → Hapus part files setelah ekstrak (hemat disk) ...
+  → Rebuild better-sqlite3 untuk v22.23.0 ...
+rebuilt dependencies successfully
+  ✓ better-sqlite3 rebuilt
+  → Hapus @img lama dari node_modules ...
+  ℹ️  CPU: x86-64-v2 ✓ (SSE4.2 terdeteksi) — native linux-x64 binary
+  ℹ️  @img/sharp-linux-x64@0.34.5 + @img/sharp-libvips-linux-x64@1.2.4
+  → Download @img/sharp-linux-x64@0.34.5 ...
+  ✓ @img/sharp-linux-x64@0.34.5 extracted (178KB)
+  → Download @img/sharp-libvips-linux-x64@1.2.4 ...
+  ✓ @img/sharp-libvips-linux-x64@1.2.4 extracted (7357KB)
+  ⚠️  x64 binary gagal di runtime (CPUID masking di VM) — fallback ke wasm32 ...
+  → Download @img/sharp-wasm32@0.34.5 ...
+  ✓ @img/sharp-wasm32@0.34.5 extracted (3723KB)
+  → Install @emnapi/runtime@^1.7.0 (dep @img/sharp-wasm32) ...
+  ✓ @emnapi/runtime@1.7.0 installed (63KB)
+
+╔══════════════════════════════════════════════════════╗
+║  deploy.sh GAGAL di baris 659 — exit code: 0
+╚══════════════════════════════════════════════════════╝
+
+  ✗ FATAL: sharp tidak bisa dimuat setelah install (v22.23.0)
+    CPU SSE4.2: 0  (1=ada → native x64, 0=tidak ada → wasm32)
+    node_modules path: /home/smknwon2/public_html/news/node_modules
+    @img packages terinstall:
+      sharp-wasm32
+
+    Error detail:
+    node:internal/modules/cjs/loader:1433
+      throw err;
+      ^
+
+    Error: Cannot find module '@img/colour'
+    Require stack:
+    - /home/smknwon2/public_html/news/node_modules/sharp/lib/colour.js
+    - /home/smknwon2/public_html/news/node_modules/sharp/lib/index.js
+    - /home/smknwon2/public_html/news/[eval]
+        at Module._resolveFilename (node:internal/modules/cjs/loader:1430:15)
+        at defaultResolveImpl (node:internal/modules/cjs/loader:1040:19)
+        at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1045:22)
+        at Module._load (node:internal/modules/cjs/loader:1216:25)
+        at wrapModuleLoad (node:internal/modules/cjs/loader:254:19)
+        at Module.require (node:internal/modules/cjs/loader:1527:12)
+        at require (node:internal/modules/helpers:147:16)
+        at Object.<anonymous> (/home/smknwon2/public_html/news/node_modules/sharp/lib/colour.js:6:15)
+        at Module._compile (node:internal/modules/cjs/loader:1781:14)
+        at Module._extensions..js (node:internal/modules/cjs/loader:1913:10) {
+      code: 'MODULE_NOT_FOUND',
+      requireStack: [
+        '/home/smknwon2/public_html/news/node_modules/sharp/lib/colour.js',
+        '/home/smknwon2/public_html/news/node_modules/sharp/lib/index.js',
+        '/home/smknwon2/public_html/news/[eval]'
+      ]
+    }
+
+    Node.js v22.23.0
+
+    Deploy DIBATALKAN — Strapi TIDAK di-restart.
+    (Jika Strapi sudah jalan, versi lama tetap aktif.)
+[public_html/news (22)] [smknwon2@tirtonirmolo news]$
