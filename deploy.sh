@@ -427,21 +427,33 @@ fi
 
 # ── sharp: fix ABI mismatch — WAJIB setelah SEMUA jalur instalasi deps ────────
 #
-# ROOT CAUSE (diverifikasi dari log cPanel):
-#   npm install dengan nodevenv activate → NPM_CONFIG_PREFIX di-set ke venv dir.
-#   npm memperlakukan ini sebagai "global prefix" → install ke $PREFIX/lib/node_modules/
-#   (BUKAN ke ./node_modules/ yang merupakan symlink ke venv).
-#   Akibatnya: "up to date in 3s" tapi sharp tidak ada di app's node_modules.
-#   npm install manual pun ditolak CloudLinux: "demands to store node modules
-#   in separate folder (virtual environment)".
+# ROOT CAUSE (diverifikasi dari analisis binary sharp@0.34.5):
 #
-# SOLUSI: bypass npm sepenuhnya — download tarball @img langsung dari npm
-#   registry via wget/curl, extract ke venv target. Tidak ada npm intercept,
-#   tidak ada PREFIX confusion, tidak ada CloudLinux restriction.
+#   BUG 1 — x86-64-v2 microarchitecture trap (penyebab utama kegagalan):
+#     sharp/lib/sharp.js mencoba load @img/sharp-linux-x64 (path ke-3 dari 4).
+#     Jika berhasil load, ia memanggil sharp._isUsingX64V2() lewat CPUID.
+#     Jika CPU server (atau VM) TIDAK mengekspos SSE4.2 → isUsingX64V2() = false
+#     → sharp = null → throw error.
+#     FATAL: loop sudah `break` di path ke-3, path ke-4 (@img/sharp-wasm32)
+#     TIDAK pernah dicoba — bahkan jika wasm32 terinstall sekalipun.
 #
-# Package yang dibutuhkan untuk Linux x64 (glibc):
-#   - @img/sharp-linux-x64       — addon Node.js (.node file)
-#   - @img/sharp-libvips-linux-x64 — shared library libvips
+#   BUG 2 — Error disembunyikan:
+#     Verifikasi lama: "$_SH_NODE" -e "require('sharp')" 2>/dev/null
+#     2>/dev/null membuang seluruh stack trace sehingga tidak ada petunjuk error.
+#
+#   BUG 3 — Versi libvips fallback salah:
+#     Fallback hardcode 1.1.0, tapi sharp@0.34.5 mensyaratkan 1.2.4.
+#
+# SOLUSI PRESISI:
+#   Deteksi SSE4.2 di /proc/cpuinfo SEBELUM memilih binary:
+#   - SSE4.2 ada  → install @img/sharp-linux-x64 + @img/sharp-libvips-linux-x64
+#                   (native binary, performa optimal)
+#   - SSE4.2 tidak ada → install @img/sharp-wasm32 SAJA, JANGAN install x64.
+#                   Jika x64 ada → loop di sharp.js break di path 3, V2 check gagal,
+#                   wasm32 tidak dicoba. Jika x64 TIDAK ada → path 3 = MODULE_NOT_FOUND
+#                   → loop lanjut ke path 4 (wasm32) → berhasil.
+#
+# Referensi: sharp/lib/sharp.js paths[] + _isUsingX64V2() check
 
 _SH_NODE=$(find_system_node)
 _SH_VER=$("$_SH_NODE" --version 2>/dev/null)
@@ -450,44 +462,54 @@ _SH_VER=$("$_SH_NODE" --version 2>/dev/null)
 _SH_NM="$APP_DIR/node_modules"
 [ -L "$_SH_NM" ] && _SH_NM="$(readlink -f "$_SH_NM")"
 
-echo "  → Hapus @img lama (ABI mismatch) dari node_modules ..."
+echo "  → Hapus @img lama dari node_modules ..."
 # HANYA hapus @img (binary packages) — jangan hapus sharp (pure-JS wrapper).
-# sharp/index.js adalah JS murni yang require('@img/sharp-linux-x64');
-# jika sharp dihapus, require('sharp') langsung MODULE_NOT_FOUND.
 rm -rf "$_SH_NM/@img"
 
-echo "  → Install sharp prebuilt binary untuk $_SH_VER (direct download) ..."
+# ── Deteksi x86-64-v2 microarchitecture (SSE4.2 = syarat minimum) ─────────────
+# sharp@0.33+ prebuilt linux-x64 mensyaratkan: CMPXCHG16B, POPCNT, SSE4.1, SSE4.2, SSSE3.
+# /proc/cpuinfo melaporkan flag CPU yang diekspos ke proses (bisa berbeda dari hardware asli
+# jika host memakai VM dengan CPU passthrough terbatas, e.g. Xen default, KVM qemu32, dll).
+_SH_CPU_V2=0
+if grep -qw 'sse4_2' /proc/cpuinfo 2>/dev/null; then
+  _SH_CPU_V2=1
+  echo "  ℹ️  CPU: x86-64-v2 ✓ (SSE4.2 terdeteksi) — native linux-x64 binary"
+else
+  echo "  ℹ️  CPU: SSE4.2 TIDAK terdeteksi di /proc/cpuinfo"
+  echo "  ℹ️  Menggunakan @img/sharp-wasm32 (CPU-agnostic, sedikit lebih lambat)"
+fi
 
-# Baca versi dari package.json sharp yang sudah terinstall
+# Baca versi exact dari sharp/package.json yang sudah terinstall di node_modules.
+# CATATAN: baca dari optionalDependencies['@img/sharp-linux-x64'] — ini adalah versi
+# EXACT yang digunakan npm saat install, bukan range ^x.y.z.
+# Fallback ke 1.2.4 (libvips) bukan 1.1.0 — sharp@0.34.x membutuhkan libvips 1.2.4.
 _SH_PKG="$_SH_NM/sharp/package.json"
 if [ -f "$_SH_PKG" ]; then
   _SH_X64_VER=$("$_SH_NODE" -e "
     try {
       var p = require('$_SH_PKG');
       var v = (p.optionalDependencies||{})['@img/sharp-linux-x64'] || p.version;
-      console.log(v.replace(/^[\\^~]/,''));
+      console.log(v.replace(/^[\\^~>=<]/g,'').split(' ')[0]);
     } catch(e) { console.log('0.34.5'); }
   " 2>/dev/null || echo "0.34.5")
   _SH_LIBVIPS_VER=$("$_SH_NODE" -e "
     try {
       var p = require('$_SH_PKG');
-      var v = (p.optionalDependencies||{})['@img/sharp-libvips-linux-x64'] || '1.1.0';
-      console.log(v.replace(/^[\\^~]/,''));
-    } catch(e) { console.log('1.1.0'); }
-  " 2>/dev/null || echo "1.1.0")
+      var v = (p.optionalDependencies||{})['@img/sharp-libvips-linux-x64'] || '1.2.4';
+      console.log(v.replace(/^[\\^~>=<]/g,'').split(' ')[0]);
+    } catch(e) { console.log('1.2.4'); }
+  " 2>/dev/null || echo "1.2.4")
 else
-  # sharp/package.json tidak ada (jalur install_deps, belum sempat install)
-  # Baca dari package.json root → versi sharp → asumsi @img sama
+  # sharp/package.json belum ada — baca versi dari root package.json
   _SH_X64_VER=$("$_SH_NODE" -e "
     try {
       var p = require('$APP_DIR/package.json');
       var v = (p.dependencies||{}).sharp || '0.34.5';
-      console.log(v.replace(/^[\\^~]/,''));
+      console.log(v.replace(/^[\\^~>=<]/g,'').split(' ')[0]);
     } catch(e) { console.log('0.34.5'); }
   " 2>/dev/null || echo "0.34.5")
-  _SH_LIBVIPS_VER="1.1.0"
+  _SH_LIBVIPS_VER="1.2.4"
 fi
-echo "  ℹ️  @img/sharp-linux-x64@$_SH_X64_VER, @img/sharp-libvips-linux-x64@$_SH_LIBVIPS_VER"
 
 # Download helper — coba wget lalu curl
 _dl() {
@@ -501,69 +523,83 @@ _dl() {
   return 1
 }
 
-# Download + extract dua paket ke venv target
+# Download + extract satu paket npm ke target dir
+_download_img_pkg() {
+  local PKG_NAME="$1" PKG_VER="$2" TARGET="$3"
+  local URL="https://registry.npmjs.org/@img/${PKG_NAME}/-/${PKG_NAME}-${PKG_VER}.tgz"
+  local TMP="/tmp/img-${PKG_NAME}-${PKG_VER}.tgz"
+  echo "  → Download @img/${PKG_NAME}@${PKG_VER} ..."
+  if ! _dl "$URL" "$TMP"; then
+    echo "  ✗ wget/curl gagal untuk @img/${PKG_NAME}"
+    return 1
+  fi
+  local SIZE; SIZE=$(wc -c < "$TMP" 2>/dev/null || echo 0)
+  if [ "$SIZE" -lt 10000 ]; then
+    echo "  ✗ Download terlalu kecil (${SIZE} byte) — kemungkinan 404 atau network error"
+    head -3 "$TMP" 2>/dev/null | cat
+    rm -f "$TMP"
+    return 1
+  fi
+  rm -rf "$TARGET"
+  mkdir -p "$TARGET"
+  # npm registry tarball selalu punya prefix "package/" — strip satu level
+  tar -xzf "$TMP" --strip-components=1 -C "$TARGET"
+  rm -f "$TMP"
+  echo "  ✓ @img/${PKG_NAME}@${PKG_VER} extracted ($(( SIZE / 1024 ))KB)"
+  return 0
+}
+
 SHARP_OK=0
 _SH_DL_FAIL=0
-for _SH_PKGSPEC in \
-    "sharp-linux-x64:$_SH_X64_VER" \
-    "sharp-libvips-linux-x64:$_SH_LIBVIPS_VER"; do
-  _SH_PKG_NAME="${_SH_PKGSPEC%%:*}"
-  _SH_PKG_VER="${_SH_PKGSPEC##*:}"
-  _SH_URL="https://registry.npmjs.org/@img/${_SH_PKG_NAME}/-/${_SH_PKG_NAME}-${_SH_PKG_VER}.tgz"
-  _SH_TMP="/tmp/${_SH_PKG_NAME}-${_SH_PKG_VER}.tgz"
-  _SH_TARGET="$_SH_NM/@img/$_SH_PKG_NAME"
 
-  echo "  → Download @img/${_SH_PKG_NAME}@${_SH_PKG_VER} ..."
-  if ! _dl "$_SH_URL" "$_SH_TMP"; then
-    echo "  ✗ wget/curl gagal"
-    _SH_DL_FAIL=1; break
+if [ "$_SH_CPU_V2" -eq 1 ]; then
+  # ── Native linux-x64 path ──────────────────────────────────────────────────
+  echo "  ℹ️  @img/sharp-linux-x64@$_SH_X64_VER + @img/sharp-libvips-linux-x64@$_SH_LIBVIPS_VER"
+  _download_img_pkg "sharp-linux-x64"         "$_SH_X64_VER"    "$_SH_NM/@img/sharp-linux-x64"         || _SH_DL_FAIL=1
+  if [ "$_SH_DL_FAIL" -eq 0 ]; then
+    _download_img_pkg "sharp-libvips-linux-x64" "$_SH_LIBVIPS_VER" "$_SH_NM/@img/sharp-libvips-linux-x64" || _SH_DL_FAIL=1
   fi
+else
+  # ── WebAssembly fallback path ──────────────────────────────────────────────
+  # @img/sharp-wasm32 menyertakan libvips yang dikompilasi ke dalam wasm binary.
+  # Tidak perlu @img/sharp-libvips-linux-x64.
+  # PENTING: JANGAN install @img/sharp-linux-x64 di sini — jika ada, sharp.js akan
+  # mencoba load x64 dulu (path ke-3), V2 check gagal, lalu throw TANPA mencoba
+  # wasm32 (path ke-4) karena loop sudah break. Tidak ada x64 = loop terus ke wasm32.
+  echo "  ℹ️  @img/sharp-wasm32@$_SH_X64_VER (wasm32 = CPU-agnostic, no libvips needed)"
+  _download_img_pkg "sharp-wasm32" "$_SH_X64_VER" "$_SH_NM/@img/sharp-wasm32" || _SH_DL_FAIL=1
+fi
 
-  _SH_SIZE=$(wc -c < "$_SH_TMP" 2>/dev/null || echo 0)
-  if [ "$_SH_SIZE" -lt 10000 ]; then
-    echo "  ✗ Download terlalu kecil (${_SH_SIZE} byte) — kemungkinan 404 atau error"
-    cat "$_SH_TMP" 2>/dev/null | head -5
-    rm -f "$_SH_TMP"
-    _SH_DL_FAIL=1; break
-  fi
-
-  rm -rf "$_SH_TARGET"
-  mkdir -p "$_SH_TARGET"
-  # npm tarball selalu punya prefix "package/" — strip satu level
-  tar -xzf "$_SH_TMP" --strip-components=1 -C "$_SH_TARGET"
-  rm -f "$_SH_TMP"
-  echo "  ✓ @img/${_SH_PKG_NAME}@${_SH_PKG_VER} extracted ($(( _SH_SIZE / 1024 ))KB)"
-done
-unset _SH_PKGSPEC _SH_PKG_NAME _SH_PKG_VER _SH_URL _SH_TMP _SH_TARGET _SH_SIZE
 unset _SH_X64_VER _SH_LIBVIPS_VER _SH_PKG
-
 [ "$_SH_DL_FAIL" -eq 0 ] && SHARP_OK=1
-unset _SH_DL_FAIL _SH_NM
+unset _SH_DL_FAIL
 
-# Verifikasi WAJIB — gagal = exit 1 sebelum Passenger restart
-if [ "$SHARP_OK" -eq 1 ] && "$_SH_NODE" -e "require('sharp')" 2>/dev/null; then
-  echo "  ✓ sharp prebuilt binary OK ($_SH_VER)"
+# ── Verifikasi WAJIB — tampilkan error LENGKAP jika gagal ────────────────────
+# CATATAN: jangan suppres stderr (2>/dev/null) — error message dari sharp
+# mengandung diagnosis penting (CPU arch, missing lib, wrong GLIBC, dll).
+_SHARP_ERR=$( (cd "$APP_DIR" && "$_SH_NODE" -e "require('sharp')") 2>&1 )
+_SHARP_EXIT=$?
+
+if [ "$SHARP_OK" -eq 1 ] && [ "$_SHARP_EXIT" -eq 0 ]; then
+  echo "  ✓ sharp OK ($_SH_VER)"
 else
   echo ""
   echo "  ✗ FATAL: sharp tidak bisa dimuat setelah install ($_SH_VER)"
+  echo "    CPU SSE4.2: $_SH_CPU_V2  (1=ada → native x64, 0=tidak ada → wasm32)"
+  echo "    node_modules path: $_SH_NM"
+  echo "    @img packages terinstall:"
+  ls "$_SH_NM/@img/" 2>/dev/null | sed 's/^/      /' || echo "      (kosong atau tidak ditemukan)"
+  echo ""
+  if [ -n "$_SHARP_ERR" ]; then
+    echo "    Error detail:"
+    echo "$_SHARP_ERR" | head -40 | sed 's/^/    /'
+  fi
+  echo ""
   echo "    Deploy DIBATALKAN — Strapi TIDAK di-restart."
   echo "    (Jika Strapi sudah jalan, versi lama tetap aktif.)"
-  echo ""
-  echo "    Solusi manual di SSH cPanel:"
-  echo "      NODE=\$(find_system_node 2>/dev/null || which node)"
-  echo "      NM=\$(readlink -f ~/public_html/news/node_modules)"
-  echo "      rm -rf \"\$NM/@img\""
-  echo "      # Ganti versi sesuai sharp yang terinstall:"
-  echo "      mkdir -p \"\$NM/@img/sharp-linux-x64\""
-  echo "      wget -O /tmp/s.tgz https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz"
-  echo "      tar -xzf /tmp/s.tgz --strip-components=1 -C \"\$NM/@img/sharp-linux-x64\""
-  echo "      mkdir -p \"\$NM/@img/sharp-libvips-linux-x64\""
-  echo "      wget -O /tmp/lv.tgz https://registry.npmjs.org/@img/sharp-libvips-linux-x64/-/sharp-libvips-linux-x64-1.1.0.tgz"
-  echo "      tar -xzf /tmp/lv.tgz --strip-components=1 -C \"\$NM/@img/sharp-libvips-linux-x64\""
-  echo "      node -e \"require('sharp'); console.log('sharp OK')\""
   exit 1
 fi
-unset _SH_NODE _SH_VER
+unset _SH_NODE _SH_VER _SH_CPU_V2 _SH_NM _SHARP_ERR _SH_EXIT
 
 # ── Ekstrak next-build.tar.gz → frontend/.next/ ──────────────────────────────
 # Build artifact di-commit sebagai tarball agar tidak dihapus cleanup agent.
