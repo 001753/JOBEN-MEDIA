@@ -445,13 +445,14 @@ fi
 #     Fallback hardcode 1.1.0, tapi sharp@0.34.5 mensyaratkan 1.2.4.
 #
 # SOLUSI PRESISI:
-#   Deteksi SSE4.2 di /proc/cpuinfo SEBELUM memilih binary:
-#   - SSE4.2 ada  → install @img/sharp-linux-x64 + @img/sharp-libvips-linux-x64
-#                   (native binary, performa optimal)
-#   - SSE4.2 tidak ada → install @img/sharp-wasm32 SAJA, JANGAN install x64.
-#                   Jika x64 ada → loop di sharp.js break di path 3, V2 check gagal,
-#                   wasm32 tidak dicoba. Jika x64 TIDAK ada → path 3 = MODULE_NOT_FOUND
-#                   → loop lanjut ke path 4 (wasm32) → berhasil.
+#   1. Deteksi SSE4.2 di /proc/cpuinfo sebagai hints awal.
+#   2. Jika SSE4.2 terdeteksi → install x64 dulu, lalu RUNTIME CHECK lewat Node.
+#      Beberapa VM (Xen/KVM dengan CPUID masking) melaporkan SSE4.2 di /proc/cpuinfo
+#      tapi memblokir instruksi CPUID di level proses → _isUsingX64V2() = false.
+#      Jika x64 gagal di Node → otomatis hapus x64, install wasm32 (tanpa abort).
+#   3. Jika SSE4.2 tidak terdeteksi → langsung install @img/sharp-wasm32 SAJA.
+#      JANGAN install x64 — jika ada, loop di sharp.js break di path 3, V2 check
+#      gagal, wasm32 tidak dicoba. Tidak ada x64 = loop lanjut ke wasm32.
 #
 # Referensi: sharp/lib/sharp.js paths[] + _isUsingX64V2() check
 
@@ -558,6 +559,24 @@ if [ "$_SH_CPU_V2" -eq 1 ]; then
   _download_img_pkg "sharp-linux-x64"         "$_SH_X64_VER"    "$_SH_NM/@img/sharp-linux-x64"         || _SH_DL_FAIL=1
   if [ "$_SH_DL_FAIL" -eq 0 ]; then
     _download_img_pkg "sharp-libvips-linux-x64" "$_SH_LIBVIPS_VER" "$_SH_NM/@img/sharp-libvips-linux-x64" || _SH_DL_FAIL=1
+  fi
+
+  # ── Runtime cross-check: /proc/cpuinfo vs CPUID aktual ─────────────────────
+  # Beberapa VM (Xen/KVM dengan CPUID masking) melaporkan SSE4.2 di /proc/cpuinfo
+  # tapi hypervisor memblokir instruksi CPUID di level proses → _isUsingX64V2()
+  # mengembalikan false → sharp.js melempar error meskipun binary sudah terinstall.
+  # Deteksi dini di sini: jika x64 gagal di Node, langsung hapus x64 dan install
+  # wasm32 sebagai gantinya — tanpa abort deploy.
+  if [ "$_SH_DL_FAIL" -eq 0 ]; then
+    _SH_X64_EXIT=0
+    (cd "$APP_DIR" && "$_SH_NODE" -e "require('sharp')") >/dev/null 2>&1 || _SH_X64_EXIT=$?
+    if [ "$_SH_X64_EXIT" -ne 0 ]; then
+      echo "  ⚠️  x64 binary gagal di runtime (CPUID masking di VM) — fallback ke wasm32 ..."
+      rm -rf "$_SH_NM/@img"
+      _SH_CPU_V2=0
+      _download_img_pkg "sharp-wasm32" "$_SH_X64_VER" "$_SH_NM/@img/sharp-wasm32" || _SH_DL_FAIL=1
+    fi
+    unset _SH_X64_EXIT
   fi
 else
   # ── WebAssembly fallback path ──────────────────────────────────────────────
@@ -707,7 +726,7 @@ cat > "$CMS_DIR/server.js" << 'EOJS'
  * Application root  : ~/public_html/strapi   (direktori ini)
  * Application URL   : cms.news.jobenapp.cloud
  * Startup file      : server.js
- * Node.js version   : 20 (sama dengan news/)
+ * Node.js version   : 22 (nodevenv/public_html/news/22)
  */
 const path = require('path');
 
