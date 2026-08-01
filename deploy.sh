@@ -450,8 +450,11 @@ _SH_VER=$("$_SH_NODE" --version 2>/dev/null)
 _SH_NM="$APP_DIR/node_modules"
 [ -L "$_SH_NM" ] && _SH_NM="$(readlink -f "$_SH_NM")"
 
-echo "  → Hapus sharp lama (ABI mismatch) dari node_modules ..."
-rm -rf "$_SH_NM/sharp" "$_SH_NM/@img"
+echo "  → Hapus @img lama (ABI mismatch) dari node_modules ..."
+# HANYA hapus @img (binary packages) — jangan hapus sharp (pure-JS wrapper).
+# sharp/index.js adalah JS murni yang require('@img/sharp-linux-x64');
+# jika sharp dihapus, require('sharp') langsung MODULE_NOT_FOUND.
+rm -rf "$_SH_NM/@img"
 
 echo "  → Install sharp prebuilt binary untuk $_SH_VER (direct download) ..."
 
@@ -549,7 +552,7 @@ else
   echo "    Solusi manual di SSH cPanel:"
   echo "      NODE=\$(find_system_node 2>/dev/null || which node)"
   echo "      NM=\$(readlink -f ~/public_html/news/node_modules)"
-  echo "      rm -rf \"\$NM/sharp\" \"\$NM/@img\""
+  echo "      rm -rf \"\$NM/@img\""
   echo "      # Ganti versi sesuai sharp yang terinstall:"
   echo "      mkdir -p \"\$NM/@img/sharp-linux-x64\""
   echo "      wget -O /tmp/s.tgz https://registry.npmjs.org/@img/sharp-linux-x64/-/sharp-linux-x64-0.34.5.tgz"
