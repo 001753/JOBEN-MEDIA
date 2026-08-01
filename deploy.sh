@@ -25,6 +25,11 @@
 
 set -e
 
+# ── ERR trap — cetak baris gagal supaya tidak pernah exit silent ──────────────
+# set -e akan exit jika ada perintah gagal; trap ini cetak nomor baris & perintah
+# yang memicu exit sehingga debugging tidak perlu tebak-tebakan.
+trap 'echo "" >&2; echo "╔══════════════════════════════════════════════════════╗" >&2; echo "║  deploy.sh GAGAL di baris $LINENO — exit code: $?" >&2; echo "╚══════════════════════════════════════════════════════╝" >&2' ERR
+
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 FRONTEND_DIR="$APP_DIR/frontend"
 cd "$APP_DIR"
