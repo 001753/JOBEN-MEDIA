@@ -415,6 +415,15 @@ else
     NODE_VER=$("$SYSTEM_NODE" --version 2>/dev/null)
 
     # ── sharp: install (bukan rebuild) agar prebuilt binary didownload ─────────
+    # Hapus sharp lama terlebih dahulu — jika tidak dihapus, npm melihat sharp
+    # sudah ada (dari tarball Node 20) dan mengembalikan "up to date" tanpa
+    # mendownload prebuilt binary yang sesuai Node versi saat ini (Node 22).
+    echo "  → Hapus sharp lama (ABI Node 20) dari node_modules ..."
+    _SHARP_NM="$APP_DIR/node_modules"
+    [ -L "$_SHARP_NM" ] && _SHARP_NM="$(readlink -f "$_SHARP_NM")"
+    rm -rf "$_SHARP_NM/sharp" "$_SHARP_NM/@img"
+    unset _SHARP_NM
+
     echo "  → Install sharp prebuilt binary untuk $NODE_VER ..."
     SHARP_OK=0
     if [ -n "$NPM_CLI" ]; then
