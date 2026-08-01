@@ -456,6 +456,13 @@ fi
 #     path sharp.js gagal → throw "linux-x64 runtime" (generic error, bukan indikasi
 #     linux-x64 yang dicoba). Fix: _install_emnapi_runtime() setelah tiap wasm32 install.
 #
+#   BUG 5 — @img/colour dihapus bersama binary packages:
+#     rm -rf "$NM/@img" menghapus @img/colour yang merupakan regular dependency
+#     (pure-JS, bukan binary) di sharp/package.json → "dependencies": {"@img/colour":"^1.0.0"}.
+#     @img/colour dipakai oleh sharp/lib/colour.js di semua platform.
+#     Akibat: bahkan setelah binary terpasang, require('sharp') gagal dengan
+#     "Cannot find module '@img/colour'". Fix: loop yang skip 'colour' saat hapus @img/.
+#
 # SOLUSI PRESISI:
 #   1. Deteksi SSE4.2 di /proc/cpuinfo sebagai hints awal.
 #   2. Jika SSE4.2 terdeteksi → install x64 dulu, lalu RUNTIME CHECK lewat Node.
@@ -475,9 +482,21 @@ _SH_VER=$("$_SH_NODE" --version 2>/dev/null)
 _SH_NM="$APP_DIR/node_modules"
 [ -L "$_SH_NM" ] && _SH_NM="$(readlink -f "$_SH_NM")"
 
-echo "  → Hapus @img lama dari node_modules ..."
-# HANYA hapus @img (binary packages) — jangan hapus sharp (pure-JS wrapper).
-rm -rf "$_SH_NM/@img"
+echo "  → Hapus @img binary lama dari node_modules ..."
+# Hapus HANYA sub-paket binary/wasm di bawah @img — JANGAN hapus @img/colour.
+# @img/colour adalah regular dependency (pure-JS, tidak ada binary) yang dibutuhkan
+# oleh semua platform melalui sharp/lib/colour.js. Jika dihapus, require('sharp')
+# akan gagal dengan "Cannot find module '@img/colour'" bahkan setelah binary terpasang.
+# @img/sharp-* dan @img/sharp-libvips-* adalah optional (platform-specific binary)
+# yang perlu diganti — itulah satu-satunya yang dihapus di sini.
+for _img_pkg in "$_SH_NM/@img"/*/; do
+  [ -d "$_img_pkg" ] || continue
+  _img_name="$(basename "${_img_pkg%/}")"
+  if [ "$_img_name" != "colour" ]; then
+    rm -rf "$_img_pkg"
+  fi
+done
+unset _img_pkg _img_name
 
 # ── Deteksi x86-64-v2 microarchitecture (SSE4.2 = syarat minimum) ─────────────
 # sharp@0.33+ prebuilt linux-x64 mensyaratkan: CMPXCHG16B, POPCNT, SSE4.1, SSE4.2, SSSE3.
@@ -624,7 +643,8 @@ if [ "$_SH_CPU_V2" -eq 1 ]; then
     (cd "$APP_DIR" && "$_SH_NODE" -e "require('sharp')") >/dev/null 2>&1 || _SH_X64_EXIT=$?
     if [ "$_SH_X64_EXIT" -ne 0 ]; then
       echo "  ⚠️  x64 binary gagal di runtime (CPUID masking di VM) — fallback ke wasm32 ..."
-      rm -rf "$_SH_NM/@img"
+      # Hapus hanya binary x64 yang baru saja didownload — jangan hapus @img/colour
+      rm -rf "$_SH_NM/@img/sharp-linux-x64" "$_SH_NM/@img/sharp-libvips-linux-x64"
       _SH_CPU_V2=0
       _download_img_pkg "sharp-wasm32" "$_SH_X64_VER" "$_SH_NM/@img/sharp-wasm32" || _SH_DL_FAIL=1
       [ "$_SH_DL_FAIL" -eq 0 ] && { _install_emnapi_runtime "$_SH_NM" || _SH_DL_FAIL=1; }
